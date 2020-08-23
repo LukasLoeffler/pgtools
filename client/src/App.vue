@@ -2,15 +2,11 @@
   <div id="app">
     <v-app>
       <div id="nav">
-        <div>
-          <router-link to="/triggers">Triggers</router-link> |
-          <router-link to="/events">Events</router-link> |
-          <router-link to="/comparison">Comparison</router-link> |
-          <router-link to="/watcher">Watcher</router-link>
-          <DbConnectDialog id="dbCon"/>
-        </div>
+        <router-link to="/home">Home</router-link> |
+        <router-link to="/triggers">Triggers</router-link> |
+        <router-link to="/watcher">Watcher</router-link>
+        <DbConnectDialog id="dbCon"/>
       </div>
-
       <router-view></router-view>
     </v-app>
   </div>
@@ -20,19 +16,9 @@
 import DbConnectDialog from "./components/DbConnectDialog";
 
 export default {
-  
   name: 'App',
-  
   components: { DbConnectDialog },
-
-  data: () => ({
-    //
-  }),
-  methods: {
-    openDbDialog() {
-      console.log("Open");
-    }
-  }
+  methods: {}
 };
 </script>
 
