@@ -29,7 +29,6 @@ def notify(payload):
         payload (string): The json payload of the event
     """
     global event_index
-    print("Notify")
     payload["timestamp"] = datetime.now().isoformat()[11:-3]
     payload["index"] = event_index
     socketio.emit('evt', payload)
@@ -119,12 +118,11 @@ def sub_function():
     for e in pubsub.events():
         if e:
             payload = json.loads(e.payload)
-            print(f"{payload['table']} - {payload['action']}")
+            #print(f"{payload['table']} - {payload['action']}")
             #print(payload['data'])
             notify(payload)
 
 
 if __name__ == '__main__':
     # webbrowser.open_new_tab("http://localhost:5000")
-    socketio.run(app)
-    
+    socketio.run(app, host="0.0.0.0")
