@@ -2,7 +2,7 @@
   <div id="app">
     <v-app>
       <div id="nav">
-        <router-link to="/home">Home</router-link> |
+        <router-link to="/">Home</router-link> |
         <router-link to="/triggers">Triggers</router-link> |
         <router-link to="/watcher">Watcher</router-link>
         <DbConnectDialog id="dbCon"/>
@@ -17,6 +17,9 @@ import DbConnectDialog from "./components/DbConnectDialog";
 
 export default {
   name: 'App',
+  data: function () {
+    return {}
+  },
   components: { DbConnectDialog },
   methods: {}
 };
