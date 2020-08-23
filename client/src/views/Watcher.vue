@@ -64,7 +64,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-snackbar color="blue-grey" v-model="alert" :vertical="vertical" timeout="3000" top>
+    <v-snackbar color="blue-grey" v-model="alert"  timeout="3000" top>
         No filter set. Resetting to event mode.
       <template v-slot:action="{ attrs }">
         <v-btn color="primary" small v-bind="attrs" @click="resetToEventMode()">Reset</v-btn>
