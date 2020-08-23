@@ -6,12 +6,20 @@
           <v-col id="search-bar">
             <v-row align="center" justify="center">
               <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table"/>
-              <v-text-field class="ml-1 mr-1" v-model="dataID" append-icon="mdi-magnify" outlined dense hide-details label="Data ID"  placeholder="Data ID"/>
+              <v-text-field class="ml-1 mr-1" v-model="dataID" :disabled="!table" append-icon="mdi-magnify" outlined dense hide-details label="Data ID"  placeholder="Data ID"/>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-switch class="ml-1 mr-1" v-on="on" v-model="detailActive" hint="">Toggle detail mode</v-switch>
                 </template>
                 <span>Toggle detail mode</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn class="ml-1 mr-1" v-on="on" @click="resetFilter()" :disabled="!table&&!dataID">
+                    <unicon name="filter-slash"></unicon>
+                  </v-btn>
+                </template>
+                <span>Reset filter</span>
               </v-tooltip>
             </v-row>
           </v-col>
@@ -19,6 +27,12 @@
           :disable-pagination="true" :sort-by="['index']" :sort-desc="[false]" :search="table" :custom-filter="filter" height="80vh">
             <template v-slot:item.action="{ item }">
               <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
+            </template>
+            <template v-slot:item.table="{ item }">
+              <a @click="setTableFilter(item.table)">{{ item.table }}</a>
+            </template>
+            <template v-slot:item.data.id="{ item }">
+              <a @click="setDataIdFilter(item.data.id)">{{ item.data.id }}</a>
             </template>
             <template v-slot:item.filter="{ item }">
               <v-tooltip bottom>
@@ -64,18 +78,14 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-snackbar color="blue-grey" v-model="alert"  timeout="3000" top>
-        No filter set. Resetting to event mode.
-      <template v-slot:action="{ attrs }">
-        <v-btn color="primary" small v-bind="attrs" @click="resetToEventMode()">Reset</v-btn>
-      </template>
+    <v-snackbar color="warning" v-model="alert" timeout="3000" top>
+        No table set as filter. Automatically resetting to event mode now.
     </v-snackbar>
   </v-container>
 </template>
 
+
 <script>
-
-
 export default {
   name: 'Watcher',
   components: { },
@@ -107,21 +117,33 @@ export default {
       else return 'blue';
     },
     changed(item, key) {
-      if(item["data"][key] === item["data_old"][key]) {
+      if(item["data"][key] === item["data_old"][key] || item["action"] === "INSERT" || item["action"] === "DELETE") {
         return false;
       } else {
         return true;
       }
     },
     filter(value, search, item) {
-      return value != null &&
-        typeof value === 'string' &&
-        item.table === this.table && item.data.id == this.dataID
+      if (!item.table) {
+        return false;
+      }
+      if (this.table && this.dataID && item.table == this.table && item.data.id == this.dataID) {
+        return true;
+      } else if (this.table && !this.dataID && item.table == this.table) {
+        return true;
+      } else {
+        return false
+      }
     },
     setFilter(item) {
       this.table = item.table;
       this.dataID = item.data.id;
-      //this.detailActive = true;
+    },
+    setTableFilter(table) {
+      this.table = table;
+    },
+    setDataIdFilter(dataId) {
+      this.dataID = dataId;
     },
     /**
      * Method is called when filter is refreshed.
@@ -129,11 +151,14 @@ export default {
      * Current fields used for filtering are dataID and table.
      */
     refreshTableAndSelection() {
-      if(this.table && this.dataID) {
-        this.headersDetailed = [];
+      this.headersDetailed = [];
+      if (this.table && this.dataID) {
         this.filteredEvents = this.$store.getters.events.filter(event => event.data.id === this.dataID && event.table === this.table);
-        this.headersDetailed = Object.keys(this.filteredEvents[0]["data"]);
       }
+      if(this.table) {
+        this.filteredEvents = this.$store.getters.events.filter(event => event.table === this.table);
+      }
+      this.headersDetailed = Object.keys(this.filteredEvents[0]["data"]);
     },
     /**
      * Resets the current filter (table and dataID)
@@ -141,7 +166,7 @@ export default {
      * Sets the mode to 0 (event view) because without filter multiple incompatible events can occur.
      */
     resetFilter() {
-      this.table = "";
+      this.table = null;
       this.dataID = null;
       this.refreshTableAndSelection();
       this.detailActive = false;
@@ -155,12 +180,6 @@ export default {
     events() {
       return this.$store.getters.events;
     },
-    resetEnabled() {
-      if (this.table || this.dataID) {
-        return true;
-      }
-      return false;
-    }
   },
   watch: {
     detailActive(newState, oldState) {
@@ -178,6 +197,12 @@ export default {
       if (!newState) {
         this.detailActive = false;
       }
+    },
+    // Resetting dataID if no table is entered
+    table() {
+      if (!this.table) {
+        this.dataID = null;
+      }
     }
   },
   mounted() {},
@@ -187,9 +212,7 @@ export default {
 
 
 <style scoped>
-
 .changed {
-  background-color: lightcoral;
+  background-color: rgba(255, 0, 0, 0.2);
 }
-
 </style>
