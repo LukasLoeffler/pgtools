@@ -71,7 +71,8 @@
     },
     methods: {
       connectToDB() {
-        let url = 'http://localhost:5000/init'
+        let url = `http://${location.hostname}:5000/init`
+        console.log(url);
         let data = {
           hostname: this.hostname,
           port: this.port,
