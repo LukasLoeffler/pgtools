@@ -29,7 +29,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 event_index = 0
-active_connections = []
+active_connections = []  # Array containing all currently active connections
 
 class Connection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,7 +39,6 @@ class Connection(db.Model):
     password = db.Column(db.String(255))
     host = db.Column(db.String(255))
     port = db.Column(db.Integer)
-
 
     def __init__(self, name, database, user, password, host, port):
         self.name = name
@@ -56,14 +55,12 @@ class Connection(db.Model):
         """
         return PgConnection(database=self.database, user=self.user, password=self.password, host=self.host, port=self.port)
 
-
     def listen_start(self):
         self.connection = self.get_connection()
         self.connection.cur.execute("LISTEN pg_change;")
         active_connections.append(self)
         thread = threading.Thread(target=events, args=(self.connection.con,))
         thread.start()
-
 
     def listen_end(self):
         self.connection.cur.execute("UNLISTEN pg_change;")
@@ -102,15 +99,17 @@ class ConnectionSchema(ma.Schema):
 connection_schema = ConnectionSchema()
 connections_schema = ConnectionSchema(many=True)
 
+
 def is_connection_valid(connection):
     """
-    Checks if connaction can be established
+    Checks if connection can be established
     """
     try:
         connection.get_connection()
         return True
     except:
         return False
+
 
 @app.route("/")
 def index():
@@ -124,13 +123,17 @@ def listen_start(id):
         connection.listen_start()
         return jsonify({"status": "success"})
     else:
-        return jsonify({"status": "error"}), 400
+        return jsonify({
+            "status": "error",
+            "message": "Connection can't be established"
+        }), 400
 
 
 @app.route("/connection/listen-end/<int:id>")
 def listen_end(id):
     conEnd = None
     # Connection has to be fetched from active connections
+    # Running connection are not persisted in the database
     for connection in active_connections:
         if connection.id == id:
             connection.listen_end()
@@ -138,9 +141,15 @@ def listen_end(id):
 
     if conEnd:
         active_connections.remove(conEnd)
-        return jsonify({"status": "successfully unlistened"})
+        return jsonify({
+            "status": "success",
+            "message": f"Connection {conEnd.id} successfully unlistened."
+        })
     else:
-        return jsonify({"status": "no listener active"})
+        return jsonify({
+            "status": "warning",
+            "message": f"Connection {id} was not active."
+        }), 400
 
 
 @app.route("/connection/<int:id>/status")
@@ -222,8 +231,10 @@ def get_triggers(id):
             con.close()
             return response_data
 
-    response = jsonify({"error": "trigger could not be fetched"})
-    return response
+    return jsonify({
+        "status": "error",
+        "message": "Triggers could not be fetched"
+    }), 400
 
 
 @app.route("/connection/<int:id>/trigger", methods=["POST"])
@@ -235,7 +246,10 @@ def create_trigger(id):
             con.close()
             return response_data
             
-    return jsonify({"error": "trigger could not be created"})
+    return jsonify({
+        "status": "error",
+        "message": "Triggers could not be created"
+    }), 400
 
 
 if __name__ == '__main__':
