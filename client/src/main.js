@@ -86,23 +86,12 @@ socket.on("connect", () => {
 
 socket.on("disconnect", () => {
   console.log("disconnect");
+  store.commit('setActiveConnections', []);
 });
 
 new Vue({
   router,
   store,
-  sockets: {
-    evt: function(event){
-      console.log(event);
-        this.store.commit('addEvent', event)
-    },
-    connect: function() {
-      console.log("connect");
-    },
-    disconnect: function() {
-      console.log("disconnect");
-    }
-  },
   vuetify,
   render: h => h(App)
 }).$mount('#app')
