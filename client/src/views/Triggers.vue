@@ -41,7 +41,7 @@ export default {
   
   data: function () {
     return {
-      url: 'http://localhost:5000/tables/triggers',
+      baseUrl: `http://${location.hostname}:5000`,
       tables: [],
       headers: [
         {text: 'Table', value: 'table'},
@@ -68,7 +68,7 @@ export default {
     },
     save() {
         this.loading = true;
-        let url = "http://localhost:5000/connection/"+this.selectedConnection.id+"/trigger";
+        let url = `${this.baseUrl}/connection/${this.selectedConnection.id}/trigger`;
         this.$http.post(url, this.tables)
         .then((result) => {
           this.tables = result.data;
@@ -84,7 +84,7 @@ export default {
       this.saveRequired = true;
     },
     loadConnections() {
-      let url = "http://localhost:5000/connection/all/active";
+      let url = `${this.baseUrl}/connection/all/active`;
       this.$http.get(url)
       .then((result) => {
         this.connections = result.data;
@@ -99,7 +99,7 @@ export default {
   },
   watch: {
     selectedConnection(newValue) {
-      let url = "http://localhost:5000/connection/"+newValue.id+"/trigger";
+      let url = `${this.baseUrl}/connection/${newValue.id}/trigger`;
       this.$http.get(url)
       .then((result) => {
         this.tables = result.data;

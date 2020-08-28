@@ -12,7 +12,6 @@ export default {
   data: function () {
     return {
       users: null,
-      uri: 'http://localhost:5000/data',
       host: null,
       port: null,
       username: null,

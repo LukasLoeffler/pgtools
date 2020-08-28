@@ -32,6 +32,7 @@ export default {
   components: { DatabaseConnection, CreateDatabaseConnection },
   data: function () {
     return {
+      baseUrl: `http://${location.hostname}:5000`,
       connections: [],
       search: '',
       headers: [
@@ -47,7 +48,7 @@ export default {
   },
   methods: {
     loadData() {
-      let url = 'http://localhost:5000/connection/all';
+      let url = `${this.baseUrl}/connection/all`;
       this.$http.get(url)
       .then((result) => {
         this.connections = result.data;

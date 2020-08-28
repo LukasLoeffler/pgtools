@@ -63,6 +63,7 @@
 export default {
   data () {
     return {
+      baseUrl: `http://${location.hostname}:5000`,
       dialog: false,
       rules: {
         required: value => !!value || 'Required.',
@@ -70,7 +71,7 @@ export default {
       },
       valid: false,
       connected: false,
-      alert: false
+      alert: false,
     }
   },
   props: {
@@ -79,20 +80,20 @@ export default {
   computed: {},
   methods: {
     connect() {
-      let url = 'http://localhost:5000/connection/listen-start/'+this.connection.id;
+      let url = `${this.baseUrl}/connection/listen-start/${this.connection.id}`
       this.$http.get(url)
       .then((result) => this.loadStatus())
       .catch((error) => this.alert = true);
     },
     disconnect() {
-      let url = 'http://localhost:5000/connection/listen-end/'+this.connection.id;
+      let url = `${this.baseUrl}/connection/listen-end/${this.connection.id}`
       this.$http.get(url)
       .then((result) => {
         this.loadStatus();
       });
     },
     loadStatus() {
-      let url = 'http://localhost:5000/connection/'+this.connection.id+"/status";
+      let url = `${this.baseUrl}/connection/${this.connection.id}/status`
       this.$http.get(url)
       .then((result) => {
         this.connected = result.data.connected;
@@ -104,7 +105,7 @@ export default {
       });
     },
     deleteConnection() {
-      let url = 'http://localhost:5000/connection/'+this.connection.id;
+      let url = `${this.baseUrl}/connection/${this.connection.id}`;
       this.$http.delete(url)
       .then((result) => {
         this.$emit('connectionDelete', result)
@@ -112,7 +113,7 @@ export default {
       });
     },
     updateConnection() {
-      let url = 'http://localhost:5000/connection';
+      let url = `${this.baseUrl}/connection`;
       this.$http.put(url, this.connection)
       .then((result) => {
         this.$emit('connectionDelete', result)
