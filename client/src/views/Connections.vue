@@ -13,7 +13,7 @@
             </v-row>
 
           <v-data-table fixed-header :headers="headers" :items="connections" :hide-default-footer="true" :disable-pagination="true"  :search="search" height="80vh">
-            <template v-slot:item.status="{ item }">
+            <template v-slot:[`item.status`]="{ item }">
               <DatabaseConnection :connection="item" @connectionDelete="loadData"/>
             </template>
           </v-data-table>

@@ -10,7 +10,8 @@
               <v-btn small class="toolbar-btn" color="success" :loading="loading" @click="save" :disabled="!saveRequired">Save changes</v-btn>
             </v-col>
             <v-col cols="4">
-              <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense></v-select>
+              <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense hide-details
+              class="mr-2" no-data-text="No active connection. Go to connections and select at least one"></v-select>
             </v-col>
           </v-row>
         </v-card>
@@ -20,7 +21,7 @@
       <v-col lg="12" id="content">
         <v-card>
           <v-data-table v-if="tables" :headers="headers" :items="tables" class="elevation-1" :hide-default-footer="true"  :disable-pagination="true" height="85vh">
-            <template v-slot:item.trigger_enabled="{ item }">
+            <template v-slot:[`item.trigger_enabled`]="{ item }">
               <v-simple-checkbox v-model="item.trigger_enabled" @click="requireSave"></v-simple-checkbox>
             </template>
           </v-data-table>
@@ -87,6 +88,9 @@ export default {
       this.$http.get(url)
       .then((result) => {
         this.connections = result.data;
+        if (result.data[0]){
+          this.selectedConnection = result.data[0];
+        }
       });
     }
   },
@@ -98,7 +102,6 @@ export default {
       let url = "http://localhost:5000/connection/"+newValue.id+"/trigger";
       this.$http.get(url)
       .then((result) => {
-        console.log(result);
         this.tables = result.data;
       })
       .catch((error) => {

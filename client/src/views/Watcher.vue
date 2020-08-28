@@ -25,16 +25,16 @@
           </v-col>
           <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
           :disable-pagination="true" :sort-by="['index']" :sort-desc="[false]" :search="table" :custom-filter="filter" height="80vh">
-            <template v-slot:item.action="{ item }">
+            <template v-slot:[`item.action`]="{ item }">
               <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
             </template>
-            <template v-slot:item.table="{ item }">
+            <template v-slot:[`item.table`]="{ item }">
               <a @click="setTableFilter(item.table)">{{ item.table }}</a>
             </template>
-            <template v-slot:item.data.id="{ item }">
+            <template v-slot:[`item.data.id`]="{ item }">
               <a @click="setDataIdFilter(item.data.id)">{{ item.data.id }}</a>
             </template>
-            <template v-slot:item.filter="{ item }">
+            <template v-slot:[`item.filter`]="{ item }">
               <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn label small @click="setFilter(item)" v-bind="attrs" v-on="on">
