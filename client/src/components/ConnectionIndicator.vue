@@ -1,5 +1,5 @@
 <template>
-    <v-btn x-small v-if="connected.length > 0" color="green" @click="gotoConnections">{{connected.length}} Connections</v-btn>
+    <v-btn x-small v-if="connected.length > 0" color="green" @click="gotoConnections">Connections: [{{connected.length}}]</v-btn>
     <v-btn x-small v-else color="red" @click="gotoConnections">Not Connected</v-btn>
 </template>
 

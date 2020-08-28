@@ -116,7 +116,7 @@ def index():
     return app.send_static_file("index.html")
 
 
-@app.route("/connection/listen-start/<int:id>")
+@app.route("/connection/<int:id>/listen-start")
 def listen_start(id):
     connection = Connection.query.get(id)
     if is_connection_valid(connection):
@@ -129,7 +129,7 @@ def listen_start(id):
         }), 400
 
 
-@app.route("/connection/listen-end/<int:id>")
+@app.route("/connection/<int:id>/listen-end")
 def listen_end(id):
     conEnd = None
     # Connection has to be fetched from active connections
@@ -216,7 +216,7 @@ def get_all_connections():
     return connections_schema.jsonify(all_connections)
 
 
-@app.route('/connection/status/<int:id>', methods=['GET'])
+@app.route('/connection/<int:id>/status', methods=['GET'])
 def get_connection_status(id):
     connection = Connection.query.get(id)
     return None
