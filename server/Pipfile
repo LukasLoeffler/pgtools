@@ -11,4 +11,6 @@ pgpubsub = "*"
 flask-socketio = "*"
 flask-cors = "*"
 pyinstaller = "*"
-
+flask-sqlalchemy = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"

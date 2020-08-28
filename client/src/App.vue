@@ -3,9 +3,10 @@
     <v-app>
       <div id="nav">
         <router-link to="/">Home</router-link> |
+        <router-link to="/connections">Connections</router-link> |
         <router-link to="/triggers">Triggers</router-link> |
         <router-link to="/watcher">Watcher</router-link>
-        <DbConnectDialog id="dbCon"/>
+        <ConnectionIndicator id="dbCon"/>
       </div>
       <router-view></router-view>
     </v-app>
@@ -13,14 +14,14 @@
 </template>
 
 <script>
-import DbConnectDialog from "./components/DbConnectDialog";
+import ConnectionIndicator from "./components/ConnectionIndicator";
 
 export default {
   name: 'App',
   data: function () {
     return {}
   },
-  components: { DbConnectDialog },
+  components: { ConnectionIndicator },
   methods: {}
 };
 </script>
@@ -38,13 +39,13 @@ body {
 
 #nav {
   padding: 20px;
-  background-color: #2c3e50;
-  color: #42b983;
+  background-color: #3e5770;
+  color: #50e2a1;
 }
 
 #nav a {
   font-weight: bold;
-  color: #42b983;
+  color: #50e2a1;
 }
 
 #nav a.router-link-exact-active {

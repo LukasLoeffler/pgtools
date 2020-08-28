@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import Unicon from 'vue-unicons'
-import { uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash } from 'vue-unicons/src/icons'
+import { uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle  } from 'vue-unicons/src/icons'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vuetify from './plugins/vuetify';
@@ -16,7 +16,7 @@ Vue.use(Vuetify)
 Vue.use(Vuex)
 
 
-Unicon.add([uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash])
+Unicon.add([uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle ])
 Vue.use(Unicon, {
   height: 20,
   width: 20
@@ -25,40 +25,42 @@ Vue.use(Unicon, {
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 
+
 const store = new Vuex.Store({
   state: {
-    connected: false,
+    activeConnections: [],
     events: [],
     eventSelection: [],
     contentHeight: "90vh"
   },
   mutations: {
-    connectionStatus (state, status) {
-      state.connected = status
+    //Sets a whole array of connections as active connections
+    setActiveConnections (state, connections) {
+      state.activeConnections = connections;
+    },
+    //Adds connection to activeConnections if no connection with same id is present
+    addActiveConnection (state, connection) {
+      if (!state.activeConnections.some(existingConnection => existingConnection.id === connection.id)){
+        state.activeConnections.push(connection);
+      }
+    },
+    //Removed connection from active connection if existing
+    removeActiveConnection(state, connection) {
+      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.id !== connection.id)
     },
     addEvent(state, event) {
       state.events = [event, ...state.events];
-    },
-    selectEvents(state, events) {
-      state.eventSelection = events;
-    },
-    resetEvents(state) {
-      state.eventSelection = [];
-      state.events = [];
     },
     setHeight(state, height) {
       state.contentHeight = height+"px";
     }
   },
   getters: {
-    connectionStatus: state => {
-      return state.connected;
+    activeConnections: state => {
+      return state.activeConnections;
     },
     events: state => {
       return state.events;
-    },
-    selectedEvents: state => {
-      return state.eventSelection;
     },
     contentHeight: state => {
       return state.contentHeight;
@@ -66,17 +68,24 @@ const store = new Vuex.Store({
   }
 })
 
+
+
+let url = "http://localhost:5000/connection/all/active";
+axios.get(url)
+.then((result) => {
+  store.commit('setActiveConnections', result.data);
+});
+
 socket.on("evt", event => {
   store.commit('addEvent', event)
 });
 
 socket.on("connect", () => {
- console.log("connect");
+  console.log("connect");
 });
 
 socket.on("disconnect", () => {
- console.log("disconnect");
- store.commit('connectionStatus', false);
+  console.log("disconnect");
 });
 
 new Vue({
@@ -86,13 +95,12 @@ new Vue({
     evt: function(event){
       console.log(event);
         this.store.commit('addEvent', event)
-     },
+    },
     connect: function() {
       console.log("connect");
     },
     disconnect: function() {
       console.log("disconnect");
-      this.$store.commit('connectionStatus', false);
     }
   },
   vuetify,

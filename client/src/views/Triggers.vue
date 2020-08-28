@@ -3,9 +3,16 @@
     <v-row>
       <v-col lg="12" id=toolbar>
         <v-card>
-          <v-btn small class="toolbar-btn" color="primary" @click="selectAll">Select All</v-btn>
-          <v-btn small class="toolbar-btn" color="error" @click="deselectAll">Deselect All</v-btn>
-          <v-btn small class="toolbar-btn" color="success" :loading="loading" @click="save" :disabled="!saveRequired">Save changes</v-btn>
+          <v-row>
+            <v-col cols="8">
+              <v-btn small class="toolbar-btn" color="primary" @click="selectAll">Select All</v-btn>
+              <v-btn small class="toolbar-btn" color="error" @click="deselectAll">Deselect All</v-btn>
+              <v-btn small class="toolbar-btn" color="success" :loading="loading" @click="save" :disabled="!saveRequired">Save changes</v-btn>
+            </v-col>
+            <v-col cols="4">
+              <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense></v-select>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
@@ -40,7 +47,9 @@ export default {
         {text: 'Trigger enabled', value: 'trigger_enabled'},
       ],
       saveRequired: false,
-      loading: false
+      loading: false,
+      connections: [],
+      selectedConnection: null
     }
   },
   methods: {
@@ -58,36 +67,43 @@ export default {
     },
     save() {
         this.loading = true;
-        this.$http.post(this.url, this.tables)
+        let url = "http://localhost:5000/connection/"+this.selectedConnection.id+"/trigger";
+        this.$http.post(url, this.tables)
         .then((result) => {
           this.tables = result.data;
           this.saveRequired = false;
           this.loading = false;
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+          this.loading = false;
+        });
     },
     requireSave() {
       this.saveRequired = true;
     },
-    loadData() {
-      this.$http.get(this.url)
+    loadConnections() {
+      let url = "http://localhost:5000/connection/all/active";
+      this.$http.get(url)
       .then((result) => {
-        this.tables = result.data;
+        this.connections = result.data;
       });
     }
   },
-  computed: {
-    connected() {
-      return this.$store.getters.connectionStatus;
-    }
-  },
-  mounted() {
-    this.loadData();
+  created() {
+    this.loadConnections();
   },
   watch: {
-    connected(newStatus) {
-      if(newStatus) {
-        this.loadData();
-      }
+    selectedConnection(newValue) {
+      let url = "http://localhost:5000/connection/"+newValue.id+"/trigger";
+      this.$http.get(url)
+      .then((result) => {
+        console.log(result);
+        this.tables = result.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      })
     }
   }
 }

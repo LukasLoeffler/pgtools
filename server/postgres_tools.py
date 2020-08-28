@@ -1,7 +1,10 @@
+import json
 import psycopg2
 from psycopg2 import errors
+import select
 
 
+NOT_READY = ([], [], [])
 class Connection:
     def __init__(self, database, user, password, host="localhost", port=5432):
         self.database = database
@@ -10,12 +13,18 @@ class Connection:
         self.host = host
         self.port = port
         self.con = psycopg2.connect(database=database , user=user, password=password, host=host, port=port)
+        self.con.autocommit = True
         self.cur = self.con.cursor()
-
 
     def __repr__(self):
         return f"DB: {self.database} -- User: {self.user} -- Password: {self.password} -- Host: {self.host} -- Port: {self.port}"
 
+    def as_dict(self):
+        return {"database": self.database, "user": self.user, "password": self.password, "host": self.host, "port": self.port}
+
+    def close(self):
+        self.cur.close()
+        self.con.close()
 
     def create_general_notify_event(self):
         exec_string = """
@@ -45,7 +54,7 @@ class Connection:
                             'data_old', payload_old);
 
 
-            PERFORM pg_notify('events', payload::text);
+            PERFORM pg_notify('pg_change', payload::text);
 
             RETURN NULL;
         END;
@@ -54,7 +63,7 @@ class Connection:
 
         self.cur.execute(exec_string)
         self.con.commit()
-        print("notify_event() trigger function successfully created ✔")
+        #print("notify_event() trigger function successfully created ✔")
 
     
     def create_trigger_for_table(self, tablename):
@@ -136,13 +145,11 @@ class Connection:
         table_list = []
         for table in self.cur.fetchall():
             table_name = table[0]
-
             exec_string = f"""
             SELECT event_manipulation
             FROM  information_schema.triggers
             WHERE event_object_table = '{table_name}'
-            ORDER BY event_object_table
-                ,event_manipulation
+            ORDER BY event_object_table, event_manipulation
             """
             self.cur.execute(exec_string)
             result = self.cur.fetchall()
@@ -160,3 +167,8 @@ class Connection:
                 self.create_trigger_for_table(table["table"])
 
         return self.get_all_tables_with_trigger()
+
+
+if __name__ == "__main__":
+    conn = Connection("ProConnNew", "postgres", "admin")
+    print(conn.get_all_tables_with_trigger())

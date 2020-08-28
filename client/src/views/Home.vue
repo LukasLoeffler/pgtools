@@ -13,7 +13,7 @@ export default {
     return {
       users: null,
       uri: 'http://localhost:5000/data',
-      hostname: null,
+      host: null,
       port: null,
       username: null,
       password: null,

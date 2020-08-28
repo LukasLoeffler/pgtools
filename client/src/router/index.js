@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import Triggers from '../views/Triggers.vue'
 import Watcher from '../views/Watcher.vue'
+import Connections from '../views/Connections.vue'
 
 Vue.use(VueRouter)
 
@@ -28,10 +29,15 @@ Vue.use(VueRouter)
     name: 'Watcher',
     component: Watcher
   },
+  {
+    path: '/connections',
+    name: 'Connections',
+    component: Connections
+  },
 ]
 
 const router = new VueRouter({
-  routes
+  routes,
 })
 
 export default router
