@@ -54,10 +54,10 @@ class Connection(db.Model):
 
 
     def listen_start(self):
-        connection = self.get_connection()
-        connection.cur.execute("LISTEN pg_change;")
+        self.connection = self.get_connection()
+        self.connection.cur.execute("LISTEN pg_change;")
         active_connections.append(self)
-        thread = threading.Thread(target=events, args=(connection.con,))
+        thread = threading.Thread(target=events, args=(self.connection.con,))
         thread.start()
 
 
