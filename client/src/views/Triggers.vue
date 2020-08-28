@@ -4,12 +4,12 @@
       <v-col lg="12" id=toolbar>
         <v-card>
           <v-row>
-            <v-col cols="8">
+            <v-col cols="8" class="pb-1 pt-2">
               <v-btn small class="toolbar-btn" color="primary" @click="selectAll">Select All</v-btn>
               <v-btn small class="toolbar-btn" color="error" @click="deselectAll">Deselect All</v-btn>
               <v-btn small class="toolbar-btn" color="success" :loading="loading" @click="save" :disabled="!saveRequired">Save changes</v-btn>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="4" class="py-1 pt-2">
               <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense hide-details
               class="mr-2" no-data-text="No active connection. Go to connections and select at least one"></v-select>
             </v-col>

@@ -5,8 +5,9 @@
         <v-card>
           <v-col id="search-bar">
             <v-row align="center" justify="center">
-              <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table"/>
-              <v-text-field class="ml-1 mr-1" v-model="dataID" :disabled="!table" append-icon="mdi-magnify" outlined dense hide-details label="Data ID"  placeholder="Data ID"/>
+              <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
+              <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
+              <v-text-field class="ml-1 mr-1" v-model="dataId" append-icon="mdi-magnify" outlined dense hide-details label="Data ID" placeholder="Data ID" :disabled="!table"/>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-switch class="ml-1 mr-1" v-on="on" v-model="detailActive" hint="">Toggle detail mode</v-switch>
@@ -15,24 +16,28 @@
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn class="ml-1 mr-1" v-on="on" @click="resetFilter()" :disabled="!table&&!dataID">
+                  <v-btn class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
                     <unicon name="filter-slash"></unicon>
                   </v-btn>
                 </template>
                 <span>Reset filter</span>
               </v-tooltip>
             </v-row>
+            <v-divider></v-divider>
           </v-col>
           <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
-          :disable-pagination="true" :sort-by="['index']" :sort-desc="[false]" :search="table" :custom-filter="filter" height="80vh">
+          :disable-pagination="true" :sort-by="['index']" :sort-desc="[false]" :search="database" :custom-filter="filter" height="80vh">
             <template v-slot:[`item.action`]="{ item }">
               <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
             </template>
+            <template v-slot:[`item.database.database`]="{ item }">
+              <a @click="setDatabaseFilter(item)">{{ item.database.database }}</a>
+            </template>
             <template v-slot:[`item.table`]="{ item }">
-              <a @click="setTableFilter(item.table)">{{ item.table }}</a>
+              <a @click="setTableFilter(item)">{{ item.table }}</a>
             </template>
             <template v-slot:[`item.data.id`]="{ item }">
-              <a @click="setDataIdFilter(item.data.id)">{{ item.data.id }}</a>
+              <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
             </template>
             <template v-slot:[`item.filter`]="{ item }">
               <v-tooltip bottom>
@@ -45,6 +50,7 @@
                 </v-tooltip>
             </template>
           </v-data-table>
+          <!-- Detail table to view data. -->
           <v-simple-table v-if="detailActive" height="80vh">
             <template v-slot:default>
               <thead>
@@ -95,14 +101,16 @@ export default {
       headers: [
         { text: 'Index', value: 'index' },
         { text: 'Time', value: 'timestamp' },
-        { text: 'Tabelle', value: 'table' },
+        { text: 'Database', value: 'database.database' },
+        { text: 'Table', value: 'table' },
         { text: 'Data ID', value: 'data.id' },
         { text: 'Operation', value: 'action' },
         { text: 'Filter', value: 'filter' },
       ],
       headersDetailed: [],
-      table: "",
-      dataID: null,
+      table: null,
+      dataId: null,
+      database: null,
       detailActive: false,
       filteredEvents: [],
       keys: [],
@@ -123,13 +131,24 @@ export default {
         return true;
       }
     },
+    //TODO: Filter function should be reworked
     filter(value, search, item) {
+
       if (!item.table) {
         return false;
       }
-      if (this.table && this.dataID && item.table == this.table && item.data.id == this.dataID) {
+
+      if(this.database && item.database.database !== this.database) {
+        return false;
+      }
+
+      if (this.database && !this.table && !this.dataId && item.database.database === this.database) {
         return true;
-      } else if (this.table && !this.dataID && item.table == this.table) {
+      }
+
+      if (this.table && this.dataId && item.table == this.table && item.data.id == this.dataId) {
+        return true;
+      } else if (this.table && !this.dataId && item.table == this.table) {
         return true;
       } else {
         return false
@@ -137,37 +156,54 @@ export default {
     },
     setFilter(item) {
       this.table = item.table;
-      this.dataID = item.data.id;
+      this.dataId = item.data.id;
+      this.database = item.database.database;
     },
-    setTableFilter(table) {
-      this.table = table;
+    setDatabaseFilter(item) {
+      this.database = item.database.database;
+      this.table = null;
+      this.dataId = null;
     },
-    setDataIdFilter(dataId) {
-      this.dataID = dataId;
+    setTableFilter(item) {
+      this.database = item.database.database;
+      this.table = item.table;
+      this.dataId = null;
+    },
+    setDataIdFilter(item) {
+      this.database = item.database.database;
+      this.table = item.table;
+      this.dataId = item.data.id;
     },
     /**
      * Method is called when filter is refreshed.
      * Filters the events and the headers for the table according the filter.
-     * Current fields used for filtering are dataID and table.
+     * Current fields used for filtering are dataId and table.
      */
     refreshTableAndSelection() {
       this.headersDetailed = [];
-      if (this.table && this.dataID) {
-        this.filteredEvents = this.$store.getters.events.filter(event => event.data.id === this.dataID && event.table === this.table);
+
+      console.log(this.$store.getters.events);
+
+      if (this.table && this.dataId) {
+        this.filteredEvents = this.$store.getters.events.filter(event => event.data.id === this.dataId && event.table === this.table);
       }
       if(this.table) {
         this.filteredEvents = this.$store.getters.events.filter(event => event.table === this.table);
       }
-      this.headersDetailed = Object.keys(this.filteredEvents[0]["data"]);
+
+      if (this.filteredEvents[0]) {
+        this.headersDetailed = Object.keys(this.filteredEvents[0]["data"]);
+      }
     },
     /**
-     * Resets the current filter (table and dataID)
+     * Resets the current filter (table and dataId)
      * Refreshes the table and the selection accordingly by calling the respective method.
      * Sets the mode to 0 (event view) because without filter multiple incompatible events can occur.
      */
     resetFilter() {
       this.table = null;
-      this.dataID = null;
+      this.dataId = null;
+      this.database = null;
       this.refreshTableAndSelection();
       this.detailActive = false;
     },
@@ -183,7 +219,7 @@ export default {
   },
   watch: {
     detailActive(newState, oldState) {
-      if (newState && !this.table && !this.dataID) {
+      if (newState && !this.table && !this.dataId) {
         this.alert = true;
       }
       else {
@@ -198,10 +234,10 @@ export default {
         this.detailActive = false;
       }
     },
-    // Resetting dataID if no table is entered
+    // Resetting dataId if no table is entered
     table() {
       if (!this.table) {
-        this.dataID = null;
+        this.dataId = null;
       }
     }
   },

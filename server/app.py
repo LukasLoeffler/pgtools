@@ -59,7 +59,7 @@ class Connection(db.Model):
         self.connection = self.get_connection()
         self.connection.cur.execute("LISTEN pg_change;")
         active_connections.append(self)
-        thread = threading.Thread(target=events, args=(self.connection.con,))
+        thread = threading.Thread(target=events, args=(self.connection,))
         thread.start()
 
     def listen_end(self):
@@ -72,21 +72,24 @@ def notify(payload):
     global event_index
     payload["timestamp"] = datetime.now().isoformat()[11:-3]
     payload["index"] = event_index
-    socketio.emit('evt', payload)
+    socketio.emit('databaseEvent', payload)
     event_index += 1
 
 
 def events(connection):
+    con = connection.con
     while True:
         #If connection is closed from outside an exception is thrown on connection.poll()
         try:
-            if select.select([connection],[],[],5) != ([],[],[]):
+            if select.select([con],[],[],5) != ([],[],[]):
                 seconds_passed = 0
-                connection.poll()
-                connection.commit()
-                while connection.notifies:
-                    data = connection.notifies.pop().payload
-                    notify(json.loads(data))
+                con.poll()
+                con.commit()
+                while con.notifies:
+                    payload = con.notifies.pop().payload
+                    data = json.loads(payload)
+                    data["database"] = connection.as_dict()
+                    notify(data)
         except Exception as e:
             break
 

@@ -76,7 +76,7 @@ axios.get(url)
   store.commit('setActiveConnections', result.data);
 });
 
-socket.on("evt", event => {
+socket.on("databaseEvent", event => {
   store.commit('addEvent', event)
 });
 
