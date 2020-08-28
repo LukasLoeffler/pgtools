@@ -50,6 +50,10 @@ class Connection(db.Model):
         self.port = port
 
     def get_connection(self):
+        """
+        Creates a real connection to the database via postgres_tools.
+        Function is currently needed because of missing thread safety.
+        """
         return PgConnection(database=self.database, user=self.user, password=self.password, host=self.host, port=self.port)
 
 
@@ -98,9 +102,12 @@ class ConnectionSchema(ma.Schema):
 connection_schema = ConnectionSchema()
 connections_schema = ConnectionSchema(many=True)
 
-def check_connection(connection):
+def is_connection_valid(connection):
+    """
+    Checks if connaction can be established
+    """
     try:
-        print(connection.get_connection())
+        connection.get_connection()
         return True
     except:
         return False
@@ -110,21 +117,20 @@ def index():
     return app.send_static_file("index.html")
 
 
-@app.route("/connection/listen-start/<id>")
+@app.route("/connection/listen-start/<int:id>")
 def listen_start(id):
     connection = Connection.query.get(id)
-
-    if check_connection(connection):
+    if is_connection_valid(connection):
         connection.listen_start()
         return jsonify({"status": "success"})
     else:
         return jsonify({"status": "error"}), 400
 
 
-@app.route("/connection/listen-end/<id>")
+@app.route("/connection/listen-end/<int:id>")
 def listen_end(id):
-    id = int(id) #TODO: Find better solution
     conEnd = None
+    # Connection has to be fetched from active connections
     for connection in active_connections:
         if connection.id == id:
             connection.listen_end()
@@ -137,9 +143,8 @@ def listen_end(id):
         return jsonify({"status": "no listener active"})
 
 
-@app.route("/connection/<id>/status")
+@app.route("/connection/<int:id>/status")
 def connection_status(id):
-    id = int(id) #TODO: Find better solution
     for connection in active_connections:
         if connection.id == id:
             return jsonify({"connected": True})
@@ -188,8 +193,7 @@ def update_connection():
     return connection_schema.jsonify(connection) 
 
 
-
-@app.route('/connection/<id>', methods=['DELETE'])
+@app.route('/connection/<int:id>', methods=['DELETE'])
 def delete_connection(id):
     connection = Connection.query.get(id)
     db.session.delete(connection)
@@ -203,20 +207,17 @@ def get_all_connections():
     return connections_schema.jsonify(all_connections)
 
 
-@app.route('/connection/status/<id>', methods=['GET'])
+@app.route('/connection/status/<int:id>', methods=['GET'])
 def get_connection_status(id):
     connection = Connection.query.get(id)
     return None
 
 
-@app.route("/connection/<id>/trigger", methods=["GET"])
+@app.route("/connection/<int:id>/trigger", methods=["GET"])
 def get_triggers(id):
-    print("Getting trigger")
-    id = int(id) #TODO: Find better solution
     for connection in active_connections:
         if connection.id == id:
             con = connection.get_connection()
-            #con.close()
             response_data = jsonify(con.get_all_tables_with_trigger())
             con.close()
             return response_data
@@ -225,10 +226,8 @@ def get_triggers(id):
     return response
 
 
-@app.route("/connection/<id>/trigger", methods=["POST"])
+@app.route("/connection/<int:id>/trigger", methods=["POST"])
 def create_trigger(id):
-    print("Setting trigger")
-    id = int(id) #TODO: Find better solution
     for connection in active_connections:
         if connection.id == id:
             con = connection.get_connection()
@@ -237,7 +236,6 @@ def create_trigger(id):
             return response_data
             
     return jsonify({"error": "trigger could not be created"})
-
 
 
 if __name__ == '__main__':
