@@ -11,8 +11,9 @@
             <unicon name="pause-circle" v-if="connected" fill="red"></unicon>
             <unicon name="pause-circle" v-else fill="grey"></unicon>
           </v-btn>
-          <v-btn text x-small class="mr-1" v-bind="attrs" v-on="on">
-            <unicon name="pen" fill="#46a2d4"></unicon>
+          <v-btn text x-small class="mr-1" :disabled="connected" v-bind="attrs" v-on="on">
+            <unicon name="pen" v-if="!connected" fill="#46a2d4"></unicon>
+            <unicon name="pen" v-else fill="grey"></unicon>
           </v-btn>
         </div>
       </template>
@@ -80,13 +81,13 @@ export default {
   computed: {},
   methods: {
     connect() {
-      let url = `${this.baseUrl}/connection/listen-start/${this.connection.id}`
+      let url = `${this.baseUrl}/connection/${this.connection.id}/listen-start`
       this.$http.get(url)
       .then((result) => this.loadStatus())
       .catch((error) => this.alert = true);
     },
     disconnect() {
-      let url = `${this.baseUrl}/connection/listen-end/${this.connection.id}`
+      let url = `${this.baseUrl}/connection/${this.connection.id}/listen-end`
       this.$http.get(url)
       .then((result) => {
         this.loadStatus();
