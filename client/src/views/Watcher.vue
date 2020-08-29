@@ -84,8 +84,8 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-snackbar color="warning" v-model="alert" timeout="3000" top>
-        No table set as filter. Automatically resetting to event mode now.
+    <v-snackbar v-model="alert" color="warning" timeout="3000" top>
+      Invalid filter. Automatically resetting to event mode now.
     </v-snackbar>
   </v-container>
 </template>
@@ -181,9 +181,6 @@ export default {
      */
     refreshTableAndSelection() {
       this.headersDetailed = [];
-
-      console.log(this.$store.getters.events);
-
       if (this.table && this.dataId) {
         this.filteredEvents = this.$store.getters.events.filter(event => event.data.id === this.dataId && event.table === this.table);
       }

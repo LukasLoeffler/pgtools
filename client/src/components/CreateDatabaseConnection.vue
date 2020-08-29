@@ -71,7 +71,6 @@ export default {
   methods: {
     createConnection() {
       let url = `http://${location.hostname}:5000/connection`
-      console.log(url);
       let data = {
         name: this.name,
         host: this.host,
