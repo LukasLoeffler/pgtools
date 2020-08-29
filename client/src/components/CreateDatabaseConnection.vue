@@ -36,9 +36,11 @@
             </v-container>
           </v-form>
         </v-card-text>
+        <v-divider></v-divider>
         <v-card-actions>
+          
+          <v-btn color="green darken-1" class="ml-7" left @click="createConnection">Create</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" @click="createConnection">Create</v-btn>
           <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
         </v-card-actions>
       </v-card>
