@@ -1,3 +1,4 @@
 /.vscode
 /server/__pycache__
 server/db.sqlite
+/server/static
