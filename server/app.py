@@ -57,6 +57,7 @@ class Connection(db.Model):
 
     def listen_start(self):
         self.connection = self.get_connection()
+        self.connection.create_general_notify_event()
         self.connection.cur.execute("LISTEN pg_change;")
         active_connections.append(self)
         thread = threading.Thread(target=events, args=(self.connection,))
@@ -117,6 +118,26 @@ def is_connection_valid(connection):
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
+
+
+@app.route("/check-connection",  methods=['POST'])
+def check_connection():
+    database = request.json['database']
+    user = request.json['user']
+    password = request.json['password']
+    host = request.json['host']
+    port = request.json['port']
+    try:
+        connection = PgConnection(database, user, password, host, port)
+        return jsonify({
+            "status": "success",
+            "message": "Connection properties valid"
+        })
+    except:
+        return jsonify({
+            "status": "error",
+            "message": "Connection properties invalid"
+        })
 
 
 @app.route("/connection/<int:id>/listen-start")
