@@ -1,36 +1,22 @@
-<template>
-  <v-container fluid fill-height>
-    <v-row>
-      <v-col lg="12" id=toolbar>
-        <v-card>
-          <v-row>
-            <v-col cols="8" class="pb-1 pt-2">
-              <v-btn small class="toolbar-btn" color="primary" @click="selectAll">Select All</v-btn>
-              <v-btn small class="toolbar-btn" color="error" @click="deselectAll">Deselect All</v-btn>
-              <v-btn small class="toolbar-btn" color="success" :loading="loading" @click="save" :disabled="!saveRequired">Save changes</v-btn>
-            </v-col>
-            <v-col cols="4" class="py-1 pt-2">
-              <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense hide-details
-              class="mr-2" no-data-text="No active connection. Go to connections and select at least one"></v-select>
-            </v-col>
-          </v-row>
-        </v-card>
+<template id="temp">
+  <v-card class="ma-2" :height="cardHeight">
+    <v-row ref="ctrlBar">
+      <v-col cols="8">
+        <v-btn small class="ma-1" color="primary" @click="selectAll">Select All</v-btn>
+        <v-btn small class="ma-1" color="error" @click="deselectAll">Deselect All</v-btn>
+        <v-btn small class="ma-1" color="success" :loading="loading" @click="save" :disabled="!saveRequired">Save changes</v-btn>
+      </v-col>
+      <v-col cols="4">
+        <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense hide-details
+        class="mr-2" :no-data-text="noDataText"></v-select>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col lg="12" id="content">
-        <v-card>
-          <v-data-table v-if="tables" :headers="headers" :items="tables" class="elevation-1" :hide-default-footer="true"  :disable-pagination="true" height="85vh">
-            <template v-slot:[`item.trigger_enabled`]="{ item }">
-              <v-simple-checkbox v-model="item.trigger_enabled" @click="requireSave"></v-simple-checkbox>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
-
-
+    <v-data-table v-if="tables" :headers="headers" :items="tables" class="elevation-1" :hide-default-footer="true"  :disable-pagination="true" :height="tableHeight" :no-data-text="noDataText">
+      <template v-slot:[`item.trigger_enabled`]="{ item }">
+        <v-simple-checkbox v-model="item.trigger_enabled" @click="requireSave"></v-simple-checkbox>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>
@@ -50,7 +36,17 @@ export default {
       saveRequired: false,
       loading: false,
       connections: [],
-      selectedConnection: null
+      selectedConnection: null,
+      ctrlBarHeight: 0,
+      noDataText: "No active connection. Go to Connections and activate at least one"
+    }
+  },
+  computed: {
+    tableHeight() {
+      return (this.$store.getters.contentHeight-this.ctrlBarHeight)+"px";
+    },
+    cardHeight() {
+      return (this.$store.getters.contentHeight)+"px";
     }
   },
   methods: {
@@ -97,6 +93,10 @@ export default {
   created() {
     this.loadConnections();
   },
+  mounted() {
+    this.ctrlBarHeight = this.$refs.ctrlBar.clientHeight;
+    console.log(this.ctrlBarHeight);
+  },
   watch: {
     selectedConnection(newValue) {
       let url = `${this.baseUrl}/connection/${newValue.id}/trigger`;
@@ -113,18 +113,4 @@ export default {
 </script>
 
 <style scoped>
-#toolbar {
-  margin-bottom: 5px;
-  padding: 6px;
-  padding-bottom: 0;
-  padding-top: 0;
-}
-
-.toolbar-btn {
-  margin: 5px;
-}
-
-#content {
-  padding: 6px;
-}
 </style>

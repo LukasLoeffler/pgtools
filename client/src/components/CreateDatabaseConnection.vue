@@ -39,12 +39,17 @@
         <v-divider></v-divider>
         <v-card-actions>
           
-          <v-btn color="green darken-1" class="ml-7" left @click="createConnection">Create</v-btn>
+          <v-btn color="green" class="ml-6" outlined left @click="createConnection" :disabled="!valid">Create</v-btn>
+          <v-btn color="blue" class="ml-1" outlined left @click="checkConnection" :loading="checkingConnection">Check</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
+          <v-btn color="blue" text @click="dialog = false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar color="error" v-model="alert" timeout="3000" top>Invalid connection properties. Try again with changed properties.</v-snackbar>
+    <v-snackbar color="success" v-model="successSnackbar" timeout="3000" top>
+      <p class="ma-0 text-center">Connection valid.</p>
+    </v-snackbar>
   </v-row>
 </template>
 
@@ -54,6 +59,9 @@ export default {
   data () {
     return {
       dialog: false,
+      checkingConnection: false,
+      alert: false,
+      successSnackbar: false,
       rules: {
         required: value => !!value || 'Required.',
         max: v => v.length <= 6 || 'Max 6 characters',
@@ -71,8 +79,7 @@ export default {
   props: {},
   computed: {},
   methods: {
-    createConnection() {
-      let url = `http://${location.hostname}:5000/connection`
+    getConnectionFromForm() {
       let data = {
         name: this.name,
         host: this.host,
@@ -81,12 +88,32 @@ export default {
         user: this.user,
         password: this.password
       };
+      return data;
+    },
+    createConnection() {
+      let url = `http://${location.hostname}:5000/connection`
+      let data = this.getConnectionFromForm();
       this.$http.post(url, data)
       .then((result) => {
         this.$emit('connectionCreate', result)
         this.dialog = false;
       }).catch((err) => {
         console.error(err);
+        this.alert = true;
+      })
+    },
+    checkConnection() {
+      this.checkingConnection = true;
+      let url = `http://${location.hostname}:5000/check-connection`
+      let data = this.getConnectionFromForm();
+      this.$http.post(url, data)
+      .then((result) => {
+        if (result.data.status === "error") {
+          this.alert = true;
+        } else {
+          this.successSnackbar = true;
+        }
+        this.checkingConnection = false;
       })
     }
   }

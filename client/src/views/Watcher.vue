@@ -1,89 +1,83 @@
 <template>
-  <v-container fluid class="pt-0">
-    <v-row :height="$store.getters.contentHeight">
-      <v-col lg="12" id="content">
-        <v-card>
-          <v-col id="search-bar">
-            <v-row align="center" justify="center">
-              <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
-              <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
-              <v-text-field class="ml-1 mr-1" v-model="dataId" append-icon="mdi-magnify" outlined dense hide-details label="Data ID" placeholder="Data ID" :disabled="!table"/>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-switch class="ml-1 mr-1" v-on="on" v-model="detailActive" hint="">Toggle detail mode</v-switch>
-                </template>
-                <span>Toggle detail mode</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
-                    <unicon name="filter-slash"></unicon>
-                  </v-btn>
-                </template>
-                <span>Reset filter</span>
-              </v-tooltip>
-            </v-row>
-            <v-divider></v-divider>
-          </v-col>
-          <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
-          :disable-pagination="true" :sort-by="['index']" :sort-desc="[false]" :search="database" :custom-filter="filter" height="80vh">
-            <template v-slot:[`item.action`]="{ item }">
-              <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
-            </template>
-            <template v-slot:[`item.database.database`]="{ item }">
-              <a @click="setDatabaseFilter(item)">{{ item.database.database }}</a>
-            </template>
-            <template v-slot:[`item.table`]="{ item }">
-              <a @click="setTableFilter(item)">{{ item.table }}</a>
-            </template>
-            <template v-slot:[`item.data.id`]="{ item }">
-              <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
-            </template>
-            <template v-slot:[`item.filter`]="{ item }">
-              <v-tooltip bottom>
+  <v-container fluid class="pa-2">
+    <v-card :height="$store.getters.contentHeight">
+      <v-row align="center" justify="center" class="px-4">
+        <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
+        <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
+        <v-text-field class="ml-1 mr-1" v-model="dataId" append-icon="mdi-magnify" outlined dense hide-details label="Data ID" placeholder="Data ID" :disabled="!table"/>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-switch class="ml-1 mr-1" v-on="on" v-model="detailActive" hint="">Toggle detail mode</v-switch>
+          </template>
+          <span>Toggle detail mode</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
+              <unicon name="filter-slash"></unicon>
+            </v-btn>
+          </template>
+          <span>Reset filter</span>
+        </v-tooltip>
+      </v-row>
+      <v-divider></v-divider>
+      <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
+      :disable-pagination="true" :sort-by="['index']" :sort-desc="[false]" :search="database" :custom-filter="filter">
+        <template v-slot:[`item.action`]="{ item }">
+          <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
+        </template>
+        <template v-slot:[`item.database.database`]="{ item }">
+          <a @click="setDatabaseFilter(item)">{{ item.database.database }}</a>
+        </template>
+        <template v-slot:[`item.table`]="{ item }">
+          <a @click="setTableFilter(item)">{{ item.table }}</a>
+        </template>
+        <template v-slot:[`item.data.id`]="{ item }">
+          <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
+        </template>
+        <template v-slot:[`item.filter`]="{ item }">
+          <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn label small @click="setFilter(item)" v-bind="attrs" v-on="on">
+                  <unicon name="filter"></unicon>
+                </v-btn>
+              </template>
+              <span>Set as Filter</span>
+            </v-tooltip>
+        </template>
+      </v-data-table>
+      <!-- Detail table to view data. -->
+      <v-simple-table v-if="detailActive" height="80vh">
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th>Index</th>
+              <th>Operation</th>
+              <th v-for="header in headersDetailed" v-bind:key="header">{{header}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="event in filteredEvents" :key="event.id">
+              <td>{{event.index}}</td>
+              <td><v-chip label small :color="getColor(event.action)">{{ event.action }}</v-chip></td>
+              <td v-for="object in Object.entries(event.data)" :key="object[0]" v-bind:class="{ changed: changed(event, object[0]) }">
+                <v-tooltip v-if="changed(event, object[0])" left>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn label small @click="setFilter(item)" v-bind="attrs" v-on="on">
-                      <unicon name="filter"></unicon>
-                    </v-btn>
-                  </template>
-                  <span>Set as Filter</span>
-                </v-tooltip>
-            </template>
-          </v-data-table>
-          <!-- Detail table to view data. -->
-          <v-simple-table v-if="detailActive" height="80vh">
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th>Index</th>
-                  <th>Operation</th>
-                  <th v-for="header in headersDetailed" v-bind:key="header">{{header}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="event in filteredEvents" :key="event.id">
-                  <td>{{event.index}}</td>
-                  <td><v-chip label small :color="getColor(event.action)">{{ event.action }}</v-chip></td>
-                  <td v-for="object in Object.entries(event.data)" :key="object[0]" v-bind:class="{ changed: changed(event, object[0]) }">
-                    <v-tooltip v-if="changed(event, object[0])" left>
-                      <template v-slot:activator="{ on, attrs }">
-                        <p label small @click="setFilter(item)" v-bind="attrs" v-on="on">
-                          {{object[1]}}
-                        </p>
-                      </template>
-                      <span>old value: {{event.data_old[object[0]]}}</span>
-                    </v-tooltip>
-                    <p v-else>
+                    <p label small @click="setFilter(item)" v-bind="attrs" v-on="on">
                       {{object[1]}}
                     </p>
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </v-card>
-      </v-col>
-    </v-row>
+                  </template>
+                  <span>old value: {{event.data_old[object[0]]}}</span>
+                </v-tooltip>
+                <p v-else>
+                  {{object[1]}}
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+    </v-card>
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
       Invalid filter. Automatically resetting to event mode now.
     </v-snackbar>
@@ -213,6 +207,11 @@ export default {
     events() {
       return this.$store.getters.events;
     },
+    contentHeight() {
+      let height = window.innerHeight+'px';
+      console.log(height);
+      return height;
+    }
   },
   watch: {
     detailActive(newState, oldState) {

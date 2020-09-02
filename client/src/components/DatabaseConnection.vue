@@ -52,7 +52,7 @@
           <v-btn color="green" outlined @click="updateConnection" left class="ml-7">Save</v-btn>
           <v-btn color="red" outlined @click="deleteConnection" left>Delete</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
+          <v-btn color="blue" text @click="dialog = false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

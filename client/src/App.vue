@@ -1,7 +1,7 @@
 <template>  
   <div id="app">
     <v-app>
-      <div id="nav">
+      <div id="nav" ref="nav">
         <router-link to="/">Home</router-link> |
         <router-link to="/connections">Connections</router-link> |
         <router-link to="/triggers">Triggers</router-link> |
@@ -22,7 +22,18 @@ export default {
     return {}
   },
   components: { ConnectionIndicator },
-  methods: {}
+  methods: {
+    setInnerHeight(innerHeight) {
+      this.$store.commit('setHeight', innerHeight);
+    }
+  },
+  mounted() {
+      let navbarHeight = this.$refs.nav.clientHeight;
+      this.setInnerHeight(window.innerHeight-navbarHeight);
+      window.addEventListener('resize', () => {
+        this.setInnerHeight(window.innerHeight-navbarHeight);
+      })
+  }
 };
 </script>
 
@@ -31,10 +42,6 @@ export default {
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
 
-}
-
-body {
-  margin: 0;
 }
 
 #nav {

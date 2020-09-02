@@ -1,8 +1,8 @@
 <template>
-<v-container fluid class="pt-0">
-    <v-row :height="$store.getters.contentHeight">
+  <v-container fluid class="pt-0">
+    <v-row>
       <v-col lg="12" id="content">
-        <v-card>
+        <v-card :height="$store.getters.contentHeight">
             <v-row class="ml-1 mr-1">
               <v-col cols="11">
                 <v-text-field class="ml-1 mr-1" v-model="search" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table"/>
@@ -12,7 +12,7 @@
               </v-col>
             </v-row>
 
-          <v-data-table fixed-header :headers="headers" :items="connections" :hide-default-footer="true" :disable-pagination="true"  :search="search" height="80vh">
+          <v-data-table fixed-header :headers="headers" :items="connections" :hide-default-footer="true" :disable-pagination="true" :search="search" :height="$store.getters.contentHeight">
             <template v-slot:[`item.status`]="{ item }">
               <DatabaseConnection :connection="item" @connectionDelete="loadData"/>
             </template>

@@ -52,7 +52,8 @@ const store = new Vuex.Store({
       state.events = [event, ...state.events];
     },
     setHeight(state, height) {
-      state.contentHeight = height+"px";
+      height = height-25;
+      state.contentHeight = height;
     }
   },
   getters: {
