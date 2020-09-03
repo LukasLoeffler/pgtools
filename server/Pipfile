@@ -7,10 +7,11 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-pgpubsub = "*"
 flask-socketio = "*"
 flask-cors = "*"
-pyinstaller = "*"
 flask-sqlalchemy = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
+
+[requires]
+python_version = "python 3"
