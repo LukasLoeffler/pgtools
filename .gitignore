@@ -2,3 +2,4 @@
 /server/__pycache__
 server/db.sqlite
 /server/static
+build.zip
