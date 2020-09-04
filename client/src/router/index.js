@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import About from '../views/About.vue'
 import Triggers from '../views/Triggers.vue'
 import Watcher from '../views/Watcher.vue'
 import Connections from '../views/Connections.vue'
@@ -13,11 +12,6 @@ Vue.use(VueRouter)
     path: '/',
     name: 'Home',
     component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About
   },
   {
     path: '/triggers',
