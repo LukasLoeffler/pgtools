@@ -5,13 +5,12 @@
         <v-card :height="$store.getters.contentHeight">
             <v-row class="ml-1 mr-1">
               <v-col cols="5">
-                <v-text-field class="ml-1 mr-1" v-model="search" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table"/>
+                <v-text-field class="mr-1" v-model="search" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table"/>
               </v-col>
               <v-col cols="1">
                 <CreateDatabaseConnection @connectionCreate="loadData"/>
               </v-col>
             </v-row>
-
           <v-data-table fixed-header :headers="headers" :items="connections" :hide-default-footer="true" :disable-pagination="true" :search="search" :height="$store.getters.contentHeight">
             <template v-slot:[`item.status`]="{ item }">
               <ManageDatabaseConnection :connection="item" @connectionDelete="loadData"/>

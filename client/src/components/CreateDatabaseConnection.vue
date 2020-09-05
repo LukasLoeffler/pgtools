@@ -13,7 +13,6 @@
         <ConnectionEditor :connection="connection" @validityChange="changeValidity" @connectionChange="setConnection"/>
         <v-divider></v-divider>
         <v-card-actions>
-          
           <v-btn color="green" class="ml-6" outlined left @click="createConnection" :disabled="!valid">Create</v-btn>
           <v-btn color="blue" class="ml-1" outlined left @click="checkConnection" :loading="checkingConnection">Check</v-btn>
           <v-spacer></v-spacer>
@@ -28,14 +27,13 @@
   </v-row>
 </template>
 
+
 <script>
 import ConnectionEditor from "../components/ConnectionEditor";
 
 export default {
   name: 'CreateDatabaseConnection',
-  components: {
-    ConnectionEditor
-  },
+  components: { ConnectionEditor },
   data () {
     return {
       dialog: false,
@@ -46,7 +44,7 @@ export default {
       connected: false,
       connection: {
         name: '',
-        host: '',
+        host: 'localhost',
         port: '5432',
         database: '',
         user: '',
@@ -54,8 +52,6 @@ export default {
       }
     }
   },
-  props: {},
-  computed: {},
   methods: {
     setConnection(newConnection) {
       this.connection = newConnection;
@@ -63,21 +59,9 @@ export default {
     changeValidity(validity) {
       this.valid = validity;
     },
-    getConnectionFromForm() {
-      let data = {
-        name: this.name,
-        host: this.host,
-        port: this.port,
-        database: this.database,
-        user: this.user,
-        password: this.password
-      };
-      return data;
-    },
     createConnection() {
       let url = `http://${location.hostname}:5000/connection`
-      let data = this.getConnectionFromForm();
-      this.$http.post(url, data)
+      this.$http.post(url, this.connection)
       .then((result) => {
         this.$emit('connectionCreate', result)
         this.dialog = false;
@@ -100,7 +84,6 @@ export default {
       })
     }
   }
-
 }
 </script>
 

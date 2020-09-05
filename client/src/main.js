@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import Unicon from 'vue-unicons'
-import { uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle, uniChannelAdd } from 'vue-unicons/src/icons'
+import { uniFilter, uniFilterSlash, uniPlay, uniPen, uniPauseCircle, uniChannelAdd, uniLink, uniLinkBroken } from 'vue-unicons/src/icons'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vuetify from './plugins/vuetify';
@@ -16,7 +16,7 @@ Vue.use(Vuetify)
 Vue.use(Vuex)
 
 
-Unicon.add([uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle, uniChannelAdd ])
+Unicon.add([uniFilter, uniFilterSlash, uniPlay, uniPen, uniPauseCircle, uniChannelAdd, uniLink, uniLinkBroken])
 Vue.use(Unicon, {
   height: 20,
   width: 20
@@ -31,7 +31,8 @@ const store = new Vuex.Store({
     activeConnections: [],
     events: [],
     eventSelection: [],
-    contentHeight: "90vh"
+    contentHeight: "90vh",
+    websocketStatus: false
   },
   mutations: {
     //Sets a whole array of connections as active connections
@@ -54,6 +55,9 @@ const store = new Vuex.Store({
     setHeight(state, height) {
       height = height-25;
       state.contentHeight = height;
+    },
+    setWebsocketStatus(state, status) {
+      state.websocketStatus = status;
     }
   },
   getters: {
@@ -65,6 +69,9 @@ const store = new Vuex.Store({
     },
     contentHeight: state => {
       return state.contentHeight;
+    },
+    websocketStatus: state => {
+      return state.websocketStatus;
     }
   }
 })
@@ -82,11 +89,13 @@ socket.on("databaseEvent", event => {
 });
 
 socket.on("connect", () => {
-  console.log("connect");
+  console.log("%c WebsocketStatus: %cConnected", "font-weight: bold;", "color: green;");
+  store.commit('setWebsocketStatus', true);
 });
 
 socket.on("disconnect", () => {
-  console.log("disconnect");
+  console.log("%c WebsocketStatus: %cNot Connected", "font-weight: bold;", "color: red;");
+  store.commit('setWebsocketStatus', false);
   store.commit('setActiveConnections', []);
 });
 
