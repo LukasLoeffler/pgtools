@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import Unicon from 'vue-unicons'
-import { uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle  } from 'vue-unicons/src/icons'
+import { uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle, uniChannelAdd } from 'vue-unicons/src/icons'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vuetify from './plugins/vuetify';
@@ -16,7 +16,7 @@ Vue.use(Vuetify)
 Vue.use(Vuex)
 
 
-Unicon.add([uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle ])
+Unicon.add([uniFilter, uniCrosshairAlt, uniCrosshair, uniFilterSlash, uniPlay, uniStopCircle, uniTrashAlt, uniPen, uniPauseCircle, uniChannelAdd ])
 Vue.use(Unicon, {
   height: 20,
   width: 20

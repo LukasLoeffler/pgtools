@@ -1,41 +1,16 @@
 <template>
   <v-row>
-    <v-dialog v-model="dialog" persistent max-width="600px">
+    <v-dialog v-model="dialog" max-width="600px">
       <template v-slot:activator="{ on, attrs }">
-          <v-btn color="green" class="mr-1" v-bind="attrs" v-on="on">
-            Add
+          <v-btn color="green" class="mr-1" outlined v-bind="attrs" v-on="on">
+            <unicon name="channel-add" fill="green"></unicon>
           </v-btn>
       </template>
       <v-card>
         <v-card-title>
           <span class="headline">Create connection</span>
         </v-card-title>
-        <v-card-text>
-          <v-form v-model="valid">
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field id="name" label="Name" v-model="name" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="host" label="Host" v-model="host" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="port" type="number" label="Port" v-model="port" :rules="[rules.required, rules.max]"></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field id="db" label="Database" v-model="database" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="user" label="User" v-model="user" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="password" type="password" label="Password" v-model="password" :rules="[rules.required]"></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-card-text>
+        <ConnectionEditor :connection="connection" @validityChange="changeValidity" @connectionChange="setConnection"/>
         <v-divider></v-divider>
         <v-card-actions>
           
@@ -54,31 +29,40 @@
 </template>
 
 <script>
+import ConnectionEditor from "../components/ConnectionEditor";
+
 export default {
   name: 'CreateDatabaseConnection',
+  components: {
+    ConnectionEditor
+  },
   data () {
     return {
       dialog: false,
       checkingConnection: false,
       alert: false,
       successSnackbar: false,
-      rules: {
-        required: value => !!value || 'Required.',
-        max: v => v.length <= 6 || 'Max 6 characters',
-      },
       valid: false,
       connected: false,
-      name: '',
-      host: '',
-      port: '5432',
-      database: '',
-      user: '',
-      password: ''
+      connection: {
+        name: '',
+        host: '',
+        port: '5432',
+        database: '',
+        user: '',
+        password: ''
+      }
     }
   },
   props: {},
   computed: {},
   methods: {
+    setConnection(newConnection) {
+      this.connection = newConnection;
+    },
+    changeValidity(validity) {
+      this.valid = validity;
+    },
     getConnectionFromForm() {
       let data = {
         name: this.name,
@@ -105,8 +89,7 @@ export default {
     checkConnection() {
       this.checkingConnection = true;
       let url = `http://${location.hostname}:5000/check-connection`
-      let data = this.getConnectionFromForm();
-      this.$http.post(url, data)
+      this.$http.post(url, this.connection)
       .then((result) => {
         if (result.data.status === "error") {
           this.alert = true;

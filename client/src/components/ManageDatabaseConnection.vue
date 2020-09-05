@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-dialog v-model="dialog" persistent max-width="600px">
+    <v-dialog v-model="dialog" max-width="600px">
       <template v-slot:activator="{ on, attrs }">
         <div>
           <v-btn text x-small class="mr-1" :disabled="connected" @click="connect">
@@ -21,35 +21,10 @@
         <v-card-title>
           <span class="headline">Edit connection</span>
         </v-card-title>
-        <v-card-text>
-          <v-form v-model="valid">
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field id="name" label="Name" v-model="connection.name" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="host" label="Host" v-model="connection.host" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="port" type="number" label="Port" v-model="connection.port" :rules="[rules.required, rules.max]"></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field id="db" label="Database" v-model="connection.database" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="user" label="User" v-model="connection.user" :rules="[rules.required]"></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field id="password" type="password" label="Password" v-model="connection.password" :rules="[rules.required]"></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-card-text>
+        <ConnectionEditor :connection="localConnection" @validityChange="changeValidity" @connectionChange="setConnection"/>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="green" outlined @click="updateConnection" left class="ml-7">Save</v-btn>
+          <v-btn color="green" outlined @click="updateConnection" :disabled="!valid" left class="ml-7">Save</v-btn>
           <v-btn color="red" outlined @click="deleteConnection" left>Delete</v-btn>
           <v-spacer></v-spacer>
           <v-btn color="blue" text @click="dialog = false">Close</v-btn>
@@ -61,25 +36,34 @@
 </template>
 
 <script>
+import ConnectionEditor from "../components/ConnectionEditor";
+
+
 export default {
   data () {
     return {
       baseUrl: `http://${location.hostname}:5000`,
       dialog: false,
-      rules: {
-        required: value => !!value || 'Required.',
-        max: v => v.length <= 6 || 'Max 6 characters',
-      },
       valid: false,
       connected: false,
       alert: false,
+      localConnection: JSON.parse(JSON.stringify(this.connection)),
+      updatedConnection: null
     }
+  },
+  components: {
+    ConnectionEditor
   },
   props: {
     connection: Object
   },
-  computed: {},
   methods: {
+    changeValidity(validity) {
+      this.valid = validity;
+    },
+    setConnection(newConnection) {
+      this.updatedConnection = newConnection;
+    },
     connect() {
       let url = `${this.baseUrl}/connection/${this.connection.id}/listen-start`
       this.$http.get(url)
@@ -115,7 +99,7 @@ export default {
     },
     updateConnection() {
       let url = `${this.baseUrl}/connection`;
-      this.$http.put(url, this.connection)
+      this.$http.put(url, this.updatedConnection)
       .then((result) => {
         this.$emit('connectionDelete', result)
         this.dialog = false;

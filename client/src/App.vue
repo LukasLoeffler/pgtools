@@ -1,16 +1,14 @@
 <template>  
-  <div id="app">
-    <v-app>
-      <div id="nav" ref="nav">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/connections">Connections</router-link> |
-        <router-link to="/triggers">Triggers</router-link> |
-        <router-link to="/watcher">Watcher</router-link>
-        <ConnectionIndicator id="dbCon"/>
-      </div>
-      <router-view></router-view>
-    </v-app>
-  </div>
+  <v-app id="app">
+    <div id="nav" ref="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/connections">Connections</router-link> |
+      <router-link to="/triggers">Triggers</router-link> |
+      <router-link to="/watcher">Watcher</router-link>
+      <ConnectionIndicator id="dbCon"/>
+    </div>
+    <router-view></router-view>
+  </v-app>
 </template>
 
 <script>
@@ -61,6 +59,12 @@ export default {
 
 #dbCon {
   float: right;
+}
+
+@media only screen and (max-width: 500px) {
+  #dbCon {
+    display: none;
+  }
 }
 </style>
 
