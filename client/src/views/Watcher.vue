@@ -22,28 +22,18 @@
       </v-row>
       <v-divider></v-divider>
       <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
-      :disable-pagination="true" :sort-by="['index']" :sort-desc="[false]" :search="database" :custom-filter="filter">
+      :disable-pagination="true" :sort-by="['index']" :sort-desc="[true]" :search="database" :custom-filter="filter">
         <template v-slot:[`item.action`]="{ item }">
           <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
         </template>
-        <template v-slot:[`item.database.database`]="{ item }">
-          <a @click="setDatabaseFilter(item)">{{ item.database.database }}</a>
+        <template v-slot:[`item.database`]="{ item }">
+          <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
         </template>
         <template v-slot:[`item.table`]="{ item }">
           <a @click="setTableFilter(item)">{{ item.table }}</a>
         </template>
         <template v-slot:[`item.data.id`]="{ item }">
           <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
-        </template>
-        <template v-slot:[`item.filter`]="{ item }">
-          <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn label small @click="setFilter(item)" v-bind="attrs" v-on="on">
-                  <unicon name="filter"></unicon>
-                </v-btn>
-              </template>
-              <span>Set as Filter</span>
-            </v-tooltip>
         </template>
       </v-data-table>
       <!-- Detail table to view data. -->
@@ -63,7 +53,7 @@
               <td v-for="object in Object.entries(event.data)" :key="object[0]" v-bind:class="{ changed: changed(event, object[0]) }">
                 <v-tooltip v-if="changed(event, object[0])" left>
                   <template v-slot:activator="{ on, attrs }">
-                    <p label small @click="setFilter(item)" v-bind="attrs" v-on="on">
+                    <p label small v-bind="attrs" v-on="on">
                       {{object[1]}}
                     </p>
                   </template>
@@ -95,11 +85,10 @@ export default {
       headers: [
         { text: 'Index', value: 'index' },
         { text: 'Time', value: 'timestamp' },
-        { text: 'Database', value: 'database.database' },
+        { text: 'Database', value: 'database' },
         { text: 'Table', value: 'table' },
         { text: 'Data ID', value: 'data.id' },
-        { text: 'Operation', value: 'action' },
-        { text: 'Filter', value: 'filter' },
+        { text: 'Operation', value: 'action' }
       ],
       headersDetailed: [],
       table: null,
@@ -127,44 +116,29 @@ export default {
     },
     //TODO: Filter function should be reworked
     filter(value, search, item) {
-
-      if (!item.table) {
-        return false;
-      }
-
-      if(this.database && item.database.database !== this.database) {
-        return false;
-      }
-
-      if (this.database && !this.table && !this.dataId && item.database.database === this.database) {
+      if(this.database && this.table && this.dataId && this.database === item.database && this.table === item.table && this.dataId === item.data.id) {
         return true;
       }
-
-      if (this.table && this.dataId && item.table == this.table && item.data.id == this.dataId) {
+      if(this.database && this.table && !this.dataId && this.database === item.database && this.table === item.table) {
         return true;
-      } else if (this.table && !this.dataId && item.table == this.table) {
+      }     
+      if(this.database &&!this.table && !this.dataId && this.database === item.database) {
         return true;
-      } else {
-        return false
       }
-    },
-    setFilter(item) {
-      this.table = item.table;
-      this.dataId = item.data.id;
-      this.database = item.database.database;
+      return false;
     },
     setDatabaseFilter(item) {
-      this.database = item.database.database;
+      this.database = item.database;
       this.table = null;
       this.dataId = null;
     },
     setTableFilter(item) {
-      this.database = item.database.database;
+      this.database = item.database;
       this.table = item.table;
       this.dataId = null;
     },
     setDataIdFilter(item) {
-      this.database = item.database.database;
+      this.database = item.database;
       this.table = item.table;
       this.dataId = item.data.id;
     },
@@ -197,10 +171,6 @@ export default {
       this.database = null;
       this.refreshTableAndSelection();
       this.detailActive = false;
-    },
-    resetToEventMode() {
-      this.detailActive = false;
-      this.alert = false;
     }
   },
   computed: {
@@ -230,9 +200,16 @@ export default {
         this.detailActive = false;
       }
     },
-    // Resetting dataId if no table is entered
+    // Resetting dataId if no table is selected
     table() {
       if (!this.table) {
+        this.dataId = null;
+      }
+    },
+    // Resetting table and dataId if no database is selected
+    database() {
+      if (!this.database) {
+        this.table = null;
         this.dataId = null;
       }
     }

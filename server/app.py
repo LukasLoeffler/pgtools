@@ -89,7 +89,7 @@ def events(connection):
                 while con.notifies:
                     payload = con.notifies.pop().payload
                     data = json.loads(payload)
-                    data["database"] = connection.as_dict()
+                    data["database"] = connection.database
                     notify(data)
         except Exception as e:
             break
