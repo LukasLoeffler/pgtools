@@ -37,36 +37,7 @@
         </template>
       </v-data-table>
       <!-- Detail table to view data. -->
-      <v-simple-table v-if="detailActive" height="80vh">
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th>Index</th>
-              <th>Operation</th>
-              <th v-for="header in headersDetailed" v-bind:key="header">{{header}}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="event in filteredEvents" :key="event.id">
-              <td>{{event.index}}</td>
-              <td><v-chip label small :color="getColor(event.action)">{{ event.action }}</v-chip></td>
-              <td v-for="object in Object.entries(event.data)" :key="object[0]" v-bind:class="{ changed: changed(event, object[0]) }">
-                <v-tooltip v-if="changed(event, object[0])" left>
-                  <template v-slot:activator="{ on, attrs }">
-                    <p label small v-bind="attrs" v-on="on">
-                      {{object[1]}}
-                    </p>
-                  </template>
-                  <span>old value: {{event.data_old[object[0]]}}</span>
-                </v-tooltip>
-                <p v-else>
-                  {{object[1]}}
-                </p>
-              </td>
-            </tr>
-          </tbody>
-        </template>
-      </v-simple-table>
+      <DetailTable ref="detailTable" v-show="detailActive" :table="table" :dataId="dataId" :rootVisible="detailActive"/>
     </v-card>
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
       Invalid filter. Automatically resetting to event mode now.
@@ -76,9 +47,11 @@
 
 
 <script>
+import DetailTable from "../components/DetailTable";
+
 export default {
   name: 'Watcher',
-  components: { },
+  components: { DetailTable },
   data: function () {
     return {
       search: "",
@@ -107,14 +80,6 @@ export default {
       if (action === "DELETE") return "red";
       else return 'blue';
     },
-    changed(item, key) {
-      if(item["data"][key] === item["data_old"][key] || item["action"] === "INSERT" || item["action"] === "DELETE") {
-        return false;
-      } else {
-        return true;
-      }
-    },
-    //TODO: Filter function should be reworked
     filter(value, search, item) {
       if(this.database && this.table && this.dataId && this.database === item.database && this.table === item.table && this.dataId === item.data.id) {
         return true;
@@ -143,25 +108,6 @@ export default {
       this.dataId = item.data.id;
     },
     /**
-     * Method is called when filter is refreshed.
-     * Filters the events and the headers for the table according the filter.
-     * Current fields used for filtering are dataId and table.
-     */
-    refreshTableAndSelection() {
-      this.headersDetailed = [];
-      if (this.table && this.dataId) {
-        this.filteredEvents = this.$store.getters.events.filter(event => event.data.id === this.dataId && event.table === this.table);
-      }
-      if(this.table) {
-        this.filteredEvents = this.$store.getters.events.filter(event => event.table === this.table);
-      }
-
-      //Getting first event of filteres events and extracting keys of data objects to populate header of the detail table
-      if (this.filteredEvents[0]) {
-        this.headersDetailed = Object.keys(this.filteredEvents[0]["data"]);
-      }
-    },
-    /**
      * Resets the current filter (table and dataId)
      * Refreshes the table and the selection accordingly by calling the respective method.
      * Sets the mode to 0 (event view) because without filter multiple incompatible events can occur.
@@ -170,7 +116,6 @@ export default {
       this.table = null;
       this.dataId = null;
       this.database = null;
-      this.refreshTableAndSelection();
       this.detailActive = false;
     }
   },
@@ -189,12 +134,6 @@ export default {
       if (newState && !this.table && !this.dataId) {
         this.alert = true;
       }
-      else {
-        this.refreshTableAndSelection();
-      }
-    },
-    events() {
-      this.refreshTableAndSelection();
     },
     alert(newState){
       if (!newState) {
@@ -205,6 +144,7 @@ export default {
     table() {
       if (!this.table) {
         this.dataId = null;
+        this.detailActive = false;
       }
     },
     // Resetting table and dataId if no database is selected
@@ -212,17 +152,13 @@ export default {
       if (!this.database) {
         this.table = null;
         this.dataId = null;
+        this.detailActive = false;
       }
     }
-  },
-  mounted() {},
-  created() {}
+  }
 }
 </script>
 
 
 <style scoped>
-.changed {
-  background-color: rgba(255, 0, 0, 0.2);
-}
 </style>
