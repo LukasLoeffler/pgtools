@@ -156,6 +156,7 @@ export default {
         this.filteredEvents = this.$store.getters.events.filter(event => event.table === this.table);
       }
 
+      //Getting first event of filteres events and extracting keys of data objects to populate header of the detail table
       if (this.filteredEvents[0]) {
         this.headersDetailed = Object.keys(this.filteredEvents[0]["data"]);
       }

@@ -1,17 +1,15 @@
 <template>
   <div>
-    <v-btn x-small v-if="connected.length > 0" color="green" @click="gotoConnections">Connections: [{{connected.length}}]</v-btn>
+    <v-btn x-small v-if="numberActiveConnections > 0" color="green" @click="gotoConnections">Connections: [{{numberActiveConnections}}]</v-btn>
     <v-btn x-small v-else color="red" @click="gotoConnections">No listener active</v-btn>
     <v-tooltip bottom color="cyan">
       <template v-slot:activator="{ on }">
-        <v-btn x-small class="ml-2" v-if="$store.getters.websocketStatus" color="green" v-on="on">WS</v-btn>
-        <v-btn x-small class="ml-2" v-else color="red" v-on="on">WS</v-btn>
+        <v-btn x-small class="ml-2" :color="getColor()" v-on="on">WS</v-btn>
       </template>
       <span v-if="$store.getters.websocketStatus">Websocket: Connected</span>
       <span v-else>Websocket: Not Connected</span>
     </v-tooltip>
   </div>
-
 </template>
 
 <script>
@@ -21,8 +19,8 @@ export default {
     return {}
   },
   computed: {
-    connected() {
-      return this.$store.getters.activeConnections;
+    numberActiveConnections() {
+      return this.$store.getters.activeConnections.length;
     }
   },
   methods: {
@@ -30,6 +28,10 @@ export default {
       if (this.$route.path !== '/connections') {
         this.$router.push('connections');
       }
+    },
+    getColor() {
+      if (this.$store.getters.websocketStatus) return "green";
+      else return 'red';
     }
   }
 }

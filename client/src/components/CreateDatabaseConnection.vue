@@ -41,7 +41,6 @@ export default {
       alert: false,
       successSnackbar: false,
       valid: false,
-      connected: false,
       connection: {
         name: '',
         host: 'localhost',
@@ -62,26 +61,27 @@ export default {
     createConnection() {
       let url = `http://${location.hostname}:5000/connection`
       this.$http.post(url, this.connection)
-      .then((result) => {
-        this.$emit('connectionCreate', result)
-        this.dialog = false;
-      }).catch((err) => {
-        console.error(err);
-        this.alert = true;
-      })
+        .then((result) => {
+          this.$emit('connectionCreate', result)
+          this.dialog = false;
+        })
+        .catch((err) => {
+          console.error(err);
+          this.alert = true;
+        })
     },
     checkConnection() {
       this.checkingConnection = true;
       let url = `http://${location.hostname}:5000/check-connection`
       this.$http.post(url, this.connection)
-      .then((result) => {
-        if (result.data.status === "error") {
-          this.alert = true;
-        } else {
-          this.successSnackbar = true;
-        }
-        this.checkingConnection = false;
-      })
+        .then((result) => {
+          if (result.data.status === "error") {
+            this.alert = true;
+          } else {
+            this.successSnackbar = true;
+          }
+          this.checkingConnection = false;
+        })
     }
   }
 }
