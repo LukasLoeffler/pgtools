@@ -22,7 +22,7 @@
       </v-row>
       <v-divider></v-divider>
       <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
-      :disable-pagination="true" :sort-by="['index']" :sort-desc="[true]" :search="database" :custom-filter="filter">
+      :disable-pagination="true" multi-sort :sort-by="['index']" :sort-desc="[true]" :search="database" :custom-filter="filter">
         <template v-slot:[`item.action`]="{ item }">
           <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
         </template>
