@@ -71,7 +71,7 @@ class Connection(db.Model):
 
 def notify(payload):
     global event_index
-    payload["timestamp"] = datetime.now().isoformat()[11:-3]
+    payload["timestamp"] = datetime.now().isoformat()[11:-4]
     payload["index"] = event_index
     socketio.emit('databaseEvent', payload)
     event_index += 1
