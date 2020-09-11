@@ -1,14 +1,13 @@
 import os
-import os
 import zipfile
 
 
 os.chdir("client")  # Change directory to client
 os.system('npm run build')  # Building vue project
+print("Build finished")
 
 os.chdir("../server")
-
-os.system("pip3 freeze > requirements.txt")  # Creating requirements.txt
+os.system("pip freeze > requirements.txt")  # Creating requirements.txt
 os.chdir("..")
 
 # Creating zip archive with 
