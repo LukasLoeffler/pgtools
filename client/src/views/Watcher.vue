@@ -7,7 +7,7 @@
         <v-text-field class="ml-1 mr-1" v-model="dataId" append-icon="mdi-magnify" outlined dense hide-details label="Data ID" placeholder="Data ID" :disabled="!table"/>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-switch class="ml-1 mr-1" v-on="on" v-model="detailActive" hint="">Toggle detail mode</v-switch>
+            <v-switch class="ml-1 mr-1" v-on="on" inset v-model="detailActive" :disabled="!table&&!dataId">Toggle detail mode</v-switch>
           </template>
           <span>Toggle detail mode</span>
         </v-tooltip>
@@ -40,7 +40,7 @@
       <DetailTable ref="detailTable" v-show="detailActive" :table="table" :dataId="dataId" :rootVisible="detailActive"/>
     </v-card>
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
-      Invalid filter. Automatically resetting to event mode now.
+      Invalid filter. Database and table are required. Automatically resetting to event mode now.
     </v-snackbar>
   </v-container>
 </template>
