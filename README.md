@@ -13,4 +13,6 @@ Names used for
 * triggers: **notify_trigger**
 * trigger functions: **notify_event**
 
-In addition, the application should only be used for development or debugging purposes, as the application has not yet been tested with high loads
+In addition, the application should only be used for development or debugging purposes, as the application has not yet been tested with high loads.
+
+The application is currently under development. If you find bugs or have suggestions, don't hesitate and create an issue or create a pull request.
