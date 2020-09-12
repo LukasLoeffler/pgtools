@@ -17,7 +17,6 @@ In addition, the application should only be used for development or debugging pu
 
 The application is currently under development. If you find bugs or have suggestions, don't hesitate and create an issue or create a pull request.
 
-https://i.imgur.com/zszR3cU.png
 ## Screenshots
 ### Connection Manager
 In the connection manager you can manage your connections. This includes the creation, activation, deactivation and deletion of said connections.
