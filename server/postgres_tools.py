@@ -167,8 +167,3 @@ class Connection:
                 self.create_trigger_for_table(table["table"])
 
         return self.get_all_tables_with_trigger()
-
-
-if __name__ == "__main__":
-    conn = Connection("ProConnNew", "postgres", "admin")
-    print(conn.get_all_tables_with_trigger())
