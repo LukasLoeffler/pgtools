@@ -16,3 +16,20 @@ Names used for
 In addition, the application should only be used for development or debugging purposes, as the application has not yet been tested with high loads.
 
 The application is currently under development. If you find bugs or have suggestions, don't hesitate and create an issue or create a pull request.
+
+https://i.imgur.com/zszR3cU.png
+## Screenshots
+### Connection Manager
+In the connection manager you can manage your connections. This includes the creation, activation, deactivation and deletion of said connections.
+Via the green play button you can activate connections to spectate them. You will only see the events of the active databases. Via the pause button you can stop listening to the database events of the connections.
+![Connections](https://i.imgur.com/O5EsSeY.png)
+![Create connection](https://i.imgur.com/zszR3cU.png)
+### Trigger
+In the trigger tab you can switch between all active connections in the upper right corner. In this view you can choose which tables in the database should throw events. If you want to watch the whole database you can check all connections.
+![Detail view](https://i.imgur.com/3pHdY1O.png)
+### Watcher - Event View
+The event view shows the database events with information about time, type, database, table and the dataId. Every time an event is thrown it will appear on top of the table. In this view you can filter by database, table and dataId. In order to get to the detailed view, at least the database and the table must be selected. The detail view can be activated/deactivated by the toggle button in the upper right corner.
+![Event view](https://i.imgur.com/IKDROaK.png)
+### Watcher - Detail View
+The detail view shows all data of the changed entity. If specific fields changed these changes are highlighted red.
+![Detail view](https://i.imgur.com/ss0Xt8h.png)
