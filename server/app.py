@@ -279,4 +279,4 @@ def create_trigger(id):
 if __name__ == '__main__':
     # webbrowser.open_new_tab("http://localhost:5000")
     db.create_all()
-    socketio.run(app, host="0.0.0.0", debug=True)
+    socketio.run(app)
