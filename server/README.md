@@ -1,8 +1,12 @@
 # pgtools
 
 ## Project setup
+With pip:
 ```
-pip install pipenv
+pip install -r requirements.txt 
+```
+With pipenv installed:
+```
 pipenv install
 ```
 
