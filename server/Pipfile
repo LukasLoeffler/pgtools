@@ -13,6 +13,3 @@ flask-cors = "*"
 flask-sqlalchemy = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
-
-[requires]
-python_version = "python 3"
