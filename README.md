@@ -1,7 +1,7 @@
 # pgtools
 
 Application for debugging applications that use postgres as DBMS.
-The application aims to help the user to understand his application by displaying the database events triggered by the application in real time.
+The application aims to help the user to understand their application by displaying the database events triggered by the application in real time.
 
 ## General
 Application built with python3 (server-side) and vue.js (client-side).
