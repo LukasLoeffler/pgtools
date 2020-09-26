@@ -261,6 +261,17 @@ def get_triggers(id):
     }), 400
 
 
+@app.route("/connection/execute", methods=["POST"])
+def execute_command():
+    connection_id = request.json['connection_id']
+    db_query = request.json['db_query']
+
+    connection = Connection.query.get(connection_id)
+    response = connection.get_connection().execute_command(db_query)
+    
+    return jsonify({"data": response})
+
+
 @app.route("/connection/<int:id>/trigger", methods=["POST"])
 def create_trigger(id):
     for connection in active_connections:

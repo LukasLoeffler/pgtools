@@ -2,6 +2,7 @@ import json
 import psycopg2
 from psycopg2 import errors
 import select
+from psycopg2.extras import RealDictCursor
 
 
 NOT_READY = ([], [], [])
@@ -167,3 +168,24 @@ class Connection:
                 self.create_trigger_for_table(table["table"])
 
         return self.get_all_tables_with_trigger()
+
+    
+    def execute_command(self, command):
+        try:
+            cur = self.con.cursor(cursor_factory=RealDictCursor)
+            cur.execute(command)
+            result = cur.fetchall()
+            return result
+
+        except Exception as e:
+            if isinstance(e, psycopg2.ProgrammingError):
+                error_message = str(e).split("\n")[0]
+                return {"message": error_message}
+            if isinstance(e, psycopg2.UndefindedTable):
+                error_message = str(e).split["\n"][0]  # Extracting multiline print statement
+                return {"message": error_message}
+            return {"messsage": str(e)}
+
+
+
+'"""DROP SCHEMA public CASCADE; CREATE SCHEMA public;"""'
