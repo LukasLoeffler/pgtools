@@ -269,7 +269,7 @@ def execute_command():
     connection = Connection.query.get(connection_id)
     response = connection.get_connection().execute_command(db_query)
     
-    return jsonify({"data": response})
+    return jsonify(response)
 
 
 @app.route("/connection/<int:id>/trigger", methods=["POST"])

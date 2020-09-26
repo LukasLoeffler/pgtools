@@ -171,20 +171,37 @@ class Connection:
 
     
     def execute_command(self, command):
+        response = {}
         try:
             cur = self.con.cursor(cursor_factory=RealDictCursor)
             cur.execute(command)
             result = cur.fetchall()
-            return result
+
+            response = {
+                "status": "success",
+                "payload": result,
+                "message": None
+            }
+            return response
 
         except Exception as e:
-            if isinstance(e, psycopg2.ProgrammingError):
+            response = {
+                "status": "error",
+                "error_type": type(e).__name__,
+                "message": str(e).split("\n")[0]
+            }
+
+            # This is no error per se, just an exception for empty result of fetchall() 
+            # which ok for queries without output
+            if isinstance(e, psycopg2.ProgrammingError) and e.args[0] == 'no results to fetch':
                 error_message = str(e).split("\n")[0]
-                return {"message": error_message}
-            if isinstance(e, psycopg2.UndefindedTable):
-                error_message = str(e).split["\n"][0]  # Extracting multiline print statement
-                return {"message": error_message}
-            return {"messsage": str(e)}
+                response = {
+                    "status": "success",
+                    "payload": None,
+                    "message": e.args[0]
+                }
+
+            return response
 
 
 
