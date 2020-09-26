@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Triggers from '../views/Triggers.vue'
 import Watcher from '../views/Watcher.vue'
 import Connections from '../views/Connections.vue'
+import Commands from '../views/Commands.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ Vue.use(VueRouter)
     path: '/connections',
     name: 'Connections',
     component: Connections
+  },
+  {
+    path: '/commands',
+    name: 'Commands',
+    component: Commands
   },
 ]
 
