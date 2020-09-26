@@ -25,7 +25,6 @@ command_db.init_app(app)
 command_ma.init_app(app)
 
 
-
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
@@ -128,7 +127,7 @@ def index():
     return app.send_static_file("index.html")
 
 
-@app.route("/check-connection",  methods=['POST'])
+@app.route("/connection/check",  methods=['POST'])
 def check_connection():
     database = request.json['database']
     user = request.json['user']

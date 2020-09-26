@@ -72,7 +72,7 @@ export default {
     },
     checkConnection() {
       this.checkingConnection = true;
-      let url = `http://${location.hostname}:5000/check-connection`
+      let url = `http://${location.hostname}:5000/connection/check`
       this.$http.post(url, this.connection)
         .then((result) => {
           if (result.data.status === "error") {
