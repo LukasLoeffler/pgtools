@@ -202,7 +202,3 @@ class Connection:
                 }
 
             return response
-
-
-
-'"""DROP SCHEMA public CASCADE; CREATE SCHEMA public;"""'
