@@ -10,8 +10,8 @@
         <v-card-title>
           <span class="headline">Create command</span>
         </v-card-title>
-        <v-form v-model="valid">
-          <v-container>
+        <v-form v-model="valid" ref="form">
+          <v-container class="pl-7">
             <v-row>
               <v-col cols="12">
                 <v-text-field label="Name" v-model="name" :rules="[rules.required]"></v-text-field>
@@ -22,7 +22,7 @@
               <v-col cols="12">
                 <v-select :items="severities" label="Severty" v-model="selectedSeverity" chips>
                   <template v-slot:selection="{ item }">
-                    <v-chip label :color=getSeverityColor(item)>
+                    <v-chip class="ml-0" small label :color=getSeverityColor(item)>
                       <span>{{ item }}</span>
                     </v-chip>
                   </template>
@@ -30,12 +30,11 @@
               </v-col>
             </v-row>
           </v-container>
-
         </v-form>
         <v-divider></v-divider>
         <v-card-actions>
           <v-btn color="green" class="ml-6" outlined left @click="createQuery" :disabled="!valid">Create</v-btn>
-          <v-btn color="blue" class="ml-1" outlined left @click="checkQuery" :loading="checkingQuery">Execute</v-btn>
+          <v-btn color="blue" class="ml-1" outlined left @click="checkQuery" :loading="checkingCommand">Execute</v-btn>
           <v-spacer></v-spacer>
           <v-btn color="blue" text @click="dialog = false">Close</v-btn>
         </v-card-actions>
@@ -54,7 +53,7 @@ export default {
   data () {
     return {
       dialog: false,
-      checkingQuery: false,
+      checkingCommand: false,
       alert: false,
       valid: false,
       rules: {
@@ -82,19 +81,18 @@ export default {
         severity: this.selectedSeverity
       }
 
-      console.log(data)
-
       this.$http.post(url, data)
-        .then((result) => {
-          console.log(result)
-        })
-        .catch((err) => {
-          console.error(err);
-          this.alert = true;
-        })
+      .then((result) => {
+        this.$emit('commandChange', result)
+        this.resetDialog();
+      })
+      .catch((err) => {
+        console.error(err);
+        this.alert = true;
+      })
     },
     checkQuery() {
-      this.checkingQuery = true;
+      this.checkingCommand = true;
       let url = `http://${location.hostname}:5000/connection/execute`
 
       let data = {
@@ -102,12 +100,18 @@ export default {
         db_query: this.query
       }
       
-
       this.$http.post(url, data)
-        .then((result) => {
-          console.log(result)
-          this.checkingQuery = false;
+      .then((result) => {
+        this.checkingCommand = false;
       })
+    },
+    resetDialog() {
+      this.name = null;
+      this.query_string = null;
+      this.selectedSeverity = "LOW"
+      // Required due to dirty form validation. Input fields red otherwise after save and reopen.
+      this.$refs.form.resetValidation();  
+      this.dialog = false;
     },
     getSeverityColor(severity) {
       if (severity === "LOW") return "green"
