@@ -1,12 +1,15 @@
 from flask import Blueprint, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS
 
 from postgres_tools import Connection as PgConnection
+
 
 db = SQLAlchemy()
 ma = Marshmallow()
 connection_bpr = Blueprint('connection_blueprint', __name__)
+CORS(connection_bpr)
 
 
 class Connection(db.Model):
@@ -40,7 +43,8 @@ connection_schema = ConnectionSchema()
 connections_schema = ConnectionSchema(many=True)
 
 
-@connection_bpr.route("/check",  methods=['POST'])
+
+@connection_bpr.route("/connection/check",  methods=['POST'])
 def check_connection():
     database = request.json['database']
     user = request.json['user']
@@ -59,7 +63,7 @@ def check_connection():
             "message": "Connection properties invalid"
         })
 
-@connection_bpr.route('/', methods=['POST'])
+@connection_bpr.route('/connection/create', methods=['POST'])
 def create_connection():
     name = request.json['name']
     database = request.json['database']
@@ -73,7 +77,7 @@ def create_connection():
     db.session.commit()
     return connection_schema.jsonify(new_connection)
 
-@connection_bpr.route('/', methods=['PUT'])
+@connection_bpr.route('/connection', methods=['PUT'])
 def update_connection():
     id = request.json['id']
     connection = Connection.query.get(id)
@@ -94,7 +98,7 @@ def update_connection():
     db.session.commit()
     return connection_schema.jsonify(connection)
     
-@connection_bpr.route("/execute", methods=["POST"])
+@connection_bpr.route("/connection/execute", methods=["POST"])
 def execute_command():
     connection_id = request.json['connection_id']
     db_query = request.json['db_query']

@@ -26,8 +26,8 @@ command_schema = CommandSchema()
 commands_schema = CommandSchema(many=True)
 
 
-@command_bpr.route("/", methods=["POST"])
-def create_query():
+@command_bpr.route("/command", methods=["POST"])
+def create_command():
     name = request.json["name"]
     query_string = request.json["query_string"]
     severity = request.json["severity"]
@@ -37,7 +37,7 @@ def create_query():
     db.session.commit()
     return command_schema.jsonify(new_command)
 
-@command_bpr.route('/all', methods=['GET'])
+@command_bpr.route('/command/all', methods=['GET'])
 def get_all_commands():
     all_commands = Command.query.all()
     return commands_schema.jsonify(all_commands)
