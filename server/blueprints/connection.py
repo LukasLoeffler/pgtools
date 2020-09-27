@@ -103,9 +103,16 @@ def execute_command():
     connection_id = request.json['connection_id']
     db_query = request.json['db_query']
 
-    connection = Connection.query.get(connection_id)
-    response = connection.get_connection().execute_command(db_query)
-    
+    try:
+        # get_connection() establishes connection to db. If this failes params of connection are invalid.
+        connection = Connection.query.get(connection_id).get_connection()
+        response = connection.execute_command(db_query)
+    except Exception as e:
+        response = {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": "Connection can't be established. Check connection params."
+        }
     return jsonify(response)
 
 
