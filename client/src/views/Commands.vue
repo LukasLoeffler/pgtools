@@ -38,7 +38,7 @@
         </v-col>
         <transition name="fade">
           <v-col v-if="commandData">
-            <CommandOutput :data="commandData"/>
+            <CommandOutput :commandData="commandData" class="mr-1"/>
           </v-col>
         </transition>
       </v-row>
@@ -90,7 +90,6 @@ export default {
       if (severity === "CRITICAL") return "red"
     },
     handleCommandData(data) {
-      console.log("HandleCommandData:", data);
       this.commandData = data;
     }
   },
