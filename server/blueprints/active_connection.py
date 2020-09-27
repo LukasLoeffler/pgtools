@@ -120,14 +120,6 @@ def all_active_connections():
     return connections_schema.jsonify(active_connections)
 
 
-@active_connection_bpr.route('/connection/<int:id>', methods=['DELETE'])
-def delete_connection(id):
-    connection = Connection.query.get(id)
-    db.session.delete(connection)
-    db.session.commit()
-    return connection_schema.jsonify(connection)
-
-
 @active_connection_bpr.route('/connection/all', methods=['GET'])
 def get_all_connections():
     all_connections = Connection.query.all()

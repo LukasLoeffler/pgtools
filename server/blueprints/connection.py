@@ -63,7 +63,7 @@ def check_connection():
             "message": "Connection properties invalid"
         })
 
-@connection_bpr.route('/connection/create', methods=['POST'])
+@connection_bpr.route('/connection', methods=['POST'])
 def create_connection():
     name = request.json['name']
     database = request.json['database']
@@ -107,3 +107,11 @@ def execute_command():
     response = connection.get_connection().execute_command(db_query)
     
     return jsonify(response)
+
+
+@connection_bpr.route('/connection/<int:id>', methods=['DELETE'])
+def delete_connection(id):
+    connection = Connection.query.get(id)
+    db.session.delete(connection)
+    db.session.commit()
+    return connection_schema.jsonify(connection)
