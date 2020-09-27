@@ -8,7 +8,7 @@
           </v-select>
         </v-col>
         <v-col cols="1" class="">
-          <CreateCommand/>
+          <CreateCommand @commandChange="loadCommands"/>
         </v-col>
         </v-row>
           <v-simple-table height="80vh">
@@ -27,7 +27,7 @@
                 <td>{{command.name}}</td>
                 <td><v-chip label small :color="getSeverityColor(command.severity)">{{ command.severity }}</v-chip></td>
                 <td>
-                  <ManageCommand :command="command" :connection="selectedConnection"/>
+                  <ManageCommand :command="command" :connection="selectedConnection" @commandChange="loadCommands"/>
                 </td>
               </tr>
             </tbody>
