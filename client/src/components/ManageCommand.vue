@@ -91,6 +91,7 @@ export default {
 
           if (result.data.status === "success") {
             console.log("Success");
+            this.$emit('commandData', result.data)
           } else {
             this.alertMessage = result.data.message;
             this.alert = true;
