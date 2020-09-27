@@ -41,3 +41,24 @@ def create_command():
 def get_all_commands():
     all_commands = Command.query.all()
     return commands_schema.jsonify(all_commands)
+
+@command_bpr.route("/command/<int:id>", methods=["PUT"])
+def edit_command(id):
+    name = request.json["name"]
+    query_string = request.json["query_string"]
+    severity = request.json["severity"]
+
+    edit_command = Command.query.get(id)
+    edit_command.name = name
+    edit_command.query_string = query_string
+    edit_command.severity = severity
+
+    db.session.commit()
+    return command_schema.jsonify(edit_command)
+
+@command_bpr.route('/command/<int:id>', methods=['DELETE'])
+def delete_command(id):
+    command = Command.query.get(id)
+    db.session.delete(command)
+    db.session.commit()
+    return command_schema.jsonify(command)
