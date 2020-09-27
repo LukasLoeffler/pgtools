@@ -10,6 +10,9 @@
               <v-col cols="1">
                 <CreateDatabaseConnection @connectionCreate="loadData"/>
               </v-col>
+              <v-col>
+                <ConnectionInfoModal style="float: right;"/>
+              </v-col>
             </v-row>
           <v-data-table fixed-header :headers="headers" :items="connections" :hide-default-footer="true" :disable-pagination="true" :search="search" :height="$store.getters.contentHeight">
             <template v-slot:[`item.status`]="{ item }">
@@ -25,10 +28,11 @@
 <script>
 import ManageDatabaseConnection from "../components/ManageDatabaseConnection";
 import CreateDatabaseConnection from "../components/CreateDatabaseConnection";
+import ConnectionInfoModal from "../components/info_modals/ConnectionInfoModal"
 
 export default {
   name: 'Connections',
-  components: { ManageDatabaseConnection, CreateDatabaseConnection },
+  components: { ManageDatabaseConnection, CreateDatabaseConnection, ConnectionInfoModal },
   data: function () {
     return {
       baseUrl: `http://${location.hostname}:5000`,

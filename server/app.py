@@ -8,275 +8,51 @@ from datetime import datetime
 
 import psycopg2
 from flask import Flask, render_template, request, jsonify
-from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
 from postgres_tools import Connection as PgConnection
-
+from blueprints.command import db as command_db, ma as command_ma, Command, command_bpr
+from blueprints.connection import db as connection_db, ma as connection_ma, Connection, connection_bpr, connection_schema, connections_schema
+from blueprints.active_connection import socketio, active_connection_bpr
 
 app = Flask(__name__, static_url_path='')
-CORS(app)
-socketio = SocketIO(app, cors_allowed_origins='*')
 
 app.config['JSON_AS_ASCII'] = False
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+CORS(app)
+
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-event_index = 0
-active_connections = []  # Array containing all currently active connections
+# Registering command blueprint incl. sqlalchemy and marshmallow
+app.register_blueprint(command_bpr)
+command_db.init_app(app)
+command_ma.init_app(app)
 
-class Connection(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
-    database = db.Column(db.String(255))
-    user = db.Column(db.String(255))
-    password = db.Column(db.String(255))
-    host = db.Column(db.String(255))
-    port = db.Column(db.Integer)
+# Registering command blueprint incl. sqlalchemy and marshmallow
+app.register_blueprint(connection_bpr)
+connection_db.init_app(app)
+connection_ma.init_app(app)
 
-    def __init__(self, name, database, user, password, host, port):
-        self.name = name
-        self.database = database
-        self.user = user
-        self.password = password
-        self.host = host
-        self.port = port
+# Registering active-connection blueprint incl. socketio
+app.register_blueprint(active_connection_bpr)
+socketio.init_app(app)
 
-    def get_connection(self):
-        """
-        Creates a real connection to the database via postgres_tools.
-        Function is currently needed because of missing thread safety.
-        """
-        return PgConnection(database=self.database, user=self.user, password=self.password, host=self.host, port=self.port)
+with app.app_context():
+    connection_db.create_all()
+    command_db.create_all() 
 
-    def listen_start(self):
-        self.connection = self.get_connection()
-        self.connection.create_general_notify_event()
-        self.connection.cur.execute("LISTEN pg_change;")
-        active_connections.append(self)
-        thread = threading.Thread(target=events, args=(self.connection,))
-        thread.start()
-
-    def listen_end(self):
-        self.connection.cur.execute("UNLISTEN pg_change;")
-        self.connection.cur.close()
-        self.connection.con.close()
-
-
-def notify(payload):
-    global event_index
-    payload["timestamp"] = datetime.now().isoformat()[11:-4]
-    payload["index"] = event_index
-    socketio.emit('databaseEvent', payload)
-    event_index += 1
-
-
-def events(connection):
-    con = connection.con
-    while True:
-        #If connection is closed from outside an exception is thrown on connection.poll()
-        try:
-            if select.select([con],[],[],5) != ([],[],[]):
-                seconds_passed = 0
-                con.poll()
-                con.commit()
-                while con.notifies:
-                    payload = con.notifies.pop().payload
-                    data = json.loads(payload)
-                    data["database"] = connection.database
-                    notify(data)
-        except Exception as e:
-            break
-
-
-class ConnectionSchema(ma.Schema):
-    class Meta:
-        fields=('id', 'name', 'database', 'user', 'password', 'host', 'port')
-
-
-connection_schema = ConnectionSchema()
-connections_schema = ConnectionSchema(many=True)
-
-
-def is_connection_valid(connection):
-    """
-    Checks if connection can be established
-    """
-    try:
-        connection.get_connection()
-        return True
-    except:
-        return False
 
 
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
 
-
-@app.route("/check-connection",  methods=['POST'])
-def check_connection():
-    database = request.json['database']
-    user = request.json['user']
-    password = request.json['password']
-    host = request.json['host']
-    port = request.json['port']
-    try:
-        connection = PgConnection(database, user, password, host, port)
-        return jsonify({
-            "status": "success",
-            "message": "Connection properties valid"
-        })
-    except:
-        return jsonify({
-            "status": "error",
-            "message": "Connection properties invalid"
-        })
-
-
-@app.route("/connection/<int:id>/listen-start")
-def listen_start(id):
-    connection = Connection.query.get(id)
-    if is_connection_valid(connection):
-        connection.listen_start()
-        return jsonify({"status": "success"})
-    else:
-        return jsonify({
-            "status": "error",
-            "message": "Connection can't be established"
-        }), 400
-
-
-@app.route("/connection/<int:id>/listen-end")
-def listen_end(id):
-    conEnd = None
-    # Connection has to be fetched from active connections
-    # Running connection are not persisted in the database
-    for connection in active_connections:
-        if connection.id == id:
-            connection.listen_end()
-            conEnd = connection
-
-    if conEnd:
-        active_connections.remove(conEnd)
-        return jsonify({
-            "status": "success",
-            "message": f"Connection {conEnd.id} successfully unlistened."
-        })
-    else:
-        return jsonify({
-            "status": "warning",
-            "message": f"Connection {id} was not active."
-        }), 400
-
-
-@app.route("/connection/<int:id>/status")
-def connection_status(id):
-    for connection in active_connections:
-        if connection.id == id:
-            return jsonify({"connected": True})
-    return jsonify({"connected": False})
-
-
-@app.route("/connection/all/active")
-def all_active_connections():
-    return connections_schema.jsonify(active_connections)
-
-
-@app.route('/connection', methods=['POST'])
-def create_connection():
-    name = request.json['name']
-    database = request.json['database']
-    user = request.json['user']
-    password = request.json['password']
-    host = request.json['host']
-    port = request.json['port']
-    new_connection = Connection(name, database, user, password, host, port)
-    
-    db.session.add(new_connection)
-    db.session.commit()
-    return connection_schema.jsonify(new_connection)
-
-
-@app.route('/connection', methods=['PUT'])
-def update_connection():
-    id = request.json['id']
-    connection = Connection.query.get(id)
-    name = request.json['name']
-    database = request.json['database']
-    user = request.json['user']
-    password = request.json['password']
-    host = request.json['host']
-    port = request.json['port']
-
-    connection.name = name
-    connection.database = database
-    connection.user = user
-    connection.password = password
-    connection.host = host
-    connection.port = port
-
-    db.session.commit()
-    return connection_schema.jsonify(connection) 
-
-
-@app.route('/connection/<int:id>', methods=['DELETE'])
-def delete_connection(id):
-    connection = Connection.query.get(id)
-    db.session.delete(connection)
-    db.session.commit()
-    return connection_schema.jsonify(connection)
-
-
-@app.route('/connection/all', methods=['GET'])
-def get_all_connections():
-    all_connections = Connection.query.all()
-    return connections_schema.jsonify(all_connections)
-
-
-@app.route('/connection/<int:id>/status', methods=['GET'])
-def get_connection_status(id):
-    connection = Connection.query.get(id)
-    return None
-
-
-@app.route("/connection/<int:id>/trigger", methods=["GET"])
-def get_triggers(id):
-    for connection in active_connections:
-        if connection.id == id:
-            con = connection.get_connection()
-            response_data = jsonify(con.get_all_tables_with_trigger())
-            con.close()
-            return response_data
-
-    return jsonify({
-        "status": "error",
-        "message": "Triggers could not be fetched"
-    }), 400
-
-
-@app.route("/connection/<int:id>/trigger", methods=["POST"])
-def create_trigger(id):
-    for connection in active_connections:
-        if connection.id == id:
-            con = connection.get_connection()
-            response_data = jsonify(con.set_trigger_for_tables(request.json))
-            con.close()
-            return response_data
-            
-    return jsonify({
-        "status": "error",
-        "message": "Triggers could not be created"
-    }), 400
-
-
 if __name__ == '__main__':
     # webbrowser.open_new_tab("http://localhost:5000")
-    db.create_all()
-    socketio.run(app)
+    socketio.run(app, debug=True)

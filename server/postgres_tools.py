@@ -2,6 +2,7 @@ import json
 import psycopg2
 from psycopg2 import errors
 import select
+from psycopg2.extras import RealDictCursor
 
 
 NOT_READY = ([], [], [])
@@ -167,3 +168,37 @@ class Connection:
                 self.create_trigger_for_table(table["table"])
 
         return self.get_all_tables_with_trigger()
+
+    
+    def execute_command(self, command):
+        response = {}
+        try:
+            cur = self.con.cursor(cursor_factory=RealDictCursor)
+            cur.execute(command)
+            result = cur.fetchall()
+
+            response = {
+                "status": "success",
+                "payload": result,
+                "message": None
+            }
+            return response
+
+        except Exception as e:
+            response = {
+                "status": "error",
+                "error_type": type(e).__name__,
+                "message": str(e).split("\n")[0]
+            }
+
+            # This is no error per se, just an exception for empty result of fetchall() 
+            # which ok for queries without output
+            if isinstance(e, psycopg2.ProgrammingError) and e.args[0] == 'no results to fetch':
+                error_message = str(e).split("\n")[0]
+                response = {
+                    "status": "success",
+                    "payload": None,
+                    "message": e.args[0]
+                }
+
+            return response

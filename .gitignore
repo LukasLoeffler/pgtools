@@ -4,3 +4,4 @@ server/db.sqlite
 /server/static
 build.zip
 /server/.vscode
+/server/blueprints/__pycache__

@@ -4,7 +4,8 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/connections">Connections</router-link> |
       <router-link to="/triggers">Triggers</router-link> |
-      <router-link to="/watcher">Watcher</router-link>
+      <router-link to="/watcher">Watcher</router-link> |
+      <router-link to="/commands">Commands</router-link>
       <ConnectionIndicator id="dbCon"/>
     </div>
     <router-view></router-view>
