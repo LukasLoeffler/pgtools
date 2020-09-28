@@ -1,7 +1,7 @@
 <template>
-  <v-card dark class="ml-1">
+  <v-card dark class="ml-1" ref="cardMain">
 
-    <v-card-title>
+    <v-card-title ref="cardTitle">
       <v-row class="ml-1">
             <v-col cols="6"> 
               <span class="headline">Command output</span>
@@ -10,23 +10,22 @@
               <v-btn-toggle v-model="toggle_one" dense mandatory style="float: right;">
                 <v-btn small>Overview</v-btn>
                 <v-btn small :disabled="!commandData.payload">Table</v-btn>
-                <v-btn small>JSON</v-btn>
             </v-btn-toggle>
             </v-col>
           </v-row>
     </v-card-title>
 
-    <v-card-text>
-      <v-simple-table v-if="toggle_one === 1 &&   commandData.payload">
+    <v-card-text class="pr-1">
+      <v-simple-table v-if="toggle_one === 1 && commandData.payload" :height="this.$store.getters.contentHeight-118+'px'">
         <thead>
           <tr>
-            <th v-for="object in Object.entries(  commandData.payload[0])" :key="object[0]">
+            <th v-for="object in Object.entries(commandData.payload[0])" :key="object[0]">
               {{object[0]}}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in   commandData.payload" :key="item.name">
+          <tr v-for="item in commandData.payload" :key="item.name">
             <td v-for="object in Object.entries(item)" :key="object[0]">
             {{object[1]}}
             </td>

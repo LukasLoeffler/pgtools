@@ -1,19 +1,19 @@
 <template>
-  <v-container fluid class="p-0">
-    <v-card>
+  <v-container fluid class="p-0 mb-5">
+    <v-card :height="$store.getters.contentHeight">
       <v-row>
         <v-col>
-          <v-row class="ml-1">
-            <v-col cols="4" class="">
+          <v-row class="ml-1" ref="selRow">
+            <v-col cols="6" class="pt-0">
               <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection"
                 return-object outlined dense hide-details :no-data-text="noDataText">
               </v-select>
             </v-col>
-            <v-col cols="1" class="">
+            <v-col cols="1" class="pt-0" :height="tableHeight">
               <CreateCommand @commandChange="loadCommands"/>
             </v-col>
             </v-row>
-              <v-simple-table height="80vh">
+              <v-simple-table :height="tableHeight" class="mr-1">
               <template v-slot:default>
                 <thead>
                   <tr>
@@ -38,7 +38,7 @@
         </v-col>
         <transition name="fade">
           <v-col v-if="commandData">
-            <CommandOutput :commandData="commandData" class="mr-1"/>
+            <CommandOutput :commandData="commandData" class="mr-1" style="position: absolute; bottom: 12px; top: 12px; right: 12px; left: 50%"/>
           </v-col>
         </transition>
       </v-row>
@@ -62,7 +62,8 @@ export default {
       noDataText: "Keine Verbindungen vorhanden",
       baseUrl: `http://${location.hostname}:5000`,
       commands: [],
-      commandData: null
+      commandData: null,
+      tableHeight: null
     }
   },
   methods: {
@@ -96,8 +97,13 @@ export default {
   created() {
     this.loadConnections();
     this.loadCommands();
+    console.log("Commands Created");
   },
-  mounted() {},
+  updated() {
+    let selectionRowHeight = this.$refs.selRow.clientHeight;
+    this.tableHeight = this.$store.getters.contentHeight-selectionRowHeight-16+"px";
+    console.log(this.tableHeight);
+  },
 }
 </script>
 
