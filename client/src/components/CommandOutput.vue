@@ -16,7 +16,7 @@
     </v-card-title>
 
     <v-card-text class="pr-1">
-      <v-simple-table v-if="toggle_one === 1 && commandData.payload" :height="this.$store.getters.contentHeight-118+'px'">
+      <v-simple-table v-if="toggle_one === 1 && commandData.payload" :height="tableHeight">
         <thead>
           <tr>
             <th v-for="object in Object.entries(commandData.payload[0])" :key="object[0]">
@@ -60,7 +60,8 @@ export default {
     data: () => {
     return {
       name: "CommandOutput",
-      toggle_one: 0
+      toggle_one: 0,
+      tableHeight: null
     }
   },
   props: {
@@ -79,6 +80,9 @@ export default {
     commandData() {
       this.toggle_one = 0;
     }
+  },
+  updated() {
+    this.tableHeight = this.$store.getters.contentHeight-118+'px'
   }
 }
 </script>

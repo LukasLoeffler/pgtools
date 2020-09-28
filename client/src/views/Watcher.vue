@@ -125,7 +125,6 @@ export default {
     },
     contentHeight() {
       let height = window.innerHeight+'px';
-      console.log(height);
       return height;
     }
   },

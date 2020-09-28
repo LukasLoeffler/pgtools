@@ -88,7 +88,6 @@ export default {
       this.refreshTableAndSelection();
     },
     visible(newValue) {
-      console.log(this.dataId +" "+this.table);
       this.refreshTableAndSelection();
     }
   }

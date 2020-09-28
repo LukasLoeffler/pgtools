@@ -95,7 +95,6 @@ export default {
   },
   mounted() {
     this.ctrlBarHeight = this.$refs.ctrlBar.clientHeight;
-    console.log(this.ctrlBarHeight);
   },
   watch: {
     selectedConnection(newValue) {

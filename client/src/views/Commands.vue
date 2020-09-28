@@ -97,12 +97,10 @@ export default {
   created() {
     this.loadConnections();
     this.loadCommands();
-    console.log("Commands Created");
   },
   updated() {
     let selectionRowHeight = this.$refs.selRow.clientHeight;
     this.tableHeight = this.$store.getters.contentHeight-selectionRowHeight-16+"px";
-    console.log(this.tableHeight);
   },
 }
 </script>
