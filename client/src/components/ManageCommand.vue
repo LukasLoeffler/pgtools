@@ -79,7 +79,6 @@ export default {
   },
   methods: {
     executeCommand() {
-      console.log(`Executing Command ${this.command.name} onto ${this.connection.id}`)
       let url = `${this.baseUrl}/connection/execute`
       let data = {
         connection_id: this.connection.id,
@@ -87,11 +86,8 @@ export default {
       }
       this.$http.post(url, data)
         .then((result) => {
-          console.log("QueryResult: ", result.data)
-
-          if (result.data.status === "success") {
-            console.log("Success");
-          } else {
+          this.$emit('commandData', result.data);
+          if (result.data.status !== "success") {
             this.alertMessage = result.data.message;
             this.alert = true;
           }
