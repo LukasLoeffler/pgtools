@@ -32,3 +32,8 @@ The event view shows the database events with information about time, type, data
 ### Watcher - Detail View
 The detail view shows all data of the changed entity. If specific fields changed these changes are highlighted red.
 ![Detail view](https://i.imgur.com/ss0Xt8h.png)
+### Quick Commands
+Frequently used db commands can be created and executed from the user interface.
+![Quick commands - Create](https://imgur.com/OJO3CBU.png)
+The overview tab shows if the query was successful. The table tab shows the retrieved data in a table (if possible)
+![Quick commands - Execute](https://i.imgur.com/iDdKl2c.png)
