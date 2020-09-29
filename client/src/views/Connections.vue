@@ -5,7 +5,7 @@
         <v-card :height="$store.getters.contentHeight">
             <v-row class="ml-1 mr-1">
               <v-col cols="5">
-                <v-text-field class="mr-1" v-model="search" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table"/>
+                <v-text-field class="mr-1" v-model="search" append-icon="mdi-magnify" outlined dense hide-details label="Connection" placeholder="Connection"/>
               </v-col>
               <v-col cols="1">
                 <CreateDatabaseConnection @connectionCreate="loadData"/>
