@@ -1,18 +1,10 @@
 import os
-import json
-import webbrowser
-import logging
-import threading
-import select
-from datetime import datetime
 
-import psycopg2
-from flask import Flask, render_template, request, jsonify
+from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
-from postgres_tools import Connection as PgConnection
 from blueprints.command import db as command_db, ma as command_ma, Command, command_bpr
 from blueprints.connection import db as connection_db, ma as connection_ma, Connection, connection_bpr, connection_schema, connections_schema
 from blueprints.active_connection import socketio, active_connection_bpr
@@ -48,11 +40,10 @@ with app.app_context():
     command_db.create_all() 
 
 
-
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
 
 if __name__ == '__main__':
     # webbrowser.open_new_tab("http://localhost:5000")
-    socketio.run(app, debug=True)
+    socketio.run(app)
