@@ -58,6 +58,10 @@ const store = new Vuex.Store({
     },
     setWebsocketStatus(state, status) {
       state.websocketStatus = status;
+    },
+    resetEvents(state) {
+      state.events = [];
+      state.eventSelection = [];
     }
   },
   getters: {

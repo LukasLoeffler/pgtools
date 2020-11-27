@@ -1,7 +1,7 @@
 <template>
-  <v-container fluid class="pa-2">
+  <v-container fluid class="pa-2" v-resize="updateTableHeight">
     <v-card :height="$store.getters.contentHeight">
-      <v-row align="center" justify="center" class="px-4">
+      <v-row ref="filterRow" align="center" justify="center" class="px-4">
         <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
         <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
         <v-text-field class="ml-1 mr-1" v-model="dataId" append-icon="mdi-magnify" outlined dense hide-details label="Data ID" placeholder="Data ID" :disabled="!table"/>
@@ -19,10 +19,18 @@
           </template>
           <span>Reset filter</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn class="mr-2" v-on="on"  @click="clearEvents()">
+              <v-icon color="red">mdi-delete-sweep-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>Clear events</span>
+        </v-tooltip>
       </v-row>
       <v-divider></v-divider>
       <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
-      :disable-pagination="true" multi-sort :sort-by="['index']" :sort-desc="[true]" :search="database" :custom-filter="filter">
+      :disable-pagination="true" multi-sort :sort-by="['index']" :sort-desc="[true]" :search="database" :custom-filter="filter" :height="tableHeight">
         <template v-slot:[`item.action`]="{ item }">
           <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
         </template>
@@ -70,7 +78,8 @@ export default {
       detailActive: false,
       filteredEvents: [],
       keys: [],
-      alert: false
+      alert: false,
+      filterBarHeight: null
     }
   },
   methods: {
@@ -117,6 +126,12 @@ export default {
       this.dataId = null;
       this.database = null;
       this.detailActive = false;
+    },
+    updateTableHeight() {
+      this.filterBarHeight = this.$refs.filterRow.clientHeight;
+    },
+    clearEvents() {
+      this.$store.commit("resetEvents")
     }
   },
   computed: {
@@ -126,6 +141,14 @@ export default {
     contentHeight() {
       let height = window.innerHeight+'px';
       return height;
+    },
+    tableHeight() {
+      if (this.filterBarHeight && this.$store.getters.contentHeight) {
+        let tableHeight= this.$store.getters.contentHeight - this.filterBarHeight - 26 + "px";
+        return tableHeight;
+      } else {
+        return "80vh";
+      }
     }
   },
   watch: {
