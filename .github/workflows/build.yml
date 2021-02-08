@@ -22,21 +22,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+         python-version: 3.8 #install the python needed
       - name: Installing project dependencies
         working-directory: ./client
         run: npm install
       - name: Building the project
-        working-directory: ./client
-        run: npm run build
-        
-
-      - uses: actions/checkout@v2
-
-      - uses: actions/checkout@v2
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: my-artifact
-
-      - name: Display structure of downloaded files
-        run: ls -R
+        run: python build.py
