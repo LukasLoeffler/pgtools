@@ -133,7 +133,6 @@ export default {
       if (Number.isInteger(contentHeight) && this.$refs.filterRow) {
         let filterBarHeight = this.$refs.filterRow.clientHeight;
         this.tableHeight = this.$store.getters.contentHeight - filterBarHeight + "px";
-        console.log(this.tableHeight);
       }
     },
     clearEvents() {
