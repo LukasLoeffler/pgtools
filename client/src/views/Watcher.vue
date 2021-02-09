@@ -79,7 +79,8 @@ export default {
       filteredEvents: [],
       keys: [],
       alert: false,
-      filterBarHeight: null
+      filterBarHeight: null,
+      tableHeight: "80vh"
     }
   },
   methods: {
@@ -128,10 +129,20 @@ export default {
       this.detailActive = false;
     },
     updateTableHeight() {
-      this.filterBarHeight = this.$refs.filterRow.clientHeight;
+      let contentHeight = this.$store.getters.contentHeight;
+      if (Number.isInteger(contentHeight) && this.$refs.filterRow) {
+        let filterBarHeight = this.$refs.filterRow.clientHeight;
+        this.tableHeight = this.$store.getters.contentHeight - filterBarHeight + "px";
+        console.log(this.tableHeight);
+      }
     },
     clearEvents() {
-      this.$store.commit("resetEvents")
+      let url = `http://${location.hostname}:5000/connection/reset-index`;
+      this.$http.get(url)
+      .then((result) => {
+        console.log(result);
+        this.$store.commit("resetEvents");
+      });
     }
   },
   computed: {
@@ -142,14 +153,9 @@ export default {
       let height = window.innerHeight+'px';
       return height;
     },
-    tableHeight() {
-      if (this.filterBarHeight && this.$store.getters.contentHeight) {
-        let tableHeight= this.$store.getters.contentHeight - this.filterBarHeight - 26 + "px";
-        return tableHeight;
-      } else {
-        return "80vh";
-      }
-    }
+  },
+  updated() {
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 1);
   },
   watch: {
     detailActive(newState, oldState) {

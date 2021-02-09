@@ -154,3 +154,13 @@ def create_trigger(id):
         "status": "error",
         "message": "Triggers could not be created"
     }), 400
+
+
+@active_connection_bpr.route("/connection/reset-index", methods=["GET"])
+def reset_index():
+    global event_index
+    event_index = 0
+    return jsonify({
+        "status": "success",
+        "message": "Index reset successful."
+    }), 200

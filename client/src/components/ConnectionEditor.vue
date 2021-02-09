@@ -37,7 +37,7 @@ export default {
         required: value => !!value || 'Required.',
         positive: value => value > 0 || 'Positive number required.'
       },
-      localConnection: JSON.parse(JSON.stringify(this.connection))
+      localConnection: {...this.connection}
     }
   },
   props: {
