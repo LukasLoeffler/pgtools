@@ -11,7 +11,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "node-forge": "^0.10.0",
-    "prismjs": "^1.21.0",
+    "prismjs": "^1.23.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vue-socket.io": "^3.0.9",
