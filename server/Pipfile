@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 psycopg2 = "*"
 flask = "*"
-flask-socketio = "*"
+Flask-SocketIO = "<5"
 flask-cors = "*"
 flask-sqlalchemy = "*"
 flask-marshmallow = "*"
