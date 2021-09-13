@@ -1,25 +1,32 @@
 <template>
-  <v-container fluid class="pt-0">
+  <v-container fluid>
     <v-row>
-      <v-col lg="12" id="content">
-        <v-card :height="$store.getters.contentHeight">
-            <v-row class="ml-1 mr-1">
-              <v-col cols="5">
-                <v-text-field class="mr-1" v-model="search" append-icon="mdi-magnify" outlined dense hide-details label="Connection" placeholder="Connection"/>
-              </v-col>
-              <v-col cols="1">
-                <CreateDatabaseConnection @connectionCreate="loadData"/>
-              </v-col>
-              <v-col>
-                <ConnectionInfoModal style="float: right;"/>
-              </v-col>
-            </v-row>
-          <v-data-table fixed-header :headers="headers" :items="connections" :hide-default-footer="true" :disable-pagination="true" :search="search" :height="$store.getters.contentHeight">
-            <template v-slot:[`item.status`]="{ item }">
-              <ManageDatabaseConnection :connection="item" @connectionDelete="loadData"/>
-            </template>
-          </v-data-table>
-        </v-card>
+      <v-col id="content">
+        <v-row>
+          <v-col cols="5">
+            <v-text-field 
+              class="ma-1" 
+              v-model="search" 
+              append-icon="mdi-magnify"
+              outlined
+              dense 
+              hide-details 
+              label="Connection" 
+              placeholder="Connection"
+            />
+          </v-col>
+          <v-col cols="1">
+            <CreateDatabaseConnection @connectionCreate="loadData" class="mt-1"/>
+          </v-col>
+          <v-col>
+            <ConnectionInfoModal style="float: right;" class="mt-1"/>
+          </v-col>
+        </v-row>
+        <v-data-table fixed-header :headers="headers" :items="connections" :search="search">
+          <template v-slot:[`item.status`]="{ item }">
+            <ManageDatabaseConnection :connection="item" @connectionDelete="loadData"/>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>

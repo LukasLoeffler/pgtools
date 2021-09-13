@@ -1,19 +1,18 @@
 <template>
   <v-container fluid class="p-0 mb-5">
-    <v-card :height="$store.getters.contentHeight">
       <v-row>
         <v-col>
-          <v-row class="ml-1" ref="selRow">
-            <v-col cols="6" class="pt-0">
+          <v-row class="ml-1">
+            <v-col cols="6">
               <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection"
                 return-object outlined dense hide-details :no-data-text="noDataText">
               </v-select>
             </v-col>
-            <v-col cols="1" class="pt-0" :height="tableHeight">
-              <CreateCommand @commandChange="loadCommands"/>
+            <v-col class="ml-1" cols="2">
+              <CreateCommand @commandChange="loadCommands" class="mt-0"/>
             </v-col>
             </v-row>
-              <v-simple-table :height="tableHeight" class="mr-1">
+              <v-simple-table class="mr-1">
               <template v-slot:default>
                 <thead>
                   <tr>
@@ -38,11 +37,10 @@
         </v-col>
         <transition name="fade">
           <v-col v-if="commandData">
-            <CommandOutput :commandData="commandData" class="mr-1" style="position: absolute; bottom: 12px; top: 12px; right: 12px; left: 50%"/>
+            <CommandOutput :commandData="commandData" class="mr-1"/>
           </v-col>
         </transition>
       </v-row>
-    </v-card>
   </v-container>
 </template>
 
@@ -97,10 +95,6 @@ export default {
   created() {
     this.loadConnections();
     this.loadCommands();
-  },
-  updated() {
-    let selectionRowHeight = this.$refs.selRow.clientHeight;
-    this.tableHeight = this.$store.getters.contentHeight-selectionRowHeight-16+"px";
   },
 }
 </script>

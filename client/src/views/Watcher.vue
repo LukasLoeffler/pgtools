@@ -1,6 +1,5 @@
 <template>
   <v-container fluid class="pa-2" v-resize="updateTableHeight">
-    <v-card :height="$store.getters.contentHeight">
       <v-row ref="filterRow" align="center" justify="center" class="px-4">
         <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
         <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
@@ -46,7 +45,6 @@
       </v-data-table>
       <!-- Detail table to view data. -->
       <DetailTable ref="detailTable" v-show="detailActive" :table="table" :dataId="dataId" :rootVisible="detailActive"/>
-    </v-card>
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
       Invalid filter. Database and table are required. Automatically resetting to event mode now.
     </v-snackbar>

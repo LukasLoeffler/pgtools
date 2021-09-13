@@ -1,14 +1,34 @@
 <template>
   <div>
-    <v-btn x-small v-if="numberActiveConnections > 0" color="green" @click="gotoConnections">Connections: [{{numberActiveConnections}}]</v-btn>
-    <v-btn x-small v-else color="red" @click="gotoConnections">No listener active</v-btn>
-    <v-tooltip bottom color="cyan">
-      <template v-slot:activator="{ on }">
-        <v-btn x-small class="ml-2" :color="getColor()" v-on="on">WS</v-btn>
-      </template>
-      <span v-if="$store.getters.websocketStatus">Websocket: Connected</span>
-      <span v-else>Websocket: Not Connected</span>
-    </v-tooltip>
+    <v-chip
+      class="ma-1"
+      :color="numberActiveConnections > 0 ? 'green' : 'red'"
+      text-color="white"
+      label
+    >
+      Connections
+      <v-avatar
+        right
+        :class="numberActiveConnections > 0 ? 'green darken-4' : 'red darken-4'"
+      >
+        {{numberActiveConnections}}
+      </v-avatar>
+    </v-chip>
+
+    <v-chip
+      class="ma-1"
+      :color="$store.getters.websocketStatus > 0 ? 'green' : 'red'"
+      text-color="white"
+      label
+    >
+      Backend
+      <v-avatar
+        right
+        :class="$store.getters.websocketStatus > 0 ? 'green darken-4' : 'red darken-4'"
+      >
+        <v-icon>{{$store.getters.websocketStatus > 0 ? 'mdi-server-plus' : 'mdi-server-minus'}}</v-icon>
+      </v-avatar>
+    </v-chip>
   </div>
 </template>
 
