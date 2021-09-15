@@ -15,7 +15,7 @@ Vue.use(VueRouter)
   },
   {
     path: '/hooks',
-    name: 'hooks',
+    name: 'Hooks',
     component: Hooks
   },
   {
@@ -35,3 +35,4 @@ const router = new VueRouter({
 })
 
 export default router
+
