@@ -4,16 +4,13 @@
       <template v-slot:activator="{ on, attrs }">
         <div>
           <v-btn text x-small class="mr-1" :disabled="connected" @click="connect">
-            <unicon name="play" v-if="!connected" fill="green"></unicon>
-            <unicon name="play" v-else fill="grey"></unicon>
+            <unicon name="play" :fill="!connected ? 'green' : 'grey'"></unicon>
           </v-btn>
           <v-btn text x-small class="mr-1" :disabled="!connected" @click="disconnect">
-            <unicon name="pause-circle" v-if="connected" fill="red"></unicon>
-            <unicon name="pause-circle" v-else fill="grey"></unicon>
+            <unicon name="pause-circle" :fill="connected ? 'red' : 'grey'"></unicon>
           </v-btn>
           <v-btn text x-small class="mr-1" :disabled="connected" v-bind="attrs" v-on="on">
-            <unicon name="pen" v-if="!connected" fill="#46a2d4"></unicon>
-            <unicon name="pen" v-else fill="grey"></unicon>
+            <unicon name="pen" :fill="!connected ? '#46a2d4' : 'grey'"></unicon>
           </v-btn>
         </div>
       </template>
