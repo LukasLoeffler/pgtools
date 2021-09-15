@@ -7,7 +7,7 @@
         height="50"
       >
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-      <v-toolbar-title>{{ currentRoute || 'pgtools'}}</v-toolbar-title>
+      <v-toolbar-title>{{ $route.name || 'pgtools'}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <ConnectionIndicator/>
     </v-app-bar>
@@ -68,6 +68,7 @@ import ConnectionIndicator from './components/ConnectionIndicator.vue';
 
 export default {
   name: 'App',
+  components: {ConnectionIndicator },
   data: function () {
     return {
       drawer: false,
@@ -96,7 +97,6 @@ export default {
       ]
     }
   },
-  components: {ConnectionIndicator },
 };
 </script>
 
