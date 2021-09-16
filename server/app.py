@@ -45,5 +45,4 @@ def index():
     return app.send_static_file("index.html")
 
 if __name__ == '__main__':
-    # webbrowser.open_new_tab("http://localhost:5000")
-    socketio.run(app)
+    socketio.run(app, host="0.0.0.0", debug=True)
