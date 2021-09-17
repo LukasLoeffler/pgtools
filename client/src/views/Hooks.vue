@@ -1,11 +1,10 @@
 <template id="temp">
-  <v-sheet>
+  <v-container fluid>
     <v-row class="ma-1">
       <v-col cols="4">
         <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense hide-details
         class="mr-2" :no-data-text="noDataText"></v-select>
       </v-col>
-
       <v-col cols="2">
         <v-btn class="ma-1" color="success" :loading="loading" @click="save" :disabled="!saveRequired">
           SAVE
@@ -20,7 +19,6 @@
       fixed-header
       :headers="headers"
       :items="tables"
-      class="elevation-1"
       :hide-default-footer="true"
       :disable-pagination="true"
       :no-data-text="noDataText"
@@ -28,13 +26,13 @@
       show-select
       v-model="selected"
       :single-select="false"
-      height="calc(100vh - 130px)"
+      height="calc(100vh - 150px)"
     >
       <template v-slot:[`item.trigger_enabled`]="{ item }">
         <v-simple-checkbox v-model="item.trigger_enabled" @click="requireSave"></v-simple-checkbox>
       </template>
     </v-data-table>
-  </v-sheet>
+  </v-container>
 </template>
 
 <script>
