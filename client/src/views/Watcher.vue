@@ -12,15 +12,15 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
-              <unicon name="filter-slash"></unicon>
+            <v-btn icon class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
+              <v-icon>mdi-filter-remove-outline</v-icon>
             </v-btn>
           </template>
           <span>Reset filter</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn class="mr-2" v-on="on"  @click="clearEvents()">
+            <v-btn icon class="mr-2" v-on="on"  @click="clearEvents()">
               <v-icon color="red">mdi-delete-sweep-outline</v-icon>
             </v-btn>
           </template>

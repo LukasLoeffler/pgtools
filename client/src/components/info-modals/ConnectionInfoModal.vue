@@ -2,8 +2,8 @@
   <v-row>
     <v-dialog v-model="dialog" max-width="500px">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn blue="blue" class="mr-1" text v-bind="attrs" v-on="on">
-          <unicon name="info-circle" fill="blue"/>
+        <v-btn blue="blue" class="mr-3" icon v-bind="attrs" v-on="on">
+          <v-icon color="blue">mdi-information-outline</v-icon>
         </v-btn>
       </template>
       <v-card>
@@ -22,7 +22,7 @@
           <v-row dense>
             <v-col cols="1">
               <v-btn x-small text>
-                <unicon name="play" fill="green"></unicon>
+                <v-icon color="green">mdi-play-circle-outline</v-icon>
               </v-btn>
             </v-col>
             <v-col cols="11">
@@ -33,7 +33,7 @@
           <v-row dense>
             <v-col cols="1">
               <v-btn x-small text>
-                <unicon name="pause-circle" fill="red"></unicon>
+                <v-icon color="red">mdi-pause-circle-outline</v-icon>
               </v-btn>
             </v-col>
             <v-col cols="11">
@@ -44,7 +44,7 @@
           <v-row dense>
             <v-col cols="1">
               <v-btn x-small text>
-                <unicon name="pen" fill="#46a2d4"/>
+                <v-icon color="#46a2d4">mdi-pencil-circle-outline</v-icon>
               </v-btn>
             </v-col>
             <v-col cols="11">

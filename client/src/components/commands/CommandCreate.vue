@@ -2,8 +2,8 @@
   <v-row>
     <v-dialog v-model="dialog" max-width="600px">
       <template v-slot:activator="{ on, attrs }">
-          <v-btn color="green" class="mr-1" outlined v-bind="attrs" v-on="on">
-            <unicon name="channel-add" fill="green"></unicon>
+          <v-btn color="green" class="mr-1" outlined v-bind="attrs" v-on="on" right>
+            <v-icon>mdi-playlist-plus</v-icon>
           </v-btn>
       </template>
       <v-card>

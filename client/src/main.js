@@ -2,8 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
-import Unicon from 'vue-unicons'
-import { uniFilter, uniFilterSlash, uniPlay, uniPen, uniPauseCircle, uniChannelAdd, uniLink, uniLinkBroken, uniTrashAlt, uniInfoCircle  } from 'vue-unicons/src/icons'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vuetify from './plugins/vuetify';
@@ -15,12 +13,6 @@ var socket = io.connect("http://localhost:5000");
 Vue.use(Vuetify)
 Vue.use(Vuex)
 
-
-Unicon.add([uniFilter, uniFilterSlash, uniPlay, uniPen, uniPauseCircle, uniChannelAdd, uniLink, uniLinkBroken, uniTrashAlt, uniInfoCircle  ])
-Vue.use(Unicon, {
-  height: 20,
-  width: 20
-})
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios

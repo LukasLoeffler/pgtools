@@ -3,14 +3,14 @@
     <v-dialog v-model="dialog" max-width="600px">
       <template v-slot:activator="{ on, attrs }">
         <div>
-          <v-btn text x-small class="mr-1" :disabled="connected" @click="connect">
-            <unicon name="play" :fill="!connected ? 'green' : 'grey'"></unicon>
+          <v-btn icon small class="mr-1" :disabled="connected" @click="connect">
+            <v-icon :color="!connected ? 'green' : 'grey'">mdi-play-circle-outline</v-icon>
           </v-btn>
-          <v-btn text x-small class="mr-1" :disabled="!connected" @click="disconnect">
-            <unicon name="pause-circle" :fill="connected ? 'red' : 'grey'"></unicon>
+          <v-btn icon small class="mr-1" :disabled="!connected" @click="disconnect">
+            <v-icon :color="connected ? 'red' : 'grey'">mdi-pause-circle-outline</v-icon>
           </v-btn>
-          <v-btn text x-small class="mr-1" :disabled="connected" v-bind="attrs" v-on="on">
-            <unicon name="pen" :fill="!connected ? '#46a2d4' : 'grey'"></unicon>
+          <v-btn icon small class="mr-1" :disabled="connected" v-bind="attrs" v-on="on">
+            <v-icon :color="!connected ? '#46a2d4' : 'grey'">mdi-pencil-circle-outline</v-icon>
           </v-btn>
         </div>
       </template>
