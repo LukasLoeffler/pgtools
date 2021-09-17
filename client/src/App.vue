@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import ConnectionIndicator from './components/ConnectionIndicator.vue';
+import ConnectionIndicator from './components/connection/ConnectionIndicator.vue';
 
 export default {
   name: 'App',

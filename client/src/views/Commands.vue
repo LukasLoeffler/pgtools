@@ -9,7 +9,7 @@
               </v-select>
             </v-col>
             <v-col class="ml-1" cols="2">
-              <CreateCommand @commandChange="loadCommands" class="mt-0"/>
+              <CommandCreate @commandChange="loadCommands" class="mt-0"/>
             </v-col>
           </v-row>
           <CommandTable
@@ -30,13 +30,13 @@
 </template>
 
 <script>
-import CreateCommand from "../components/CreateCommand";
-import CommandOutput from "../components/CommandOutput";
+import CommandCreate from "../components/commands/CommandCreate";
+import CommandOutput from "../components/commands/CommandOutput";
 import CommandTable from '../components/commands/CommandTable.vue';
 
 export default {
   name: 'Commands',
-  components: { CreateCommand, CommandOutput, CommandTable },
+  components: { CommandCreate, CommandOutput, CommandTable },
   
   data: () => {
     return {

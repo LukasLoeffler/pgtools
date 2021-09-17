@@ -41,9 +41,9 @@
 </template>
 
 <script>
-import ManageDatabaseConnection from "../components/ManageDatabaseConnection";
-import CreateDatabaseConnection from "../components/CreateDatabaseConnection";
-import ConnectionInfoModal from "../components/info_modals/ConnectionInfoModal"
+import ManageDatabaseConnection from "../components/connection/ManageDatabaseConnection.vue";
+import CreateDatabaseConnection from "../components/connection/CreateDatabaseConnection.vue";
+import ConnectionInfoModal from "../components/info-modals/ConnectionInfoModal"
 
 export default {
   name: 'Connections',

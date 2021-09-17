@@ -48,7 +48,7 @@
 <script>
 
 export default {
-  name: 'CreateCommand',
+  name: 'CommandCreate',
   components: { },
   data () {
     return {

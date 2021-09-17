@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import ConnectionEditor from "../components/ConnectionEditor";
+import ConnectionEditor from "./ConnectionEditor";
 
 
 export default {

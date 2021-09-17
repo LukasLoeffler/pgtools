@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import ManageCommand from '../ManageCommand.vue'
+import ManageCommand from './ManageCommand.vue'
 
 export default {
     name: 'CommandTable',

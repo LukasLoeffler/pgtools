@@ -29,7 +29,7 @@
 
 
 <script>
-import ConnectionEditor from "../components/ConnectionEditor";
+import ConnectionEditor from "./ConnectionEditor.vue";
 
 export default {
   name: 'CreateDatabaseConnection',

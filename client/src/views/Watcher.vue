@@ -70,7 +70,7 @@
 
 
 <script>
-import DetailTable from "../components/DetailTable";
+import DetailTable from "../components/watcher/DetailTable";
 
 export default {
   name: 'Watcher',
