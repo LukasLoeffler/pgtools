@@ -66,7 +66,6 @@ export default {
   },
   methods: {
     loadData() {
-      console.log("Loading Data");
       let url = `${this.baseUrl}/connection/all`;
       this.$http.get(url)
       .then((result) => {
