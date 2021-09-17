@@ -142,10 +142,14 @@ class Connection:
 
     
     def get_all_tables_with_trigger(self):
-        self.cur.execute("""SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'""")
+        self.cur.execute("""SELECT * FROM information_schema.tables WHERE table_schema = 'public'""")
         table_list = []
         for table in self.cur.fetchall():
-            table_name = table[0]
+
+            table_schema = table[1]
+            table_name = table[2]
+            table_type = table[3]
+
             exec_string = f"""
             SELECT event_manipulation
             FROM  information_schema.triggers
@@ -155,7 +159,12 @@ class Connection:
             self.cur.execute(exec_string)
             result = self.cur.fetchall()
 
-            table = {"table": table_name, "trigger_enabled": bool(result)}  
+            table = {
+                "table": table_name, 
+                "type": table_type,
+                "schema": table_schema,
+                "trigger_enabled": bool(result)
+            }  
             table_list.append(table)
         
         return table_list

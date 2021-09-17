@@ -65,14 +65,20 @@ export default {
       let url = `${this.baseUrl}/connection/${this.connection.id}/listen-start`
       this.$http.get(url)
       .then((result) => this.loadStatus())
-      .catch((error) => this.alert = true);
+      .catch((error) => {
+        this.alert = true
+        this.loadStatus();
+      });
     },
     disconnect() {
       let url = `${this.baseUrl}/connection/${this.connection.id}/listen-end`
       this.$http.get(url)
-      .then((result) => {
-        this.loadStatus();
-      });
+        .then((result) => {
+          this.loadStatus();
+        })
+        .catch(error => {
+          this.loadStatus();
+        });
     },
     loadStatus() {
       let url = `${this.baseUrl}/connection/${this.connection.id}/status`

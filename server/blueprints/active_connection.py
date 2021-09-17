@@ -65,16 +65,23 @@ def listen_start(id):
     print("Listen Start")
     connection = Connection.query.get(id)
     if is_connection_valid(connection):
-        pg_connection = connection.get_connection()
-        pg_connection.create_general_notify_event()
-        pg_connection.cur.execute("LISTEN pg_change;")
 
-        connection.pg_connection = pg_connection
-        active_connections.append(connection)
-        thread = threading.Thread(target=events, args=(pg_connection,))
-        thread.start()
+        if not any(active_connection.id == connection.id for active_connection in active_connections):
+            pg_connection = connection.get_connection()
+            pg_connection.create_general_notify_event()
+            pg_connection.cur.execute("LISTEN pg_change;")
 
-        return jsonify({"status": "success"})
+            connection.pg_connection = pg_connection
+            active_connections.append(connection)
+            thread = threading.Thread(target=events, args=(pg_connection,))
+            thread.start()
+
+            return jsonify({"status": "success"})
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Connection already active"
+        }), 400
     else:
         return jsonify({
             "status": "error",
@@ -85,6 +92,7 @@ def listen_start(id):
 @active_connection_bpr.route("/connection/<int:id>/listen-end")
 def listen_end(id):
     conEnd = None
+
     # Connection has to be fetched from active connections
     # Running connection are not persisted in the database
     for connection in active_connections:
