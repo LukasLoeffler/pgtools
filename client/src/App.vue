@@ -16,9 +16,10 @@
       v-model="drawer"
       absolute
       temporary
+      dark
     >
-      <v-list>
-        <v-list-item>
+      <v-list dark>
+        <v-list-item dark>
           <v-list-item-avatar color="teal lighten-2" size="56">
             <v-img :src="'/favicon.ico'" width="30" height="30" contain></v-img>
           </v-list-item-avatar>
@@ -43,8 +44,13 @@
         nav
         dense
       >
-        <v-list-item-group v-model="currentRoute" color="primary">
-          <v-list-item v-for="(item, i) in sidebarElements" :key="i" :value="item.name" :to="item.path">
+        <v-list-item-group v-model="currentRoute">
+          <v-list-item 
+            v-for="(item, i) in sidebarElements" 
+            :key="i" 
+            :value="item.name" 
+            :to="item.path"
+          >
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
             </v-list-item-icon>
