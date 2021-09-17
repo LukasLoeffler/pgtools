@@ -1,7 +1,7 @@
 <template>
-  <v-container fluid class="p-0 mb-5">
+  <v-container fluid class="p-0 mb-5" v-resize="updateTableDistance">
       <v-row>
-        <v-col>
+        <v-col class="px-0">
           <v-row class="ml-1">
             <v-col cols="6">
               <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection"
@@ -11,29 +11,14 @@
             <v-col class="ml-1" cols="2">
               <CreateCommand @commandChange="loadCommands" class="mt-0"/>
             </v-col>
-            </v-row>
-              <v-simple-table class="mr-1">
-              <template v-slot:default>
-                <thead>
-                  <tr>
-                    <th>Index</th>
-                    <th>Name</th>
-                    <th>Severity</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="command in commands" :key="command.id">
-                    <td>{{command.id}}</td>
-                    <td>{{command.name}}</td>
-                    <td><v-chip label small :color="getSeverityColor(command.severity)">{{ command.severity }}</v-chip></td>
-                    <td>
-                      <ManageCommand :command="command" :connection="selectedConnection" @commandChange="loadCommands" @commandData="handleCommandData"/>
-                    </td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>    
+          </v-row>
+          <CommandTable
+            :height="`calc(100vh - ${tableDistanceTop}px)`"
+            :commands="commands" 
+            :selectedConnection="selectedConnection"                         
+            @commandChange="loadCommands" 
+            @commandData="handleCommandData"
+          />
         </v-col>
         <transition name="fade">
           <v-col v-if="commandData">
@@ -46,12 +31,12 @@
 
 <script>
 import CreateCommand from "../components/CreateCommand";
-import ManageCommand from "../components/ManageCommand";
 import CommandOutput from "../components/CommandOutput";
+import CommandTable from '../components/commands/CommandTable.vue';
 
 export default {
   name: 'Commands',
-  components: { CreateCommand, ManageCommand, CommandOutput },
+  components: { CreateCommand, CommandOutput, CommandTable },
   
   data: () => {
     return {
@@ -61,7 +46,7 @@ export default {
       baseUrl: `http://${location.hostname}:5000`,
       commands: [],
       commandData: null,
-      tableHeight: null
+      tableDistanceTop: 115
     }
   },
   methods: {
@@ -90,7 +75,13 @@ export default {
     },
     handleCommandData(data) {
       this.commandData = data;
-    }
+    },
+    updateTableDistance() {
+      try {
+        // 24px for padding of col
+        this.tableDistanceTop = this.$refs.table.getBoundingClientRect().top + 24;
+      } catch {/** */}
+    },
   },
   created() {
     this.loadConnections();

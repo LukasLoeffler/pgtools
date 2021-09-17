@@ -22,7 +22,15 @@
             <ConnectionInfoModal style="float: right;" class="mt-1"/>
           </v-col>
         </v-row>
-        <v-data-table fixed-header :headers="headers" :items="connections" :search="search">
+        <v-data-table 
+          fixed-header 
+          :headers="headers"
+          :disable-pagination="true"
+          :hide-default-footer="true"
+          :items="connections" 
+          :search="search"
+          height="calc(100vh - 120px)"
+        >
           <template v-slot:[`item.status`]="{ item }">
             <ManageDatabaseConnection :connection="item" @connectionDelete="loadData"/>
           </template>
@@ -58,6 +66,7 @@ export default {
   },
   methods: {
     loadData() {
+      console.log("Loading Data");
       let url = `${this.baseUrl}/connection/all`;
       this.$http.get(url)
       .then((result) => {

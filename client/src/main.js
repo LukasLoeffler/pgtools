@@ -31,7 +31,6 @@ const store = new Vuex.Store({
     activeConnections: [],
     events: [],
     eventSelection: [],
-    contentHeight: "90vh",
     websocketStatus: false
   },
   mutations: {
@@ -52,10 +51,6 @@ const store = new Vuex.Store({
     addEvent(state, event) {
       state.events = [event, ...state.events];
     },
-    setHeight(state, height) {
-      height = height-25;
-      state.contentHeight = height;
-    },
     setWebsocketStatus(state, status) {
       state.websocketStatus = status;
     },
@@ -70,9 +65,6 @@ const store = new Vuex.Store({
     },
     events: state => {
       return state.events;
-    },
-    contentHeight: state => {
-      return state.contentHeight;
     },
     websocketStatus: state => {
       return state.websocketStatus;

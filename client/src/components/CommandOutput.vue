@@ -1,5 +1,5 @@
 <template>
-  <v-card dark class="ml-1" ref="cardMain">
+  <v-card dark class="ml-1" ref="cardMain" style="height: calc(100vh - 75px)">
 
     <v-card-title ref="cardTitle">
       <v-row class="ml-1">
@@ -16,7 +16,7 @@
     </v-card-title>
 
     <v-card-text class="pr-1">
-      <v-simple-table v-if="toggle_one === 1 && commandData.payload" :height="tableHeight">
+      <v-simple-table v-if="toggle_one === 1 && commandData.payload" >
         <thead>
           <tr>
             <th v-for="object in Object.entries(commandData.payload[0])" :key="object[0]">

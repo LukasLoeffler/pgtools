@@ -27,22 +27,39 @@
           <span>Clear events</span>
         </v-tooltip>
       </v-row>
-      <v-divider></v-divider>
-      <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
-      :disable-pagination="true" multi-sort :sort-by="['index']" :sort-desc="[true]" :search="database" :custom-filter="filter" :height="tableHeight">
-        <template v-slot:[`item.action`]="{ item }">
-          <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
-        </template>
-        <template v-slot:[`item.database`]="{ item }">
-          <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
-        </template>
-        <template v-slot:[`item.table`]="{ item }">
-          <a @click="setTableFilter(item)">{{ item.table }}</a>
-        </template>
-        <template v-slot:[`item.data.id`]="{ item }">
-          <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
-        </template>
-      </v-data-table>
+      <v-row>
+        <v-col ref="table">
+          <v-data-table
+            v-if="!detailActive" 
+            id="event-table" 
+            item-key="index" 
+            fixed-header 
+            :headers="headers" 
+            :items="$store.getters.events" 
+            :hide-default-footer="true" 
+            :disable-pagination="true" 
+            multi-sort 
+            :sort-by="['index']" 
+            :sort-desc="[true]" 
+            :search="database" 
+            :custom-filter="filter" 
+            :height="`calc(100vh - ${tableDistanceTop}px)`"
+          >
+            <template v-slot:[`item.action`]="{ item }">
+              <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
+            </template>
+            <template v-slot:[`item.database`]="{ item }">
+              <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
+            </template>
+            <template v-slot:[`item.table`]="{ item }">
+              <a @click="setTableFilter(item)">{{ item.table }}</a>
+            </template>
+            <template v-slot:[`item.data.id`]="{ item }">
+              <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
       <!-- Detail table to view data. -->
       <DetailTable ref="detailTable" v-show="detailActive" :table="table" :dataId="dataId" :rootVisible="detailActive"/>
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
@@ -78,7 +95,7 @@ export default {
       keys: [],
       alert: false,
       filterBarHeight: null,
-      tableHeight: "80vh"
+      tableDistanceTop: 115
     }
   },
   methods: {
@@ -126,13 +143,6 @@ export default {
       this.database = null;
       this.detailActive = false;
     },
-    updateTableHeight() {
-      let contentHeight = this.$store.getters.contentHeight;
-      if (Number.isInteger(contentHeight) && this.$refs.filterRow) {
-        let filterBarHeight = this.$refs.filterRow.clientHeight;
-        this.tableHeight = this.$store.getters.contentHeight - filterBarHeight + "px";
-      }
-    },
     clearEvents() {
       let url = `http://${location.hostname}:5000/connection/reset-index`;
       this.$http.get(url)
@@ -140,19 +150,18 @@ export default {
         console.log(result);
         this.$store.commit("resetEvents");
       });
-    }
+    },
+    updateTableHeight() {
+      try {
+        // 24px for padding of col
+        this.tableDistanceTop = this.$refs.table.getBoundingClientRect().top + 24;
+      } catch {/** */}
+    },
   },
   computed: {
     events() {
       return this.$store.getters.events;
     },
-    contentHeight() {
-      let height = window.innerHeight+'px';
-      return height;
-    },
-  },
-  updated() {
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 1);
   },
   watch: {
     detailActive(newState, oldState) {
@@ -183,7 +192,3 @@ export default {
   }
 }
 </script>
-
-
-<style scoped>
-</style>

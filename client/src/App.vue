@@ -9,7 +9,7 @@
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ $route.name || 'pgtools'}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <ConnectionIndicator/>
+      <ConnectionIndicator id="dbCon"/>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -122,11 +122,7 @@ export default {
   color: white;
 }
 
-#dbCon {
-  float: right;
-}
-
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 500px) {
   #dbCon {
     display: none;
   }
