@@ -2,8 +2,25 @@
   <v-container fluid>
     <v-row class="ma-1">
       <v-col cols="4">
-        <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection" return-object outlined dense hide-details
-        class="mr-2" :no-data-text="noDataText"></v-select>
+        <v-select 
+          :items="connections" 
+          label="Connection" 
+          item-text="name" 
+          v-model="selectedConnection" 
+          return-object 
+          outlined 
+          dense 
+          hide-details
+          class="mr-2" 
+        >
+          <template v-slot:no-data>
+            <v-list-item>
+              <v-list-item-action-text>
+                No active connection. Go to <router-link to="/">Connections</router-link> and activate at least one
+              </v-list-item-action-text>
+            </v-list-item>
+          </template>
+        </v-select>
       </v-col>
       <v-col cols="2">
         <v-btn class="ma-1" color="success" :loading="loading" @click="save" :disabled="!saveRequired">
@@ -15,13 +32,11 @@
       </v-col>
     </v-row>
     <v-data-table
-      v-if="tables"
       fixed-header
       :headers="headers"
       :items="tables"
       :hide-default-footer="true"
       :disable-pagination="true"
-      :no-data-text="noDataText"
       item-key="table"
       show-select
       v-model="selected"
@@ -30,6 +45,13 @@
     >
       <template v-slot:[`item.trigger_enabled`]="{ item }">
         <v-simple-checkbox v-model="item.trigger_enabled" @click="requireSave"></v-simple-checkbox>
+      </template>
+      <template v-slot:no-data>
+        <v-list-item class="justify-center">
+          <v-list-item-action-text>
+            No active connection. Go to <router-link to="/">Connections</router-link> and activate at least one
+          </v-list-item-action-text>
+        </v-list-item>
       </template>
     </v-data-table>
   </v-container>
@@ -54,8 +76,6 @@ export default {
       loading: false,
       connections: [],
       selectedConnection: null,
-      ctrlBarHeight: 0,
-      noDataText: "No active connection. Go to Connections and activate at least one",
       selected: []
     }
   },
