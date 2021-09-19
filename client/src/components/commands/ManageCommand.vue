@@ -2,15 +2,15 @@
   <v-row>
     <v-dialog v-model="dialog" max-width="600px">
       <template v-slot:activator="{ on, attrs }">
-        <div>
-          <v-btn text x-small class="mr-1" @click="executeCommand">
-            <unicon name="play" fill="green"></unicon>
+        <div style="display: flex; flex-direction: row; flex-wrap: nowrap">
+          <v-btn icon class="mr-1" @click="executeCommand">
+            <v-icon color="green">mdi-play-circle-outline</v-icon>
           </v-btn>
-          <v-btn text x-small class="mr-1" v-bind="attrs" v-on="on">
-            <unicon name="pen" fill="#46a2d4"></unicon>
+          <v-btn icon class="mr-1" v-bind="attrs" v-on="on">
+            <v-icon color="#46a2d4">mdi-pencil-circle-outline</v-icon>
           </v-btn>
-          <v-btn text x-small class="mr-1" @click="deleteCommand">
-            <unicon name="trash-alt" fill="red"></unicon>
+          <v-btn icon class="mr-1" @click="deleteCommand">
+            <v-icon color="red">mdi-delete-circle-outline</v-icon>
           </v-btn>
         </div>
       </template>

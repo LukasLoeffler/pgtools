@@ -1,6 +1,5 @@
 <template>
   <v-container fluid class="pa-2" v-resize="updateTableHeight">
-    <v-card :height="$store.getters.contentHeight">
       <v-row ref="filterRow" align="center" justify="center" class="px-4">
         <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
         <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
@@ -13,40 +12,56 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
-              <unicon name="filter-slash"></unicon>
+            <v-btn icon class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
+              <v-icon>mdi-filter-remove-outline</v-icon>
             </v-btn>
           </template>
           <span>Reset filter</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn class="mr-2" v-on="on"  @click="clearEvents()">
+            <v-btn icon class="mr-2" v-on="on"  @click="clearEvents()">
               <v-icon color="red">mdi-delete-sweep-outline</v-icon>
             </v-btn>
           </template>
           <span>Clear events</span>
         </v-tooltip>
       </v-row>
-      <v-divider></v-divider>
-      <v-data-table v-if="!detailActive" id="event-table" item-key="index" fixed-header :headers="headers" :items="$store.getters.events" :hide-default-footer="true" 
-      :disable-pagination="true" multi-sort :sort-by="['index']" :sort-desc="[true]" :search="database" :custom-filter="filter" :height="tableHeight">
-        <template v-slot:[`item.action`]="{ item }">
-          <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
-        </template>
-        <template v-slot:[`item.database`]="{ item }">
-          <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
-        </template>
-        <template v-slot:[`item.table`]="{ item }">
-          <a @click="setTableFilter(item)">{{ item.table }}</a>
-        </template>
-        <template v-slot:[`item.data.id`]="{ item }">
-          <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
-        </template>
-      </v-data-table>
+      <v-row>
+        <v-col ref="table">
+          <v-data-table
+            v-if="!detailActive" 
+            id="event-table" 
+            item-key="index" 
+            fixed-header 
+            :headers="headers" 
+            :items="$store.getters.events" 
+            :hide-default-footer="true" 
+            :disable-pagination="true" 
+            multi-sort 
+            :sort-by="['index']" 
+            :sort-desc="[true]" 
+            :search="database" 
+            :custom-filter="filter" 
+            :height="`calc(100vh - ${tableDistanceTop}px)`"
+          >
+            <template v-slot:[`item.action`]="{ item }">
+              <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
+            </template>
+            <template v-slot:[`item.database`]="{ item }">
+              <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
+            </template>
+            <template v-slot:[`item.table`]="{ item }">
+              <a @click="setTableFilter(item)">{{ item.table }}</a>
+            </template>
+            <template v-slot:[`item.data.id`]="{ item }">
+              <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
       <!-- Detail table to view data. -->
       <DetailTable ref="detailTable" v-show="detailActive" :table="table" :dataId="dataId" :rootVisible="detailActive"/>
-    </v-card>
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
       Invalid filter. Database and table are required. Automatically resetting to event mode now.
     </v-snackbar>
@@ -55,7 +70,7 @@
 
 
 <script>
-import DetailTable from "../components/DetailTable";
+import DetailTable from "../components/watcher/DetailTable";
 
 export default {
   name: 'Watcher',
@@ -80,7 +95,7 @@ export default {
       keys: [],
       alert: false,
       filterBarHeight: null,
-      tableHeight: "80vh"
+      tableDistanceTop: 115
     }
   },
   methods: {
@@ -128,13 +143,6 @@ export default {
       this.database = null;
       this.detailActive = false;
     },
-    updateTableHeight() {
-      let contentHeight = this.$store.getters.contentHeight;
-      if (Number.isInteger(contentHeight) && this.$refs.filterRow) {
-        let filterBarHeight = this.$refs.filterRow.clientHeight;
-        this.tableHeight = this.$store.getters.contentHeight - filterBarHeight + "px";
-      }
-    },
     clearEvents() {
       let url = `http://${location.hostname}:5000/connection/reset-index`;
       this.$http.get(url)
@@ -142,19 +150,18 @@ export default {
         console.log(result);
         this.$store.commit("resetEvents");
       });
-    }
+    },
+    updateTableHeight() {
+      try {
+        // 24px for padding of col
+        this.tableDistanceTop = this.$refs.table.getBoundingClientRect().top + 24;
+      } catch {/** */}
+    },
   },
   computed: {
     events() {
       return this.$store.getters.events;
     },
-    contentHeight() {
-      let height = window.innerHeight+'px';
-      return height;
-    },
-  },
-  updated() {
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 1);
   },
   watch: {
     detailActive(newState, oldState) {
@@ -185,7 +192,3 @@ export default {
   }
 }
 </script>
-
-
-<style scoped>
-</style>

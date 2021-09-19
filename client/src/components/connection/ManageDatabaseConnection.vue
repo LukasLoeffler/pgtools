@@ -3,17 +3,14 @@
     <v-dialog v-model="dialog" max-width="600px">
       <template v-slot:activator="{ on, attrs }">
         <div>
-          <v-btn text x-small class="mr-1" :disabled="connected" @click="connect">
-            <unicon name="play" v-if="!connected" fill="green"></unicon>
-            <unicon name="play" v-else fill="grey"></unicon>
+          <v-btn icon small class="mr-1" :disabled="connected" @click="connect">
+            <v-icon :color="!connected ? 'green' : 'grey'">mdi-play-circle-outline</v-icon>
           </v-btn>
-          <v-btn text x-small class="mr-1" :disabled="!connected" @click="disconnect">
-            <unicon name="pause-circle" v-if="connected" fill="red"></unicon>
-            <unicon name="pause-circle" v-else fill="grey"></unicon>
+          <v-btn icon small class="mr-1" :disabled="!connected" @click="disconnect">
+            <v-icon :color="connected ? 'red' : 'grey'">mdi-pause-circle-outline</v-icon>
           </v-btn>
-          <v-btn text x-small class="mr-1" :disabled="connected" v-bind="attrs" v-on="on">
-            <unicon name="pen" v-if="!connected" fill="#46a2d4"></unicon>
-            <unicon name="pen" v-else fill="grey"></unicon>
+          <v-btn icon small class="mr-1" :disabled="connected" v-bind="attrs" v-on="on">
+            <v-icon :color="!connected ? '#46a2d4' : 'grey'">mdi-pencil-circle-outline</v-icon>
           </v-btn>
         </div>
       </template>
@@ -36,7 +33,7 @@
 </template>
 
 <script>
-import ConnectionEditor from "../components/ConnectionEditor";
+import ConnectionEditor from "./ConnectionEditor";
 
 
 export default {
@@ -68,14 +65,20 @@ export default {
       let url = `${this.baseUrl}/connection/${this.connection.id}/listen-start`
       this.$http.get(url)
       .then((result) => this.loadStatus())
-      .catch((error) => this.alert = true);
+      .catch((error) => {
+        this.alert = true
+        this.loadStatus();
+      });
     },
     disconnect() {
       let url = `${this.baseUrl}/connection/${this.connection.id}/listen-end`
       this.$http.get(url)
-      .then((result) => {
-        this.loadStatus();
-      });
+        .then((result) => {
+          this.loadStatus();
+        })
+        .catch(error => {
+          this.loadStatus();
+        });
     },
     loadStatus() {
       let url = `${this.baseUrl}/connection/${this.connection.id}/status`

@@ -1,38 +1,108 @@
 <template>  
   <v-app id="app">
-    <div id="nav" ref="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/connections">Connections</router-link> |
-      <router-link to="/triggers">Triggers</router-link> |
-      <router-link to="/watcher">Watcher</router-link> |
-      <router-link to="/commands">Commands</router-link>
+    <v-sheet>
+      <v-app-bar
+        color="primary"
+        dark
+        height="50"
+      >
+      <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+      <v-toolbar-title>{{ $route.name || 'pgtools'}}</v-toolbar-title>
+      <v-spacer></v-spacer>
       <ConnectionIndicator id="dbCon"/>
-    </div>
+    </v-app-bar>
+
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      temporary
+      dark
+    >
+      <v-list dark>
+        <v-list-item dark>
+          <v-list-item-avatar color="teal lighten-2" size="56">
+            <v-img :src="'/favicon.ico'" width="30" height="30" contain></v-img>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title class="text-h6">pgtools</v-list-item-title>
+            <v-list-item-subtitle>
+              <a
+                style="text-decoration: none"
+                class="caption" 
+                href="https://github.com/LukasLoeffler/pgtools"
+              >pgtools Github
+                <v-icon color="blue" x-small>mdi-open-in-new</v-icon>
+              </a>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+        <ConnectionIndicator class="my-1"/>
+      <v-divider></v-divider>
+      <v-list
+        nav
+        dense
+      >
+        <v-list-item-group v-model="currentRoute">
+          <v-list-item 
+            v-for="(item, i) in sidebarElements" 
+            :key="i" 
+            :value="item.name" 
+            :to="item.path"
+          >
+            <v-list-item-icon>
+              <v-icon v-text="item.icon"></v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title v-text="item.name"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
+
     <router-view></router-view>
+    </v-sheet>
   </v-app>
 </template>
 
 <script>
-import ConnectionIndicator from "./components/ConnectionIndicator";
+import ConnectionIndicator from './components/connection/ConnectionIndicator.vue';
 
 export default {
   name: 'App',
+  components: {ConnectionIndicator },
   data: function () {
-    return {}
-  },
-  components: { ConnectionIndicator },
-  methods: {
-    setInnerHeight(innerHeight) {
-      this.$store.commit('setHeight', innerHeight);
+    return {
+      drawer: false,
+      currentRoute: null,
+      sidebarElements: [
+        {
+          name: "Connections",
+          path: "/",
+          icon: "mdi-connection"
+        },
+        {
+          name: "Hooks",
+          path: "/hooks",
+          icon: "mdi-hook"
+        },
+        {
+          name: "Watcher",
+          path: "/watcher",
+          icon: "mdi-microscope"
+        },
+        {
+          name: "Commands",
+          path: "/commands",
+          icon: "mdi-console"
+        }
+      ]
     }
   },
-  mounted() {
-      let navbarHeight = this.$refs.nav.clientHeight;
-      this.setInnerHeight(window.innerHeight-navbarHeight);
-      window.addEventListener('resize', () => {
-        this.setInnerHeight(window.innerHeight-navbarHeight);
-      })
-  }
 };
 </script>
 
@@ -56,10 +126,6 @@ export default {
 
 #nav a.router-link-exact-active {
   color: white;
-}
-
-#dbCon {
-  float: right;
 }
 
 @media only screen and (max-width: 500px) {

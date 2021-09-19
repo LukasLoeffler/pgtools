@@ -2,8 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
-import Unicon from 'vue-unicons'
-import { uniFilter, uniFilterSlash, uniPlay, uniPen, uniPauseCircle, uniChannelAdd, uniLink, uniLinkBroken, uniTrashAlt, uniInfoCircle  } from 'vue-unicons/src/icons'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vuetify from './plugins/vuetify';
@@ -16,12 +14,6 @@ Vue.use(Vuetify)
 Vue.use(Vuex)
 
 
-Unicon.add([uniFilter, uniFilterSlash, uniPlay, uniPen, uniPauseCircle, uniChannelAdd, uniLink, uniLinkBroken, uniTrashAlt, uniInfoCircle  ])
-Vue.use(Unicon, {
-  height: 20,
-  width: 20
-})
-
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 
@@ -31,7 +23,6 @@ const store = new Vuex.Store({
     activeConnections: [],
     events: [],
     eventSelection: [],
-    contentHeight: "90vh",
     websocketStatus: false
   },
   mutations: {
@@ -52,10 +43,6 @@ const store = new Vuex.Store({
     addEvent(state, event) {
       state.events = [event, ...state.events];
     },
-    setHeight(state, height) {
-      height = height-25;
-      state.contentHeight = height;
-    },
     setWebsocketStatus(state, status) {
       state.websocketStatus = status;
     },
@@ -70,9 +57,6 @@ const store = new Vuex.Store({
     },
     events: state => {
       return state.events;
-    },
-    contentHeight: state => {
-      return state.contentHeight;
     },
     websocketStatus: state => {
       return state.websocketStatus;
