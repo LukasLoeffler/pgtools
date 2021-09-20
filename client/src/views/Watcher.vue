@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="pa-2" v-resize="updateTableHeight">
-      <v-row ref="filterRow" align="center" justify="center" class="px-4">
+      <v-row ref="filterRow" align="center" justify="center" class="pa-4">
         <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
         <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
         <v-text-field class="ml-1 mr-1" v-model="dataId" append-icon="mdi-magnify" outlined dense hide-details label="Data ID" placeholder="Data ID" :disabled="!table"/>
