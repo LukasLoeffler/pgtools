@@ -27,4 +27,9 @@ Names used
 
 Create Connection > Activate Connection > Avtivate Table Watch > Watch Tables
 
-**MOST IMPORTANT: If you have any questions, just ask!**
+
+![](resource/image/connections.png)
+
+
+![](resource/image/hooks.png)
+
