@@ -27,9 +27,15 @@ Names used
 
 Create Connection > Activate Connection > Avtivate Table Watch > Watch Tables
 
-
+Connections: Create new and manage existing database connections
 ![](resource/image/connections.png)
 
-
+Hooks: Define which database tables should be watched by the application
 ![](resource/image/hooks.png)
+
+Watcher: View events in realtime, filter events by database, table and id
+![](resource/image/watcher.png)
+
+Watcher: Check in the detail event view which data have been changed
+![](resource/image/watcher_detail.png)
 
