@@ -1,8 +1,9 @@
 FROM python:3.9-slim
 
-RUN apt-get update \
-    && apt-get -y install libpq-dev gcc \
-    && pip install psycopg2
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+&& rm -rf /var/lib/apt/lists/*
 
 RUN pip install pipenv
 
