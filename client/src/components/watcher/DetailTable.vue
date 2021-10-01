@@ -12,7 +12,7 @@
         <tr v-for="event in filteredEvents" :key="event.id">
           <td>{{event.index}}</td>
           <td>
-            <OperationBadge :item="event" />
+            <OperationBadge :event="event" />
           </td>
           <td v-for="object in Object.entries(event.data)" :key="object[0]" v-bind:class="{ changed: changed(event, object[0]) }">
             <v-tooltip v-if="changed(event, object[0])" left>
