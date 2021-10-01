@@ -39,7 +39,7 @@
                         <tr
                             v-for="(diffPr, index) of getObjectDifferences()" 
                             :key="index"
-                            :style="{'background-color': (diffPr.old === diffPr.new || !wholeObject) ? 'white': '#ffcccb'}"
+                            :style="{'background-color': (diffPr.old === diffPr.new || !wholeObject) ? 'white': 'rgba(134, 206, 250, 0.2)'}"
                         >
                             <td>{{ diffPr.key }}</td>
                             <td>{{ diffPr.old }}</td>
