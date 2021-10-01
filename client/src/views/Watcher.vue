@@ -31,7 +31,6 @@
         <v-col ref="table">
           <v-data-table
             v-if="!detailActive" 
-            id="event-table" 
             item-key="index" 
             fixed-header 
             :headers="headers" 
@@ -44,9 +43,12 @@
             :search="database" 
             :custom-filter="filter" 
             :height="`calc(100vh - ${tableDistanceTop}px)`"
+            :single-expand="singleExpand"
+            :expanded.sync="expanded"
+            show-expand
           >
             <template v-slot:[`item.action`]="{ item }">
-              <v-chip label small :color="getColor(item.action)">{{ item.action }}</v-chip>
+              <OperationBadge :event="item"/>
             </template>
             <template v-slot:[`item.database`]="{ item }">
               <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
@@ -57,11 +59,28 @@
             <template v-slot:[`item.data.id`]="{ item }">
               <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
             </template>
+            <template v-slot:expanded-item="{ headers, item }">
+              <td :colspan="headers.length" class="px-1">
+                <v-sheet>
+                  <ObjectDiff 
+                    class="my-2" 
+                    :item="item"
+                  />
+                </v-sheet>
+              </td>
+            </template>
           </v-data-table>
         </v-col>
       </v-row>
       <!-- Detail table to view data. -->
-      <DetailTable ref="detailTable" v-show="detailActive" :table="table" :dataId="dataId" :rootVisible="detailActive"/>
+      <DetailTable 
+        ref="detailTable" 
+        v-show="detailActive" 
+        :table="table" 
+        :dataId="dataId" 
+        :rootVisible="detailActive"
+        :height="`calc(100vh - ${tableDistanceTop}px)`"
+      />
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
       Invalid filter. Database and table are required. Automatically resetting to event mode now.
     </v-snackbar>
@@ -70,11 +89,13 @@
 
 
 <script>
+import OperationBadge from '../components/ubiquitous/OperationBadge.vue';
 import DetailTable from "../components/watcher/DetailTable";
+import ObjectDiff from '../components/watcher/ObjectDiff.vue';
 
 export default {
   name: 'Watcher',
-  components: { DetailTable },
+  components: { DetailTable, ObjectDiff, OperationBadge },
   data: function () {
     return {
       search: "",
@@ -86,6 +107,8 @@ export default {
         { text: 'Data ID', value: 'data.id' },
         { text: 'Operation', value: 'action' }
       ],
+      expanded: [],
+      singleExpand: false,
       headersDetailed: [],
       table: null,
       dataId: null,
@@ -99,12 +122,6 @@ export default {
     }
   },
   methods: {
-    getColor (action) {
-      if (action === "INSERT") return "green";
-      if (action === "UPDATE") return "orange";
-      if (action === "DELETE") return "red";
-      else return 'blue';
-    },
     filter(value, search, item) {
       if(this.database && this.table && this.dataId && this.database === item.database && this.table === item.table && this.dataId === item.data.id) {
         return true;
@@ -132,6 +149,7 @@ export default {
       this.table = item.table;
       this.dataId = item.data.id;
     },
+
     /**
      * Resets the current filter (table and dataId)
      * Refreshes the table and the selection accordingly by calling the respective method.
