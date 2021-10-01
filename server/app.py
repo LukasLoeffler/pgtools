@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask.json import jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -42,7 +43,16 @@ with app.app_context():
 
 @app.route("/")
 def index():
-    return app.send_static_file("index.html")
+    return jsonify({"status": "running"})
 
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", debug=True)
+
+    prod = True if "MODE" in os.environ and os.environ["MODE"] == "PROD" else False
+
+    if prod:
+        print("STARTING in PROD MODE")
+        from waitress import serve
+        serve(app, host="0.0.0.0", port=5000)
+    else:
+        print("STARTING in DEV MODE")
+        socketio.run(app, host="0.0.0.0", debug=True)

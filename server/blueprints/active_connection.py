@@ -61,7 +61,6 @@ def is_connection_valid(connection):
 
 @active_connection_bpr.route("/connection/<int:id>/listen-start")
 def listen_start(id):
-    print("Listen Start")
     connection = Connection.query.get(id)
     if is_connection_valid(connection):
 
