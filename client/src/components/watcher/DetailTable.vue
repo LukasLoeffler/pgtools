@@ -1,5 +1,5 @@
 <template>
-  <v-simple-table height="80vh">
+  <v-simple-table :height="height">
     <template v-slot:default>
       <thead>
         <tr>
@@ -11,7 +11,9 @@
       <tbody>
         <tr v-for="event in filteredEvents" :key="event.id">
           <td>{{event.index}}</td>
-          <td><v-chip label small :color="getColor(event.action)">{{ event.action }}</v-chip></td>
+          <td>
+            <OperationBadge :item="event" />
+          </td>
           <td v-for="object in Object.entries(event.data)" :key="object[0]" v-bind:class="{ changed: changed(event, object[0]) }">
             <v-tooltip v-if="changed(event, object[0])" left>
               <template v-slot:activator="{ on, attrs }">
@@ -32,7 +34,9 @@
 </template>
 
 <script>
+import OperationBadge from '../ubiquitous/OperationBadge.vue';
 export default {
+  components: { OperationBadge },
   name: 'DetailTable',
   data: function () {
     return {
@@ -40,7 +44,7 @@ export default {
       filteredEvents: [],
     }
   },
-  props: ["table", "dataId", "rootVisible"],
+  props: ["table", "dataId", "rootVisible", "height"],
   computed: {
     events() {
       return this.$store.getters.events;
@@ -68,12 +72,6 @@ export default {
       if (this.filteredEvents[0]) {
         this.headersDetailed = Object.keys(this.filteredEvents[0]["data"]);
       }
-    },
-    getColor (action) {
-      if (action === "INSERT") return "green";
-      if (action === "UPDATE") return "orange";
-      if (action === "DELETE") return "red";
-      else return 'blue';
     },
     changed(item, key) {
       if(item["data"][key] === item["data_old"][key] || item["action"] === "INSERT" || item["action"] === "DELETE") {
