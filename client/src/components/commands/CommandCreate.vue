@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-dialog v-model="dialog" max-width="600px">
+    <v-dialog v-model="dialog" max-width="90%">
       <template v-slot:activator="{ on, attrs }">
           <v-btn color="green" class="mr-1" outlined v-bind="attrs" v-on="on" right>
             <v-icon>mdi-playlist-plus</v-icon>
@@ -17,7 +17,12 @@
                 <v-text-field label="Name" v-model="name" :rules="[rules.required]"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field label="Query" v-model="query_string" :rules="[rules.required]"></v-text-field>
+                <v-textarea 
+                  label="Query"
+                  filled
+                  v-model="query_string" 
+                  :rules="[rules.required]"
+                ></v-textarea>
               </v-col>
               <v-col cols="12">
                 <v-select :items="severities" label="Severty" v-model="selectedSeverity" chips>
