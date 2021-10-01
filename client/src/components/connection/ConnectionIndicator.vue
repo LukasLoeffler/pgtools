@@ -2,9 +2,11 @@
   <div>
     <v-chip
       class="ma-1"
-      :color="numberActiveConnections > 0 ? 'green' : 'red'"
       text-color="white"
       label
+      :color="numberActiveConnections > 0 ? 'green' : 'red'"
+      :style="{ 'cursor': (clickable && !connectionsOpen()) ? 'pointer' : 'default'}"
+      @click="gotoConnections"
     >
       Connections
       <v-avatar
@@ -35,18 +37,29 @@
 <script>
 export default {
   name: 'ConnectionIndicator',
+  props: {
+    clickable: {
+      type: Boolean,
+      default: false
+    }
+  },
   data: function () {
-    return {}
+    return {
+      connectionPath: "/"
+    }
   },
   computed: {
     numberActiveConnections() {
       return this.$store.getters.activeConnections.length;
-    }
+    },
   },
   methods: {
+    connectionsOpen() {
+      return (this.$route.path === this.connectionPath);
+    },
     gotoConnections() {
-      if (this.$route.path !== '/connections') {
-        this.$router.push('connections');
+      if (!this.connectionsOpen()) {
+        this.$router.push(this.connectionPath);
       }
     },
     getColor() {
@@ -56,7 +69,3 @@ export default {
   }
 }
 </script>
-
-
-<style scoped>
-</style>
