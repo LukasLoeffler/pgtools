@@ -4,19 +4,19 @@
         <div v-if="item.action === 'UPDATE'">
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                    elevation="2"
-                    fab
-                    fixed
-                    right
-                    x-small
-                    color="blue"
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="wholeObject = !wholeObject"
-                >
-                    <v-icon color="white">{{(wholeObject) ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
-                </v-btn>
+                    <v-btn
+                        elevation="2"
+                        fab
+                        fixed
+                        right
+                        x-small
+                        color="blue"
+                        v-bind="attrs"
+                        v-on="on"
+                        @click="wholeObject = !wholeObject"
+                    >
+                        <v-icon color="white">{{(wholeObject) ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+                    </v-btn>
                 </template>
                 <span>{{(wholeObject) ? 'Only differences' : 'Whole object' }}</span>
             </v-tooltip>
@@ -55,12 +55,19 @@
 <script>
 export default {
     props: {
-        item: Object
+        item: Object,
+        autoExpand: {
+            type: Boolean,
+            default: false
+        }
     },
     data: () => {
         return {
             wholeObject: false
         }
+    },
+    created() {
+        if (this.autoExpand) this.wholeObject = true;
     },
     methods: {
         getAllKeys() {

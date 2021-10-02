@@ -1,36 +1,55 @@
 <template>
   <v-container fluid class="pa-2" v-resize="updateTableHeight">
       <v-row ref="filterRow" align="center" justify="center" class="pa-4">
-        <v-text-field class="ml-1 mr-1" v-model="database" append-icon="mdi-magnify" outlined dense hide-details label="Database" placeholder="Database"/>
-        <v-text-field class="ml-1 mr-1" v-model="table" append-icon="mdi-magnify" outlined dense hide-details label="Table" placeholder="Table" :disabled="!database"/>
-        <v-text-field class="ml-1 mr-1" v-model="dataId" append-icon="mdi-magnify" outlined dense hide-details label="Data ID" placeholder="Data ID" :disabled="!table"/>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-switch class="ml-1 mr-1" v-on="on" inset v-model="detailActive" :disabled="!table&&!dataId">Toggle detail mode</v-switch>
-          </template>
-          <span>Toggle detail mode</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon class="mr-2" v-on="on" @click="resetFilter()" :disabled="!table&&!dataId&&!database">
-              <v-icon>mdi-filter-remove-outline</v-icon>
-            </v-btn>
-          </template>
-          <span>Reset filter</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon class="mr-2" v-on="on"  @click="clearEvents()">
-              <v-icon color="red">mdi-delete-sweep-outline</v-icon>
-            </v-btn>
-          </template>
-          <span>Clear events</span>
-        </v-tooltip>
+
+        <transition name="fade">
+          <FilterField label="Database" placeholder="Database" v-model="database"/>
+        </transition>
+        <transition name="fade">
+          <FilterField label="Table" placeholder="Table" v-model="table"  v-if="database"/>
+        </transition>
+        <transition name="fade">
+          <FilterField label="Data ID" placeholder="Data ID" v-model="dataId" v-if="table"/>
+        </transition>
+
+        <v-sheet
+          outlined
+          rounded
+          class="d-flex"
+          style="border-color: rgba(0,0,0,.42); padding: 1px 1px 1px 1px"
+        >
+          <transition name="fade">
+            <v-tooltip bottom v-if="table || dataId || database">
+              <template v-slot:activator="{ on }">
+                <v-btn 
+                  icon 
+                  v-on="on" 
+                  @click="resetFilter()"
+                >
+                  <v-icon>mdi-filter-remove-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Reset filter</span>
+            </v-tooltip>
+          </transition>
+          <watcher-settings @settingsChange="applySettings"></watcher-settings>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn 
+                icon 
+                v-on="on"
+                @click="clearEvents()"
+              >
+                <v-icon>mdi-delete-sweep-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Clear events</span>
+          </v-tooltip>
+        </v-sheet>
       </v-row>
       <v-row>
         <v-col ref="table">
           <v-data-table
-            v-if="!detailActive" 
             item-key="index" 
             fixed-header 
             :headers="headers" 
@@ -39,11 +58,11 @@
             :disable-pagination="true" 
             multi-sort 
             :sort-by="['index']" 
-            :sort-desc="[true]" 
+            :sort-desc="true" 
             :search="database" 
             :custom-filter="filter" 
             :height="`calc(100vh - ${tableDistanceTop}px)`"
-            :single-expand="singleExpand"
+            :single-expand="false"
             :expanded.sync="expanded"
             show-expand
           >
@@ -65,6 +84,7 @@
                   <ObjectDiff 
                     class="my-2" 
                     :item="item"
+                    :autoExpand="detailActive"
                   />
                 </v-sheet>
               </td>
@@ -72,15 +92,6 @@
           </v-data-table>
         </v-col>
       </v-row>
-      <!-- Detail table to view data. -->
-      <DetailTable 
-        ref="detailTable" 
-        v-show="detailActive" 
-        :table="table" 
-        :dataId="dataId" 
-        :rootVisible="detailActive"
-        :height="`calc(100vh - ${tableDistanceTop}px)`"
-      />
     <v-snackbar v-model="alert" color="warning" timeout="3000" top>
       Invalid filter. Database and table are required. Automatically resetting to event mode now.
     </v-snackbar>
@@ -90,12 +101,13 @@
 
 <script>
 import OperationBadge from '../components/ubiquitous/OperationBadge.vue';
-import DetailTable from "../components/watcher/DetailTable";
+import FilterField from '../components/watcher/FilterField.vue';
 import ObjectDiff from '../components/watcher/ObjectDiff.vue';
+import WatcherSettings from '../components/watcher/WatcherSettings.vue';
 
 export default {
   name: 'Watcher',
-  components: { DetailTable, ObjectDiff, OperationBadge },
+  components: { ObjectDiff, OperationBadge, WatcherSettings, FilterField },
   data: function () {
     return {
       search: "",
@@ -108,12 +120,12 @@ export default {
         { text: 'Operation', value: 'action' }
       ],
       expanded: [],
-      singleExpand: false,
       headersDetailed: [],
       table: null,
       dataId: null,
       database: null,
       detailActive: false,
+      autoExpandNew: false,
       filteredEvents: [],
       keys: [],
       alert: false,
@@ -175,6 +187,10 @@ export default {
         this.tableDistanceTop = this.$refs.table.getBoundingClientRect().top + 24;
       } catch {/** */}
     },
+    applySettings(settings) {
+      this.detailActive = settings.detailActive;
+      this.autoExpandNew = settings.autoExpandNew;
+    }
   },
   computed: {
     events() {
@@ -182,15 +198,9 @@ export default {
     },
   },
   watch: {
-    detailActive(newState, oldState) {
-      if (newState && !this.table && !this.dataId) {
-        this.alert = true;
-      }
-    },
-    alert(newState){
-      if (!newState) {
-        this.detailActive = false;
-      }
+    events(newEventList){
+      // this.expanded.push(newEventList[0])
+      if (this.autoExpandNew) this.expanded = [newEventList[0]];
     },
     // Resetting dataId if no table is selected
     table() {
@@ -206,7 +216,16 @@ export default {
         this.dataId = null;
         this.detailActive = false;
       }
-    }
+    },
   }
 }
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+</style>
