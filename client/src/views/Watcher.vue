@@ -75,8 +75,8 @@
             <template v-slot:[`item.table`]="{ item }">
               <a @click="setTableFilter(item)">{{ item.table }}</a>
             </template>
-            <template v-slot:[`item.data.id`]="{ item }">
-              <a @click="setDataIdFilter(item)">{{ item.data.id }}</a>
+            <template v-slot:[`item.id`]="{ item }">
+              <a @click="setDataIdFilter(item)">{{ item.id }}</a>
             </template>
             <template v-slot:expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="px-1">
@@ -116,7 +116,7 @@ export default {
         { text: 'Time', value: 'timestamp' },
         { text: 'Database', value: 'database' },
         { text: 'Table', value: 'table' },
-        { text: 'Data ID', value: 'data.id' },
+        { text: 'Data ID', value: 'id' },
         { text: 'Operation', value: 'action' }
       ],
       expanded: [],
@@ -135,7 +135,7 @@ export default {
   },
   methods: {
     filter(value, search, item) {
-      if(this.database && this.table && this.dataId && this.database === item.database && this.table === item.table && this.dataId === item.data.id) {
+      if(this.database && this.table && this.dataId && this.database === item.database && this.table === item.table && this.dataId == item.data.id) {
         return true;
       }
       if(this.database && this.table && !this.dataId && this.database === item.database && this.table === item.table) {
@@ -159,7 +159,7 @@ export default {
     setDataIdFilter(item) {
       this.database = item.database;
       this.table = item.table;
-      this.dataId = item.data.id;
+      this.dataId = item.id;
     },
 
     /**
@@ -177,7 +177,6 @@ export default {
       let url = `http://${location.hostname}:5000/connection/reset-index`;
       this.$http.get(url)
       .then((result) => {
-        console.log(result);
         this.$store.commit("resetEvents");
       });
     },

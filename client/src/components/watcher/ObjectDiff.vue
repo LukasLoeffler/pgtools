@@ -1,55 +1,51 @@
 <template>
-    <div>
-
-        <div v-if="item.action === 'UPDATE'">
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        elevation="2"
-                        fab
-                        fixed
-                        right
-                        x-small
-                        color="blue"
-                        v-bind="attrs"
-                        v-on="on"
-                        @click="wholeObject = !wholeObject"
-                    >
-                        <v-icon color="white">{{(wholeObject) ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
-                    </v-btn>
-                </template>
-                <span>{{(wholeObject) ? 'Only differences' : 'Whole object' }}</span>
-            </v-tooltip>
-            <v-simple-table>
-                <template v-slot:default>
-                    <thead>
-                        <tr>
-                            <th>
-                                Key
-                            </th>
-                            <th>
-                                OldValue
-                            </th>
-                            <th>
-                                NewValue
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(diffPr, index) of getObjectDifferences()" 
-                            :key="index"
-                            :style="{'background-color': (diffPr.old === diffPr.new || !wholeObject) ? 'white': 'rgba(134, 206, 250, 0.2)'}"
-                        >
-                            <td>{{ diffPr.key }}</td>
-                            <td>{{ diffPr.old }}</td>
-                            <td>{{ diffPr.new }}</td>
-                        </tr>
-                    </tbody>
-                </template>
-            </v-simple-table>
-        </div>
-    </div>
+    <v-simple-table>
+        <template v-slot:default>
+            <thead>
+                <tr>
+                    <th>
+                        Key
+                    </th>
+                    <th>
+                        OldValue
+                    </th>
+                    <th class="d-flex justify-space-between">
+                        <span class="align-self-center">NewValue</span>
+                        
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                    class="align-self-center"
+                                    right
+                                    elevation="2"
+                                    fab
+                                    x-small
+                                    color="blue"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    @click="wholeObject = !wholeObject"
+                                >
+                                    <v-icon color="white">{{(wholeObject) ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+                                </v-btn>
+                            </template>
+                            <span>{{(wholeObject) ? 'Only differences' : 'Whole object' }}</span>
+                        </v-tooltip>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    v-for="(diffPr, index) of getObjectDifferences()" 
+                    :key="index"
+                    :style="{'background-color': (diffPr.old === diffPr.new) ? 'white': 'rgba(134, 206, 250, 0.2)'}"
+                >
+                    <td>{{ diffPr.key }}</td>
+                    <td>{{ String(diffPr.old) }}</td>
+                    <td>{{ String(diffPr.new) }}</td>
+                </tr>
+            </tbody>
+        </template>
+    </v-simple-table>
 </template>
 
 <script>
@@ -73,13 +69,14 @@ export default {
         getAllKeys() {
             const keysOld = Object.keys(this.item.data_old);
             const keysNew = Object.keys(this.item.data);
-            return [...new Set([...keysOld ,...keysNew])];
+            return [...new Set([...keysOld ,...keysNew])].filter(key => key !== "");
         },
         getDiffKeys() {
-            return Object.keys(this.diff(this.item.data_old, this.item.data));
+            return Object.keys(this.diff(this.item.data_old, this.item.data)).filter(key => key !== "")
         },
         getObjectDifferences() {
             const keysToShowDiffFor = (this.wholeObject) ? this.getAllKeys(): this.getDiffKeys();
+
             return keysToShowDiffFor.map(key => {
                 return {
                     key: key,

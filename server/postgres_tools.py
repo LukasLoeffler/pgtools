@@ -39,7 +39,7 @@ class Connection:
             payload_old = json_build_object('', '');
 
             IF (TG_OP = 'DELETE') THEN
-            payload_new = row_to_json(OLD);
+            payload_old = row_to_json(OLD);
             END IF;
 
             IF (TG_OP = 'INSERT') THEN
