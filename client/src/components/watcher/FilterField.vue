@@ -1,13 +1,13 @@
 <template>
-    <v-text-field 
+    <v-text-field
         :value="value"
-        :label="label" 
+        :label="label"
         :placeholder="placeholder"
         @input="input"
-        class="ml-1 mr-1" 
-        outlined 
-        dense 
-        hide-details 
+        class="mx-1"
+        outlined
+        dense
+        hide-details
         clearable
     />
 </template>
