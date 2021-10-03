@@ -29,7 +29,7 @@
           />
         </transition>
 
-        <ButtonContainer>
+        <ButtonContainer outlined>
           <transition name="fade">
             <v-tooltip bottom v-if="table || dataId || database">
               <template v-slot:activator="{ on }">
