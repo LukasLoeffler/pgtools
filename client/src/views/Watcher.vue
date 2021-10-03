@@ -1,23 +1,35 @@
 <template>
   <v-container fluid class="pa-2" v-resize="updateTableHeight">
-      <v-row ref="filterRow" align="center" justify="center" class="pa-4">
+      <v-row
+        align="center" 
+        justify="center" 
+        class="pa-4"
+      >
+        <transition name="fade">
+          <FilterField 
+            label="Database" 
+            placeholder="Database" 
+            v-model="database"
+          />
+        </transition>
+        <transition name="fade">
+          <FilterField 
+            label="Table" 
+            placeholder="Table" 
+            v-model="table"  
+            v-if="database"
+          />
+        </transition>
+        <transition name="fade">
+          <FilterField 
+            label="Data ID" 
+            placeholder="Data ID" 
+            v-model="dataId" 
+            v-if="table"
+          />
+        </transition>
 
-        <transition name="fade">
-          <FilterField label="Database" placeholder="Database" v-model="database"/>
-        </transition>
-        <transition name="fade">
-          <FilterField label="Table" placeholder="Table" v-model="table"  v-if="database"/>
-        </transition>
-        <transition name="fade">
-          <FilterField label="Data ID" placeholder="Data ID" v-model="dataId" v-if="table"/>
-        </transition>
-
-        <v-sheet
-          outlined
-          rounded
-          class="d-flex"
-          style="border-color: rgba(0,0,0,.42); padding: 1px 1px 1px 1px"
-        >
+        <ButtonContainer>
           <transition name="fade">
             <v-tooltip bottom v-if="table || dataId || database">
               <template v-slot:activator="{ on }">
@@ -45,18 +57,19 @@
             </template>
             <span>Clear events</span>
           </v-tooltip>
-        </v-sheet>
+        </ButtonContainer>
       </v-row>
       <v-row>
         <v-col ref="table">
           <v-data-table
             item-key="index" 
             fixed-header 
+            show-expand
+            multi-sort 
             :headers="headers" 
             :items="$store.getters.events" 
             :hide-default-footer="true" 
             :disable-pagination="true" 
-            multi-sort 
             :sort-by="['index']" 
             :sort-desc="true" 
             :search="database" 
@@ -64,7 +77,6 @@
             :height="`calc(100vh - ${tableDistanceTop}px)`"
             :single-expand="false"
             :expanded.sync="expanded"
-            show-expand
           >
             <template v-slot:[`item.action`]="{ item }">
               <OperationBadge :event="item"/>
@@ -100,6 +112,7 @@
 
 
 <script>
+import ButtonContainer from '../components/ubiquitous/ButtonContainer.vue';
 import OperationBadge from '../components/ubiquitous/OperationBadge.vue';
 import FilterField from '../components/watcher/FilterField.vue';
 import ObjectDiff from '../components/watcher/ObjectDiff.vue';
@@ -107,10 +120,9 @@ import WatcherSettings from '../components/watcher/WatcherSettings.vue';
 
 export default {
   name: 'Watcher',
-  components: { ObjectDiff, OperationBadge, WatcherSettings, FilterField },
+  components: { ObjectDiff, OperationBadge, WatcherSettings, FilterField, ButtonContainer },
   data: function () {
     return {
-      search: "",
       headers: [
         { text: 'Index', value: 'index' },
         { text: 'Time', value: 'timestamp' },
