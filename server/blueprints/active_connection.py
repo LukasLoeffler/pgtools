@@ -23,7 +23,7 @@ active_connections = []  # Array containing all currently active connections
 
 def notify(payload):
     global event_index
-    payload["timestamp"] = datetime.now().isoformat()[11:-4]
+    payload["timestamp"] = datetime.now().isoformat()
     payload["index"] = event_index
     socketio.emit('databaseEvent', payload)
     event_index += 1
@@ -35,7 +35,6 @@ def events(connection):
         #If connection is closed from outside an exception is thrown on connection.poll()
         try:
             if select.select([con],[],[],5) != ([],[],[]):
-                seconds_passed = 0
                 con.poll()
                 con.commit()
                 while con.notifies:
@@ -62,7 +61,6 @@ def is_connection_valid(connection):
 
 @active_connection_bpr.route("/connection/<int:id>/listen-start")
 def listen_start(id):
-    print("Listen Start")
     connection = Connection.query.get(id)
     if is_connection_valid(connection):
 
@@ -97,13 +95,17 @@ def listen_end(id):
     # Running connection are not persisted in the database
     for connection in active_connections:
         if connection.id == id:
-            connection.pg_connection.cur.execute("UNLISTEN pg_change;")
-            connection.pg_connection.cur.close()
-            connection.pg_connection.con.close()
-            conEnd = connection
-
+            try:
+                connection.pg_connection.cur.execute("UNLISTEN pg_change;")
+                connection.pg_connection.cur.close()
+                connection.pg_connection.con.close()
+                conEnd = connection
+                active_connections.remove(connection)
+            except Exception as e:
+                print(str(e))
+                active_connections.remove(connection)
+    
     if conEnd:
-        active_connections.remove(conEnd)
         return jsonify({
             "status": "success",
             "message": f"Connection {conEnd.id} successfully unlistened."

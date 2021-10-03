@@ -31,27 +31,29 @@ class Connection:
         exec_string = """
         CREATE OR REPLACE FUNCTION notify_event() RETURNS TRIGGER AS $$
         DECLARE
-            record RECORD;
             payload JSON;
+            payload_new JSON;
             payload_old JSON;
         BEGIN
+            payload_new = json_build_object('', '');
             payload_old = json_build_object('', '');
+
             IF (TG_OP = 'DELETE') THEN
-            record = OLD;
+            payload_old = row_to_json(OLD);
             END IF;
 
             IF (TG_OP = 'INSERT') THEN
-            record = NEW;
+            payload_new = row_to_json(NEW);
             END IF;
 
             IF (TG_OP = 'UPDATE') THEN
-            record = NEW;
+            payload_new = row_to_json(NEW);
             payload_old = row_to_json(OLD);
             END IF;
 
             payload = json_build_object('table', TG_TABLE_NAME,
                             'action', TG_OP,
-                            'data', row_to_json(record),
+                            'data', payload_new,
                             'data_old', payload_old);
 
 

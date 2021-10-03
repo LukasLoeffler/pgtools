@@ -2,7 +2,7 @@
   <v-row>
     <v-dialog v-model="dialog" max-width="600px">
       <template v-slot:activator="{ on, attrs }">
-        <div>
+        <ButtonContainer>
           <v-btn icon small class="mr-1" :disabled="connected" @click="connect">
             <v-icon :color="!connected ? 'green' : 'grey'">mdi-play-circle-outline</v-icon>
           </v-btn>
@@ -12,7 +12,7 @@
           <v-btn icon small class="mr-1" :disabled="connected" v-bind="attrs" v-on="on">
             <v-icon :color="!connected ? '#46a2d4' : 'grey'">mdi-pencil-circle-outline</v-icon>
           </v-btn>
-        </div>
+        </ButtonContainer>
       </template>
       <v-card>
         <v-card-title>
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import ButtonContainer from '../ubiquitous/ButtonContainer.vue';
 import ConnectionEditor from "./ConnectionEditor";
 
 
@@ -49,7 +50,7 @@ export default {
     }
   },
   components: {
-    ConnectionEditor
+    ConnectionEditor, ButtonContainer
   },
   props: {
     connection: Object

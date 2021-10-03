@@ -9,7 +9,7 @@
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ $route.name || 'pgtools'}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <ConnectionIndicator id="dbCon"/>
+      <ConnectionIndicator id="dbCon" :clickable="true"/>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -38,7 +38,7 @@
         </v-list-item>
       </v-list>
       <v-divider></v-divider>
-        <ConnectionIndicator class="my-1"/>
+        <ConnectionIndicator class="my-1" :clickable="true"/>
       <v-divider></v-divider>
       <v-list
         nav
@@ -139,6 +139,7 @@ export default {
 /* width */
 ::-webkit-scrollbar {
   width: 7px;
+  height: 7px;
 }
 
 /* Track */

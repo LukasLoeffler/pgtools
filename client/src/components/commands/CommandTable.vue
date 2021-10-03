@@ -17,7 +17,9 @@
                 <tr v-for="command in commands" :key="command.id">
                 <td>{{command.id}}</td>
                 <td>{{command.name}}</td>
-                <td><v-chip label small :color="getSeverityColor(command.severity)">{{ command.severity }}</v-chip></td>
+                <td>
+                    <v-chip label small :color="getColorForSeverity(command.severity)">{{ command.severity }}</v-chip>
+                </td>
                 <td>
                     <ManageCommand 
                         :command="command" 
@@ -33,22 +35,18 @@
 
 <script>
 import ManageCommand from './ManageCommand.vue'
+import colorHelper from '../../mixins/color-helper.js'
 
 export default {
     name: 'CommandTable',
     components: {  ManageCommand },
+    mixins: [colorHelper],
     props: {
         commands: Array,
         selectedConnection: Object,
         height: String
     },
     methods: {
-        getSeverityColor(severity) {
-            if (severity === "LOW") return "green"
-            if (severity === "MEDIUM") return "yellow"
-            if (severity === "HIGH") return "orange"
-            if (severity === "CRITICAL") return "red"
-        },
         handleCommandChange(data) {
             this.$emit("commandChange", data)
         },

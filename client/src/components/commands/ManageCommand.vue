@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-dialog v-model="dialog" max-width="600px">
+    <v-dialog v-model="dialog" max-width="90%">
       <template v-slot:activator="{ on, attrs }">
         <div style="display: flex; flex-direction: row; flex-wrap: nowrap">
           <v-btn icon class="mr-1" @click="executeCommand">
@@ -25,7 +25,12 @@
                 <v-text-field label="Name" v-model="localCommand.name" :rules="[rules.required]"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field label="Query" v-model="localCommand.query_string" :rules="[rules.required]"></v-text-field>
+                <v-textarea 
+                  label="Query"
+                  filled
+                  v-model="localCommand.query_string" 
+                  :rules="[rules.required]"
+                ></v-textarea>
               </v-col>
               <v-col cols="12">
                 <v-select :items="severities" label="Severty" v-model="localCommand.severity" chips>

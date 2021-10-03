@@ -4,6 +4,8 @@ services:
   backend:
     container_name: pgtools-backend
     image: pgtools-backend:latest
+    environment:
+      - MODE=PROD
     build: ./server
     ports:
       - "5000:5000"

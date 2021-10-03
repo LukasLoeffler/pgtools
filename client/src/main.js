@@ -73,6 +73,7 @@ axios.get(url)
 });
 
 socket.on("databaseEvent", event => {
+  event.id = event.data.id || event.data_old.id;
   store.commit('addEvent', event)
 });
 
