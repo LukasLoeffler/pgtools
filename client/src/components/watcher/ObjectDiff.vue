@@ -15,6 +15,7 @@
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn
+                                    v-if="item.action ==='UPDATE'"
                                     class="align-self-center"
                                     right
                                     elevation="2"
