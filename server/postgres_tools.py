@@ -51,10 +51,14 @@ class Connection:
             payload_old = row_to_json(OLD);
             END IF;
 
-            payload = json_build_object('table', TG_TABLE_NAME,
-                            'action', TG_OP,
-                            'data', payload_new,
-                            'data_old', payload_old);
+            payload = json_build_object(
+                'table', TG_TABLE_NAME,
+                'action', TG_OP,
+                'data', payload_new,
+                'data_old', payload_old,
+                'database', current_database(),
+                'timestamp', transaction_timestamp()
+            );
 
 
             PERFORM pg_notify('pg_change', payload::text);
