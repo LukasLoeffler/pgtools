@@ -15,9 +15,6 @@ export default {
             type: Boolean,
             default: false
         }
-    },
-    created() {
-        console.log(this._props);
     }
 }
 </script>
