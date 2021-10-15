@@ -7,3 +7,4 @@ build.zip
 /server/blueprints/__pycache__
 
 /node-server/node_modules
+/node-server/config.json
