@@ -1,0 +1,48 @@
+{
+    "connections": [
+        {
+            "name": "mes-new",
+            "database": "mes-new",
+            "host": "localhost",
+            "port": 5432,
+            "user": "postgres",
+            "password": "admin"
+        },
+        {
+            "name": "proconn",
+            "database": "proconn",
+            "user": "postgres",
+            "password": "admin",
+            "host": "localhost",
+            "port": "5432"
+        },
+        {
+            "name": "proconn_new",
+            "database": "proconn_new",
+            "user": "postgres",
+            "password": "admin",
+            "host": "localhost",
+            "port": "5432"
+        },
+        {
+            "name": "mes",
+            "database": "mes",
+            "user": "postgres",
+            "password": "admin",
+            "host": "localhost",
+            "port": "5432"
+        }
+    ],
+    "commands": [
+        {
+            "name": "1",
+            "query_string": "1",
+            "severity": "MEDIUM"
+        },
+        {
+            "name": "select all events",
+            "query_string": "SELECT * FROM event;",
+            "severity": "LOW"
+        }
+    ]
+}

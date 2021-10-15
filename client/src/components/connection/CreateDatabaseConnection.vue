@@ -13,10 +13,26 @@
         <ConnectionEditor :connection="connection" @validityChange="changeValidity" @connectionChange="setConnection"/>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="green" class="ml-6" outlined left @click="createConnection" :disabled="!valid">Create</v-btn>
-          <v-btn color="blue" class="ml-1" outlined left @click="checkConnection" :loading="checkingConnection">Check</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="blue" text @click="dialog = false">Close</v-btn>
+          <v-btn 
+            color="blue" 
+            text 
+            @click="checkConnection" 
+            :disabled="!valid" 
+            :loading="checkingConnection"
+          >Check</v-btn>
+          <v-btn 
+            color="green" 
+            text 
+            @click="createConnection" 
+            :disabled="!valid"
+          >
+          Create</v-btn>
+          <v-btn 
+            color="red" 
+            text 
+            @click="dialog = false"
+          >Abort</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -75,8 +91,9 @@ export default {
       let url = `http://${location.hostname}:5000/connection/check`
       this.$http.post(url, this.connection)
         .then((result) => {
-          if (result.data.status === "error") {
+          if (!result.data.valid) {
             this.alert = true;
+            console.log(result.data.message)
           } else {
             this.successSnackbar = true;
           }

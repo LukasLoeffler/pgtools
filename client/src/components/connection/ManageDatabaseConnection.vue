@@ -63,7 +63,7 @@ export default {
       this.updatedConnection = newConnection;
     },
     connect() {
-      let url = `${this.baseUrl}/connection/${this.connection.id}/listen-start`
+      let url = `${this.baseUrl}/connection/listen-start/${this.connection.name}`
       this.$http.get(url)
       .then((result) => this.loadStatus())
       .catch((error) => {
@@ -72,7 +72,7 @@ export default {
       });
     },
     disconnect() {
-      let url = `${this.baseUrl}/connection/${this.connection.id}/listen-end`
+      let url = `${this.baseUrl}/connection/listen-end/${this.connection.name}`
       this.$http.get(url)
         .then((result) => {
           this.loadStatus();
@@ -82,7 +82,7 @@ export default {
         });
     },
     loadStatus() {
-      let url = `${this.baseUrl}/connection/${this.connection.id}/status`
+      let url = `${this.baseUrl}/connection/status/${this.connection.name}`
       this.$http.get(url)
       .then((result) => {
         this.connected = result.data.connected;
@@ -94,7 +94,7 @@ export default {
       });
     },
     deleteConnection() {
-      let url = `${this.baseUrl}/connection/${this.connection.id}`;
+      let url = `${this.baseUrl}/connection/${this.connection.name}`;
       this.$http.delete(url)
       .then((result) => {
         this.$emit('connectionDelete', result)

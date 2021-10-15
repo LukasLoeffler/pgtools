@@ -7,7 +7,6 @@
         <template v-slot:default>
             <thead>
                 <tr>
-                <th>Index</th>
                 <th>Name</th>
                 <th>Severity</th>
                 <th>Actions</th>
@@ -15,7 +14,6 @@
             </thead>
             <tbody>
                 <tr v-for="command in commands" :key="command.id">
-                <td>{{command.id}}</td>
                 <td>{{command.name}}</td>
                 <td>
                     <v-chip label small :color="getColorForSeverity(command.severity)">{{ command.severity }}</v-chip>

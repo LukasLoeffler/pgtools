@@ -8,7 +8,7 @@ import vuetify from './plugins/vuetify';
 import Vuex from 'vuex'
 
 import io from "socket.io-client";
-var socket = io.connect("http://localhost:5000");
+let socket = io("http://localhost:5000");
 
 Vue.use(Vuetify)
 Vue.use(Vuex)
@@ -32,13 +32,13 @@ const store = new Vuex.Store({
     },
     //Adds connection to activeConnections if no connection with same id is present
     addActiveConnection (state, connection) {
-      if (!state.activeConnections.some(existingConnection => existingConnection.id === connection.id)){
+      if (!state.activeConnections.some(existingConnection => existingConnection.name === connection.name)){
         state.activeConnections.push(connection);
       }
     },
     //Removed connection from active connection if existing
     removeActiveConnection(state, connection) {
-      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.id !== connection.id)
+      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.name !== connection.name)
     },
     addEvent(state, event) {
       state.events = [event, ...state.events];
@@ -78,12 +78,12 @@ socket.on("databaseEvent", event => {
 });
 
 socket.on("connect", () => {
-  console.log("%c WebsocketStatus: %cConnected", "font-weight: bold;", "color: green;");
+  console.log("%cWebsocketStatus: %cConnected", "font-weight: bold;", "color: green;");
   store.commit('setWebsocketStatus', true);
 });
 
 socket.on("disconnect", () => {
-  console.log("%c WebsocketStatus: %cNot Connected", "font-weight: bold;", "color: red;");
+  console.log("%cWebsocketStatus: %cNot Connected", "font-weight: bold;", "color: red;");
   store.commit('setWebsocketStatus', false);
   store.commit('setActiveConnections', []);
 });

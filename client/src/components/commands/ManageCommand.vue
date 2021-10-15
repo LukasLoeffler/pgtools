@@ -1,67 +1,33 @@
 <template>
   <v-row>
-    <v-dialog v-model="dialog" max-width="90%">
-      <template v-slot:activator="{ on, attrs }">
         <div style="display: flex; flex-direction: row; flex-wrap: nowrap">
           <v-btn icon class="mr-1" @click="executeCommand">
             <v-icon color="green">mdi-play-circle-outline</v-icon>
           </v-btn>
-          <v-btn icon class="mr-1" v-bind="attrs" v-on="on">
-            <v-icon color="#46a2d4">mdi-pencil-circle-outline</v-icon>
-          </v-btn>
+            <CommandCreateEdit 
+              mode="EDIT"
+            >
+              <template v-slot:activator>
+                <v-btn icon class="mr-1">
+                  <v-icon color="#46a2d4">mdi-pencil-circle-outline</v-icon>
+                </v-btn>
+              </template>
+            </CommandCreateEdit>
           <v-btn icon class="mr-1" @click="deleteCommand">
             <v-icon color="red">mdi-delete-circle-outline</v-icon>
           </v-btn>
         </div>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Edit command</span>
-        </v-card-title>
-        <v-form v-model="valid">
-          <v-container class="pl-7">
-            <v-row>
-              <v-col cols="12">
-                <v-text-field label="Name" v-model="localCommand.name" :rules="[rules.required]"></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-textarea 
-                  label="Query"
-                  filled
-                  v-model="localCommand.query_string" 
-                  :rules="[rules.required]"
-                ></v-textarea>
-              </v-col>
-              <v-col cols="12">
-                <v-select :items="severities" label="Severty" v-model="localCommand.severity" chips>
-                  <template v-slot:selection="{ item }">
-                    <v-chip class="ml-0" small label :color=getSeverityColor(item)>
-                      <span>{{ item }}</span>
-                    </v-chip>
-                  </template>
-                </v-select>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-form>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-btn color="green" outlined left class="ml-7" @click="saveCommand">Save</v-btn>
-          <v-spacer></v-spacer>
-          <v-btn color="blue" text @click="dialog=false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+
     <v-snackbar color="warning" v-model="alert" timeout="3000" top>{{alertMessage}}</v-snackbar>
   </v-row>
 </template>
 
 <script>
-
+import CommandCreateEdit from "./CommandCreateEdit";
 
 export default {
   name: 'ManageCommand',
-  components: {  },
+  components: { CommandCreateEdit },
   props: {
     command: Object,
     connection: Object
@@ -107,7 +73,7 @@ export default {
       })
     },
     deleteCommand() {
-      let url = `${this.baseUrl}/command/${this.command.id}`
+      let url = `${this.baseUrl}/command/${this.command.name}`
       this.$http.delete(url)
       .then((result) => {
         this.$emit('commandChange', result)
@@ -115,10 +81,9 @@ export default {
       })
     },
     getSeverityColor(severity) {
-      if (severity === "LOW") return "green"
-      if (severity === "MEDIUM") return "yellow"
-      if (severity === "HIGH") return "orange"
-      if (severity === "CRITICAL") return "red"
+      if (severity === "LOW") return "green  lighten-2"
+      if (severity === "MEDIUM") return "orange  lighten-2"
+      if (severity === "HIGH") return "red  lighten-2"
     }
   },
   created() {},

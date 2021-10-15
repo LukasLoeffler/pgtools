@@ -81,6 +81,9 @@
             <template v-slot:[`item.action`]="{ item }">
               <OperationBadge :event="item"/>
             </template>
+            <template v-slot:[`item.timestamp`]="{ item }">
+              <span>{{formatTimestamp(item.timestamp)}}</span>
+            </template>
             <template v-slot:[`item.database`]="{ item }">
               <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
             </template>
@@ -93,8 +96,8 @@
             <template v-slot:expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="px-1">
                 <v-sheet>
-                  <ObjectDiff 
-                    class="my-2" 
+                  <ObjectDiff
+                    class="my-2"
                     :item="item"
                     :autoExpand="detailActive"
                   />
@@ -142,7 +145,7 @@ export default {
       keys: [],
       alert: false,
       filterBarHeight: null,
-      tableDistanceTop: 115
+      tableDistanceTop: 115,
     }
   },
   methods: {
@@ -172,6 +175,12 @@ export default {
       this.database = item.database;
       this.table = item.table;
       this.dataId = item.id;
+    },
+    formatTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      const dateString = date.toLocaleString(navigator.language);
+      const millis = date.getMilliseconds();
+      return `${dateString}\n${millis}`;
     },
 
     /**

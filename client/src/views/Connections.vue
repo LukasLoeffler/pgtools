@@ -54,7 +54,6 @@ export default {
       connections: [],
       search: '',
       headers: [
-        { text: 'Id', value: 'id' },
         { text: 'Name', value: 'name' },
         { text: 'Database', value: 'database' },
         { text: 'User', value: 'user' },

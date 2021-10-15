@@ -4,7 +4,6 @@ export default {
             if (action === "INSERT") return "green";
             if (action === "UPDATE") return "orange";
             if (action === "DELETE") return "red";
-            else return 'blue';
         },
         getColorForSeverity(severity) {
             if (severity === "LOW") return "green"

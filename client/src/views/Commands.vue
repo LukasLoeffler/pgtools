@@ -4,12 +4,17 @@
         <v-col class="px-0">
           <v-row class="ml-1">
             <v-col cols="6">
-              <v-select :items="connections" label="Connection" item-text="name" v-model="selectedConnection"
-                return-object outlined dense hide-details :no-data-text="noDataText">
-              </v-select>
+              <DropSelect 
+                v-model="selectedConnection" 
+                :items="connections"
+              />
             </v-col>
             <v-col class="ml-1" cols="2">
-              <CommandCreate @commandChange="loadCommands" class="mt-0"/>
+              <CommandCreateEdit 
+                @commandChange="loadCommands" 
+                class="mt-0"
+                mode="CREATE"
+              />
             </v-col>
           </v-row>
           <CommandTable
@@ -30,13 +35,14 @@
 </template>
 
 <script>
-import CommandCreate from "../components/commands/CommandCreate";
+import CommandCreateEdit from "../components/commands/CommandCreateEdit";
 import CommandOutput from "../components/commands/CommandOutput";
 import CommandTable from '../components/commands/CommandTable.vue';
+import DropSelect from '../components/ubiquitous/DropSelect.vue'
 
 export default {
   name: 'Commands',
-  components: { CommandCreate, CommandOutput, CommandTable },
+  components: { CommandCreateEdit, CommandOutput, CommandTable, DropSelect },
   
   data: () => {
     return {

@@ -1,60 +1,87 @@
 <template>
-  <v-row>
-    <v-dialog v-model="dialog" max-width="90%">
+  <div>
+    <v-dialog 
+      v-model="dialog" 
+      max-width="90%"
+    >
       <template v-slot:activator="{ on, attrs }">
-          <v-btn color="green" class="mr-1" outlined v-bind="attrs" v-on="on" right>
-            <v-icon>mdi-playlist-plus</v-icon>
-          </v-btn>
+        <div v-bind="attrs" v-on="on">
+          <slot name="activator">
+            <v-btn color="grey darken-1" class="mr-1" outlined>
+              <v-icon>mdi-playlist-plus</v-icon>
+            </v-btn>
+          </slot>
+        </div>
       </template>
-      <v-card>
+      <v-card v-if="dialog">
         <v-card-title>
-          <span class="headline">Create command</span>
+          <span class="headline">{{(mode ==='CREATE') ? 'Create command' : 'Edit command'}}</span>
         </v-card-title>
         <v-form v-model="valid" ref="form">
           <v-container class="pl-7">
             <v-row>
-              <v-col cols="12">
-                <v-text-field label="Name" v-model="name" :rules="[rules.required]"></v-text-field>
+              <v-col cols="6">
+                <v-text-field 
+                  label="Name" 
+                  v-model="name" 
+                  :rules="[rules.required]"
+                  outlined
+                  dense
+                  hide-details
+                ></v-text-field>
+              </v-col>
+              <v-col cols="3">
+                <SeveritySelector v-model="selectedSeverity"/>
               </v-col>
               <v-col cols="12">
                 <v-textarea 
                   label="Query"
+                  outlined
                   filled
                   v-model="query_string" 
                   :rules="[rules.required]"
+                  hide-details=""
                 ></v-textarea>
-              </v-col>
-              <v-col cols="12">
-                <v-select :items="severities" label="Severty" v-model="selectedSeverity" chips>
-                  <template v-slot:selection="{ item }">
-                    <v-chip class="ml-0" small label :color=getSeverityColor(item)>
-                      <span>{{ item }}</span>
-                    </v-chip>
-                  </template>
-                </v-select>
               </v-col>
             </v-row>
           </v-container>
         </v-form>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="green" class="ml-6" outlined left @click="createQuery" :disabled="!valid">Create</v-btn>
-          <v-btn color="blue" class="ml-1" outlined left @click="checkQuery" :loading="checkingCommand">Execute</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="blue" text @click="dialog = false">Close</v-btn>
+          <v-btn 
+            color="green" 
+            text
+            @click="createQuery" 
+            :disabled="!valid"
+          >Create</v-btn>
+          <v-btn 
+            color="red" 
+            text @click="dialog = false"
+          >Abort</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-snackbar color="error" v-model="alert" timeout="3000" top>Invalid connection properties. Try again with changed properties.</v-snackbar>
-  </v-row>
+  </div>
 </template>
 
 
 <script>
+import SeveritySelector from '../ubiquitous/SeveritySelector.vue';
 
 export default {
   name: 'CommandCreate',
-  components: { },
+  components: {SeveritySelector },
+  props: {
+    mode: {
+      type: String,
+      required: true,
+      validator: function (value) {
+        return ['EDIT', 'CREATE'].indexOf(value) !== -1
+      }
+    }
+  },
   data () {
     return {
       dialog: false,
@@ -66,7 +93,7 @@ export default {
       },
       name: null,
       query_string: null,
-      severities: ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      severities: ["LOW", "MEDIUM", "HIGH"],
       selectedSeverity: "LOW"
     }
   },
@@ -96,18 +123,12 @@ export default {
         this.alert = true;
       })
     },
-    checkQuery() {
-      this.checkingCommand = true;
-      let url = `http://${location.hostname}:5000/connection/execute`
-
-      let data = {
-        connection_id: 6,
-        db_query: this.query
-      }
-      
-      this.$http.post(url, data)
+    updateCommand() {
+      let url = `${this.baseUrl}/command/${this.command.id}`
+      this.$http.put(url, this.localCommand)
       .then((result) => {
-        this.checkingCommand = false;
+        this.$emit('commandChange', result)
+        this.dialog = false;
       })
     },
     resetDialog() {
@@ -124,7 +145,7 @@ export default {
       if (severity === "HIGH") return "orange"
       if (severity === "CRITICAL") return "red"
     }
-  }
+  },
 }
 </script>
 
