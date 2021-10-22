@@ -8,3 +8,4 @@ build.zip
 
 /server/node_modules
 server/config.json
+/server/build
