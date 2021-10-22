@@ -3,16 +3,36 @@
 Application for debugging applications that use postgres as DBMS.
 The application aims to help the user to understand their application by displaying the database events triggered by the application in real time.
 
+## General
+
+Application built with NodeJS/Typescript (server-side) and vue.js (client-side).
+The sub-projects for front- and backend can be found in the respective folders.
+
 ## Deployment
+
 The application is intended to run on the local machine for debugging purposes.
 
 The application can be started with the ```docker-compose up -d``` command.
 
 ## Development
 
-## General
-Application built with NodeJS (server-side) and vue.js (client-side).
-The sub-projects for front- and backend can be found in the respective folders.
+### Backend
+The development server can be started via
+```
+cd server
+npm install
+npm run start:dev
+```
+This spins up the application in development mode. Nodemon is used to hot-reload changes.
+
+Frontend
+```
+cd client
+npm install
+npm run serve
+```
+This spins up the VueJS development server.
+
 
 ## Note
 The application uses postgres trigger and trigger functions to intercept the database events and to forward them via pg_notify. For this reason, before using the application, you should check whether the used names of the trigger or trigger functions interfer with existing ones. 
