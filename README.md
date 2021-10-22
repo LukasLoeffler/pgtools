@@ -36,6 +36,3 @@ Hooks: Define which database tables should be watched by the application
 Watcher: View events in realtime, filter events by database, table and id
 ![](resource/image/watcher.png)
 
-Watcher: Check in the detail event view which data have been changed
-![](resource/image/watcher_detail.png)
-
