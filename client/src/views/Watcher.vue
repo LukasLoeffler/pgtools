@@ -10,6 +10,7 @@
             label="Database" 
             placeholder="Database" 
             v-model="database"
+            prepend-inner-icon="mdi-database-outline"
           />
         </transition>
         <transition name="fade">
@@ -18,6 +19,7 @@
             placeholder="Table" 
             v-model="table"  
             v-if="database"
+            prepend-inner-icon="mdi-table"
           />
         </transition>
         <transition name="fade">
@@ -26,6 +28,7 @@
             placeholder="Data ID" 
             v-model="dataId" 
             v-if="table"
+            prepend-inner-icon="mdi-identifier"
           />
         </transition>
 
@@ -81,6 +84,9 @@
             <template v-slot:[`item.action`]="{ item }">
               <OperationBadge :event="item"/>
             </template>
+            <template v-slot:[`item.timestamp`]="{ item }">
+              <span>{{formatTimestamp(item.timestamp)}}</span>
+            </template>
             <template v-slot:[`item.database`]="{ item }">
               <a @click="setDatabaseFilter(item)">{{ item.database }}</a>
             </template>
@@ -93,8 +99,8 @@
             <template v-slot:expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="px-1">
                 <v-sheet>
-                  <ObjectDiff 
-                    class="my-2" 
+                  <ObjectDiff
+                    class="my-2"
                     :item="item"
                     :autoExpand="detailActive"
                   />
@@ -112,11 +118,12 @@
 
 
 <script>
-import ButtonContainer from '../components/ubiquitous/ButtonContainer.vue';
-import OperationBadge from '../components/ubiquitous/OperationBadge.vue';
+import ButtonContainer from '../components/misc/ButtonContainer.vue';
+import OperationBadge from '../components/misc/OperationBadge.vue';
 import FilterField from '../components/watcher/FilterField.vue';
 import ObjectDiff from '../components/watcher/ObjectDiff.vue';
 import WatcherSettings from '../components/watcher/WatcherSettings.vue';
+import { BASE_URL } from '@/main'
 
 export default {
   name: 'Watcher',
@@ -142,7 +149,7 @@ export default {
       keys: [],
       alert: false,
       filterBarHeight: null,
-      tableDistanceTop: 115
+      tableDistanceTop: 115,
     }
   },
   methods: {
@@ -173,6 +180,12 @@ export default {
       this.table = item.table;
       this.dataId = item.id;
     },
+    formatTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      const dateString = date.toLocaleString(navigator.language);
+      const millis = date.getMilliseconds();
+      return `${dateString}:${millis}`;
+    },
 
     /**
      * Resets the current filter (table and dataId)
@@ -186,7 +199,7 @@ export default {
       this.detailActive = false;
     },
     clearEvents() {
-      let url = `http://${location.hostname}:5000/connection/reset-index`;
+      let url = `${BASE_URL}/connection/reset-index`;
       this.$http.get(url)
       .then((result) => {
         this.$store.commit("resetEvents");
@@ -234,11 +247,11 @@ export default {
 
 <style scoped>
 .fade-enter-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.3s;
 }
 
 .fade-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.1s;
 }
 
 

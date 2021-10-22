@@ -12,7 +12,7 @@
                     <th class="d-flex justify-space-between">
                         <span class="align-self-center">NewValue</span>
                         
-                        <v-tooltip bottom>
+                        <v-tooltip left>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn
                                     v-if="item.action ==='UPDATE'"

@@ -6,13 +6,18 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vuetify from './plugins/vuetify';
 import Vuex from 'vuex'
-
 import io from "socket.io-client";
-var socket = io.connect("http://localhost:5000");
+
+
+const PROTOCOL = location.protocol;
+const HOSTNAME = location.hostname;
+const PORT = 5000;
+export const BASE_URL = `${PROTOCOL}//${HOSTNAME}:${PORT}`;
+
+let socket = io(BASE_URL);
 
 Vue.use(Vuetify)
 Vue.use(Vuex)
-
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -65,12 +70,12 @@ const store = new Vuex.Store({
 })
 
 
+const CONNECTION_URL = `${BASE_URL}/connection/all/active`
 
-let url = "http://localhost:5000/connection/all/active";
-axios.get(url)
-.then((result) => {
-  store.commit('setActiveConnections', result.data);
-});
+axios.get(CONNECTION_URL)
+  .then((result) => {
+    store.commit('setActiveConnections', result.data);
+  });
 
 socket.on("databaseEvent", event => {
   event.id = event.data.id || event.data_old.id;
@@ -78,12 +83,12 @@ socket.on("databaseEvent", event => {
 });
 
 socket.on("connect", () => {
-  console.log("%c WebsocketStatus: %cConnected", "font-weight: bold;", "color: green;");
+  console.log("%cWebsocketStatus: %cConnected", "font-weight: bold;", "color: green;");
   store.commit('setWebsocketStatus', true);
 });
 
 socket.on("disconnect", () => {
-  console.log("%c WebsocketStatus: %cNot Connected", "font-weight: bold;", "color: red;");
+  console.log("%cWebsocketStatus: %cNot Connected", "font-weight: bold;", "color: red;");
   store.commit('setWebsocketStatus', false);
   store.commit('setActiveConnections', []);
 });

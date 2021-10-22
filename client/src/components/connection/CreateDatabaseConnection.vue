@@ -13,10 +13,26 @@
         <ConnectionEditor :connection="connection" @validityChange="changeValidity" @connectionChange="setConnection"/>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="green" class="ml-6" outlined left @click="createConnection" :disabled="!valid">Create</v-btn>
-          <v-btn color="blue" class="ml-1" outlined left @click="checkConnection" :loading="checkingConnection">Check</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="blue" text @click="dialog = false">Close</v-btn>
+          <v-btn 
+            color="blue" 
+            text 
+            @click="checkConnection" 
+            :disabled="!valid" 
+            :loading="checkingConnection"
+          >Check</v-btn>
+          <v-btn 
+            color="green" 
+            text 
+            @click="createConnection" 
+            :disabled="!valid"
+          >
+          Create</v-btn>
+          <v-btn 
+            color="red" 
+            text 
+            @click="dialog = false"
+          >Abort</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -30,6 +46,7 @@
 
 <script>
 import ConnectionEditor from "./ConnectionEditor.vue";
+import { BASE_URL } from '@/main'
 
 export default {
   name: 'CreateDatabaseConnection',
@@ -59,7 +76,7 @@ export default {
       this.valid = validity;
     },
     createConnection() {
-      let url = `http://${location.hostname}:5000/connection`
+      let url = `${BASE_URL}/connection`
       this.$http.post(url, this.connection)
         .then((result) => {
           this.$emit('connectionCreate', result)
@@ -72,10 +89,10 @@ export default {
     },
     checkConnection() {
       this.checkingConnection = true;
-      let url = `http://${location.hostname}:5000/connection/check`
+      let url = `${BASE_URL}/connection/check`
       this.$http.post(url, this.connection)
         .then((result) => {
-          if (result.data.status === "error") {
+          if (!result.data.valid) {
             this.alert = true;
           } else {
             this.successSnackbar = true;

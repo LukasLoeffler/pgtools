@@ -1,44 +1,52 @@
-<template>  
+<template>
   <v-app id="app">
-    <v-sheet>
-      <v-app-bar
-        color="primary"
-        dark
-        height="50"
-      >
-      <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-      <v-toolbar-title>{{ $route.name || 'pgtools'}}</v-toolbar-title>
+
+    <v-app-bar
+      app
+      color="blue-grey darken-2"
+      dark
+      clipped-left
+      height="50"
+    >
+      <v-app-bar-nav-icon>
+        <v-btn icon>
+          <v-icon>{{currentIcon}}</v-icon>
+        </v-btn>
+      </v-app-bar-nav-icon>
+      <v-toolbar-title 
+        color="white"
+        class="pl-1"
+      >{{ $route.name || 'pgtools'}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <ConnectionIndicator id="dbCon" :clickable="true"/>
     </v-app-bar>
 
     <v-navigation-drawer
-      v-model="drawer"
-      absolute
-      temporary
+      app
       dark
+      :mini-variant="$vuetify.breakpoint.width <= 900"
+      permanent
+      :expand-on-hover="$vuetify.breakpoint.width > 900"
+      clipped
     >
       <v-list dark>
-        <v-list-item dark>
-          <v-list-item-avatar color="teal lighten-2" size="56">
-            <v-img :src="'/favicon.ico'" width="30" height="30" contain></v-img>
+        <v-list-item class="pl-2">
+          <v-list-item-avatar color="teal lighten-2" size="37">
+            <v-img :src="'/favicon.ico'" width="25" height="25" contain></v-img>
           </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title class="text-h6">pgtools</v-list-item-title>
-            <v-list-item-subtitle>
-              <a
-                style="text-decoration: none"
-                class="caption" 
-                href="https://github.com/LukasLoeffler/pgtools"
-              >pgtools Github
-                <v-icon color="blue" x-small>mdi-open-in-new</v-icon>
-              </a>
-            </v-list-item-subtitle>
-          </v-list-item-content>
+  
+          <v-list-item-title class="text-h6">pgtools</v-list-item-title>
+  
+          <v-btn
+            icon
+            href="https://github.com/LukasLoeffler/pgtools"
+            target="_blank"
+          >
+            <v-icon>mdi-github</v-icon>
+          </v-btn>
         </v-list-item>
       </v-list>
-      <v-divider></v-divider>
-        <ConnectionIndicator class="my-1" :clickable="true"/>
+
       <v-divider></v-divider>
       <v-list
         nav
@@ -63,9 +71,9 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-
-    <router-view></router-view>
-    </v-sheet>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
   </v-app>
 </template>
 
@@ -75,37 +83,40 @@ import ConnectionIndicator from './components/connection/ConnectionIndicator.vue
 export default {
   name: 'App',
   components: {ConnectionIndicator },
-  data: function () {
-    return {
-      drawer: false,
-      currentRoute: null,
-      sidebarElements: [
-        {
-          name: "Connections",
-          path: "/",
-          icon: "mdi-connection"
-        },
-        {
-          name: "Hooks",
-          path: "/hooks",
-          icon: "mdi-hook"
-        },
-        {
-          name: "Watcher",
-          path: "/watcher",
-          icon: "mdi-microscope"
-        },
-        {
-          name: "Commands",
-          path: "/commands",
-          icon: "mdi-console"
-        }
-      ]
+  data: () => ({
+    mini: false,
+    drawer: null,
+    currentRoute: null,
+    sidebarElements: [
+      {
+        name: "Connections",
+        path: "/",
+        icon: "mdi-connection"
+      },
+      {
+        name: "Hooks",
+        path: "/hooks",
+        icon: "mdi-hook"
+      },
+      {
+        name: "Watcher",
+        path: "/watcher",
+        icon: "mdi-microscope"
+      },
+      {
+        name: "Commands",
+        path: "/commands",
+        icon: "mdi-console"
+      }
+    ]
+  }),
+  computed: {
+    currentIcon() {
+      return this.sidebarElements.find(element => element.name === this.$route.name).icon;
     }
-  },
-};
+  }
+}
 </script>
-
 
 <style scoped>
 #app {
@@ -159,4 +170,3 @@ export default {
   background: #555; 
 }
 </style>
-

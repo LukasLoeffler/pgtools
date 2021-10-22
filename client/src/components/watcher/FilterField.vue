@@ -9,6 +9,7 @@
         dense
         hide-details
         clearable
+        :prepend-inner-icon="prependInnerIcon"
     />
 </template>
 
@@ -17,7 +18,8 @@ export default {
     props: {
         value: [String, Number],
         label: String,
-        placeholder: String
+        placeholder: String,
+        prependInnerIcon: String
     },
     methods: {
         input(value) {

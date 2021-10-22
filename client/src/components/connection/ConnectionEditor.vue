@@ -19,7 +19,7 @@
             <v-text-field label="User" v-model="localConnection.user" :rules="[rules.required]"></v-text-field>
           </v-col>
           <v-col cols="6">
-            <v-text-field type="password" label="Password" v-model="localConnection.password" :rules="[rules.required]"></v-text-field>
+            <v-text-field type="password" label="Password" v-model="localConnection.password" :rules="[rules.required, rules.password]"></v-text-field>
           </v-col>
         </v-row>
       </v-container>
@@ -35,7 +35,8 @@ export default {
       valid: false,
       rules: {
         required: value => !!value || 'Required.',
-        positive: value => value > 0 || 'Positive number required.'
+        positive: value => value > 0 || 'Positive number required.',
+        password: value => value.length > 2 || 'Password must have at least 3 characters.'
       },
       localConnection: {...this.connection}
     }

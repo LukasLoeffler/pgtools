@@ -1,15 +1,14 @@
 export default {
     methods: {
         getColorForAction(action) {
-            if (action === "INSERT") return "green";
-            if (action === "UPDATE") return "orange";
-            if (action === "DELETE") return "red";
-            else return 'blue';
+            if (action === "INSERT") return "green lighten-2";
+            if (action === "UPDATE") return "orange lighten-2";
+            if (action === "DELETE") return "red lighten-2";
         },
         getColorForSeverity(severity) {
-            if (severity === "LOW") return "green"
-            if (severity === "MEDIUM") return "orange"
-            if (severity === "HIGH") return "red"
+            if (severity === "LOW") return "green lighten-2"
+            if (severity === "MEDIUM") return "orange lighten-2"
+            if (severity === "HIGH") return "red lighten-2"
         },
     }
 }

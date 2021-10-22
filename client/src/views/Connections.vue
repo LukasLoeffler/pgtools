@@ -30,6 +30,7 @@
           :items="connections" 
           :search="search"
           height="calc(100vh - 120px)"
+          sort-by="name"
         >
           <template v-slot:[`item.status`]="{ item }">
             <ManageDatabaseConnection :connection="item" @connectionDelete="loadData"/>
@@ -44,17 +45,16 @@
 import ManageDatabaseConnection from "../components/connection/ManageDatabaseConnection.vue";
 import CreateDatabaseConnection from "../components/connection/CreateDatabaseConnection.vue";
 import ConnectionInfoModal from "../components/info-modals/ConnectionInfoModal"
+import { BASE_URL } from '@/main'
 
 export default {
   name: 'Connections',
   components: { ManageDatabaseConnection, CreateDatabaseConnection, ConnectionInfoModal },
   data: function () {
     return {
-      baseUrl: `http://${location.hostname}:5000`,
       connections: [],
       search: '',
       headers: [
-        { text: 'Id', value: 'id' },
         { text: 'Name', value: 'name' },
         { text: 'Database', value: 'database' },
         { text: 'User', value: 'user' },
@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     loadData() {
-      let url = `${this.baseUrl}/connection/all`;
+      let url = `${BASE_URL}/connection/all`;
       this.$http.get(url)
       .then((result) => {
         this.connections = result.data;

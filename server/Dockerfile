@@ -1,20 +1,28 @@
-FROM python:3.9-slim
+FROM node:lts-alpine as build-stage
 
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    gcc \
-&& rm -rf /var/lib/apt/lists/*
+WORKDIR /usr/src/app
 
-RUN pip install pipenv
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY ./src ./src
+RUN npm ci --quiet && npm run build
 
-COPY Pipfile* .
 
-RUN pipenv lock --keep-outdated --requirements > requirements.txt
 
-RUN pip install -r requirements.txt
+FROM node:lts-alpine
 
-COPY . .
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --quiet --only=production
 
 EXPOSE 5000
 
-CMD ["python","-u","app.py"]
+## We just need the build to execute the command
+COPY --from=build-stage /usr/src/app/build ./build
+
+RUN mkdir output
+RUN mkdir temp
+
+
+CMD [ "node", "./build/index.js" ]

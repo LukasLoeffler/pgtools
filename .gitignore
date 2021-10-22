@@ -5,3 +5,7 @@ server/db.sqlite
 build.zip
 /server/.vscode
 /server/blueprints/__pycache__
+
+/server/node_modules
+server/config.json
+/server/build

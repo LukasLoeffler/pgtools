@@ -2,7 +2,8 @@
     <v-sheet
         :outlined="outlined"
         rounded
-        class="d-flex button-container"
+        class="button-container"
+        style="display: inline-flex;"
     >
         <slot></slot>
     </v-sheet>
@@ -15,9 +16,6 @@ export default {
             type: Boolean,
             default: false
         }
-    },
-    created() {
-        console.log(this._props);
     }
 }
 </script>
