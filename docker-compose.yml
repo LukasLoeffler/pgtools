@@ -6,7 +6,7 @@ services:
     image: pgtools-backend:latest
     environment:
       - MODE=PROD
-    build: ./node-server
+    build: ./server
     ports:
       - "5000:5000"
 

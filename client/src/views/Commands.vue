@@ -38,26 +38,25 @@
 import CommandCreateEdit from "../components/commands/CommandCreateEdit";
 import CommandOutput from "../components/commands/CommandOutput";
 import CommandTable from '../components/commands/CommandTable.vue';
-import DropSelect from '../components/ubiquitous/DropSelect.vue'
+import DropSelect from '../components/misc/DropSelect.vue'
+import { BASE_URL } from '@/main'
 
 export default {
   name: 'Commands',
   components: { CommandCreateEdit, CommandOutput, CommandTable, DropSelect },
-  
   data: () => {
     return {
       connections: [],
       selectedConnection: null,
       noDataText: "Keine Verbindungen vorhanden",
-      baseUrl: `http://${location.hostname}:5000`,
       commands: [],
-      commandData: null,
+      commandData: {},
       tableDistanceTop: 115
     }
   },
   methods: {
     loadConnections() {
-      let url = `${this.baseUrl}/connection/all`;
+      let url = `${BASE_URL}/connection/all`;
       this.$http.get(url)
       .then((result) => {
         this.connections = result.data;
@@ -67,17 +66,11 @@ export default {
       });
     },
     loadCommands() {
-      let url = `${this.baseUrl}/command/all`;
+      let url = `${BASE_URL}/command/all`;
       this.$http.get(url)
       .then((result) => {
         this.commands = result.data;
       });
-    },
-    getSeverityColor(severity) {
-      if (severity === "LOW") return "green"
-      if (severity === "MEDIUM") return "yellow"
-      if (severity === "HIGH") return "orange"
-      if (severity === "CRITICAL") return "red"
     },
     handleCommandData(data) {
       this.commandData = data;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { getConnectionByName } from "../config-handler";
+import { getConnectionById } from "../config-handler";
 const { Client } = require('pg')
 
 var express = require('express'),
@@ -49,8 +49,8 @@ async function getAllTablesWithTriggers(client: any) {
     return output;
 }
 
-router.get('/:name', async (req: Request, res: Response) => {
-    const connection = await getConnectionByName(req.params.name)
+router.get('/:id', async (req: Request, res: Response) => {
+    const connection = await getConnectionById(req.params.id)
     if (connection) {
         const client = new Client(connection)
         client.connect()
@@ -97,8 +97,8 @@ async function createTriggerForTable(client: any, tableName: string, triggerName
     return await client.query(queryString);
 }
 
-async function setTriggerForTable(connectionName: string, tableList: Array<TableHook>) {
-    const connection = await getConnectionByName(connectionName)
+async function setTriggerForTable(connectionId: string, tableList: Array<TableHook>) {
+    const connection = await getConnectionById(connectionId)
 
     const client = new Client(connection)
     client.connect()

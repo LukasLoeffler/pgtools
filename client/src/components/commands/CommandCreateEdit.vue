@@ -23,7 +23,7 @@
               <v-col cols="6">
                 <v-text-field 
                   label="Name" 
-                  v-model="name" 
+                  v-model="commandCopy.name" 
                   :rules="[rules.required]"
                   outlined
                   dense
@@ -31,16 +31,16 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="3">
-                <SeveritySelector v-model="selectedSeverity"/>
+                <SeveritySelector v-model="commandCopy.severity"/>
               </v-col>
               <v-col cols="12">
                 <v-textarea 
                   label="Query"
                   outlined
                   filled
-                  v-model="query_string" 
+                  v-model="commandCopy.query" 
                   :rules="[rules.required]"
-                  hide-details=""
+                  hide-details
                 ></v-textarea>
               </v-col>
             </v-row>
@@ -52,9 +52,9 @@
           <v-btn 
             color="green" 
             text
-            @click="createQuery" 
+            @click="(mode === 'CREATE') ? createCommand() : updateCommand()" 
             :disabled="!valid"
-          >Create</v-btn>
+          >{{(mode === 'CREATE') ? 'Create' : 'Update'}}</v-btn>
           <v-btn 
             color="red" 
             text @click="dialog = false"
@@ -68,11 +68,12 @@
 
 
 <script>
-import SeveritySelector from '../ubiquitous/SeveritySelector.vue';
+import SeveritySelector from '../misc/SeveritySelector.vue';
+import { BASE_URL } from '@/main'
 
 export default {
-  name: 'CommandCreate',
-  components: {SeveritySelector },
+  name: 'CommandCreateEdit',
+  components: { SeveritySelector },
   props: {
     mode: {
       type: String,
@@ -80,42 +81,38 @@ export default {
       validator: function (value) {
         return ['EDIT', 'CREATE'].indexOf(value) !== -1
       }
+    },
+    command: {
+      type: Object,
+      default: () => {
+        return {}
+      }
     }
   },
   data () {
     return {
+      commandCopy: null,
       dialog: false,
-      checkingCommand: false,
       alert: false,
       valid: false,
       rules: {
         required: value => !!value || 'Required.',
       },
-      name: null,
-      query_string: null,
       severities: ["LOW", "MEDIUM", "HIGH"],
-      selectedSeverity: "LOW"
     }
   },
+  created() {
+    this.commandCopy = JSON.parse(JSON.stringify(this.command));
+  },
   methods: {
-    setConnection(newConnection) {
-      this.connection = newConnection;
-    },
     changeValidity(validity) {
       this.valid = validity;
     },
-    createQuery() {
-      let url = `http://${location.hostname}:5000/command`
-
-      let data = {
-        name: this.name,
-        query_string: this.query_string,
-        severity: this.selectedSeverity
-      }
-
-      this.$http.post(url, data)
+    createCommand() {
+      let url = `${BASE_URL}/command`
+      this.$http.post(url, this.commandCopy)
       .then((result) => {
-        this.$emit('commandChange', result)
+        this.$emit('commandChange', result.data)
         this.resetDialog();
       })
       .catch((err) => {
@@ -124,26 +121,20 @@ export default {
       })
     },
     updateCommand() {
-      let url = `${this.baseUrl}/command/${this.command.id}`
-      this.$http.put(url, this.localCommand)
+      let url = `${BASE_URL}/command`
+      this.$http.put(url, this.commandCopy)
       .then((result) => {
         this.$emit('commandChange', result)
         this.dialog = false;
       })
     },
     resetDialog() {
-      this.name = null;
-      this.query_string = null;
-      this.selectedSeverity = "LOW"
+      this.commandCopy.name = null;
+      this.commandCopy.query = null;
+      this.commandCopy.severity = "LOW"
       // Required due to dirty form validation. Input fields red otherwise after save and reopen.
       this.$refs.form.resetValidation();  
       this.dialog = false;
-    },
-    getSeverityColor(severity) {
-      if (severity === "LOW") return "green"
-      if (severity === "MEDIUM") return "yellow"
-      if (severity === "HIGH") return "orange"
-      if (severity === "CRITICAL") return "red"
     }
   },
 }

@@ -6,5 +6,5 @@ build.zip
 /server/.vscode
 /server/blueprints/__pycache__
 
-/node-server/node_modules
-node-server/config.json
+/server/node_modules
+server/config.json

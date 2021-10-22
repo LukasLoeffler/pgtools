@@ -13,6 +13,7 @@ class Validity {
 }
 
 export class Connection {
+    id: string;
     name: string;
     database: string;
     user: string;
@@ -20,7 +21,8 @@ export class Connection {
     host: string;
     port: number;
 
-    constructor(name: string, database: string, user: string, password: string, host: string, port: number) {
+    constructor(id: string, name: string, database: string, user: string, password: string, host: string, port: number) {
+        this.id = id;
         this.name = name;
         this.database = database;
         this.user = user;
@@ -30,7 +32,7 @@ export class Connection {
     }
 
     static fromObject(obj: any): Connection {
-        return new Connection(obj.name, obj.database, obj.user, obj.password, obj.host, obj.port);
+        return new Connection(obj.id, obj.name, obj.database, obj.user, obj.password, obj.host, obj.port);
     }
 
     public tostring = () : string => {

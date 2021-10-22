@@ -3,6 +3,7 @@ import { loadConnections, addConnection, removeConnection, updateConnection } fr
 import { getActiveConnections, endListen, startListen, getConnectionStatus, resetEventIndex } from '../connection-store'
 import { Request, Response } from "express"
 import { generateGeneralTrigger } from '../pg-tools';
+const crypto = require("crypto");
 
 var express = require('express');
 const router = express.Router();
@@ -10,7 +11,8 @@ const router = express.Router();
 
 router.post('/', async (req: Request, res: Response) => {
     try {
-        const connection = new Connection(req.body.name, req.body.database, req.body.user, req.body.password, req.body.host, req.body.port);
+        const id = crypto.randomBytes(16).toString("hex");
+        const connection = new Connection(id, req.body.name, req.body.database, req.body.user, req.body.password, req.body.host, req.body.port);
         const connectionValidity = await connection.checkValidity();
         if (!connectionValidity.valid) throw new Error(connectionValidity.message);
         await addConnection(connection);
@@ -22,7 +24,7 @@ router.post('/', async (req: Request, res: Response) => {
 
 router.put('/', async (req: Request, res: Response) => {
     try {
-        const connection = new Connection(req.body.name, req.body.database, req.body.user, req.body.password, req.body.host, req.body.port);
+        const connection = new Connection(req.body.id, req.body.name, req.body.database, req.body.user, req.body.password, req.body.host, req.body.port);
         await updateConnection(connection);
         return res.send(connection);
     } catch (error: any) {
@@ -66,7 +68,7 @@ router.get('/reset-index', function(req: Request, res: Response) {
 });
 
 router.post('/check', async (req: Request, res: Response) => {
-    const connection = new Connection(req.body.name, req.body.database, req.body.user, req.body.password, req.body.host, req.body.port);
+    const connection = new Connection(req.body.id, req.body.name, req.body.database, req.body.user, req.body.password, req.body.host, req.body.port);
     const connectionValidity = await connection.checkValidity();
     return res.send(connectionValidity);
 })

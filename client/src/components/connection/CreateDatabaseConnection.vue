@@ -46,6 +46,7 @@
 
 <script>
 import ConnectionEditor from "./ConnectionEditor.vue";
+import { BASE_URL } from '@/main'
 
 export default {
   name: 'CreateDatabaseConnection',
@@ -75,7 +76,7 @@ export default {
       this.valid = validity;
     },
     createConnection() {
-      let url = `http://${location.hostname}:5000/connection`
+      let url = `${BASE_URL}/connection`
       this.$http.post(url, this.connection)
         .then((result) => {
           this.$emit('connectionCreate', result)
@@ -88,12 +89,11 @@ export default {
     },
     checkConnection() {
       this.checkingConnection = true;
-      let url = `http://${location.hostname}:5000/connection/check`
+      let url = `${BASE_URL}/connection/check`
       this.$http.post(url, this.connection)
         .then((result) => {
           if (!result.data.valid) {
             this.alert = true;
-            console.log(result.data.message)
           } else {
             this.successSnackbar = true;
           }

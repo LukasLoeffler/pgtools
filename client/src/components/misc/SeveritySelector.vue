@@ -1,6 +1,6 @@
 <template>
     <v-btn-toggle 
-        value="value"
+        :value="value"
         @change="input"
         dense
         mandatory

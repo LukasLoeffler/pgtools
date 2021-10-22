@@ -6,13 +6,18 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import vuetify from './plugins/vuetify';
 import Vuex from 'vuex'
-
 import io from "socket.io-client";
-let socket = io("http://localhost:5000");
+
+
+const PROTOCOL = location.protocol;
+const HOSTNAME = location.hostname;
+const PORT = 5000;
+export const BASE_URL = `${PROTOCOL}//${HOSTNAME}:${PORT}`;
+
+let socket = io(BASE_URL);
 
 Vue.use(Vuetify)
 Vue.use(Vuex)
-
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -32,13 +37,13 @@ const store = new Vuex.Store({
     },
     //Adds connection to activeConnections if no connection with same id is present
     addActiveConnection (state, connection) {
-      if (!state.activeConnections.some(existingConnection => existingConnection.name === connection.name)){
+      if (!state.activeConnections.some(existingConnection => existingConnection.id === connection.id)){
         state.activeConnections.push(connection);
       }
     },
     //Removed connection from active connection if existing
     removeActiveConnection(state, connection) {
-      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.name !== connection.name)
+      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.id !== connection.id)
     },
     addEvent(state, event) {
       state.events = [event, ...state.events];
@@ -65,12 +70,12 @@ const store = new Vuex.Store({
 })
 
 
+const CONNECTION_URL = `${BASE_URL}/connection/all/active`
 
-let url = "http://localhost:5000/connection/all/active";
-axios.get(url)
-.then((result) => {
-  store.commit('setActiveConnections', result.data);
-});
+axios.get(CONNECTION_URL)
+  .then((result) => {
+    store.commit('setActiveConnections', result.data);
+  });
 
 socket.on("databaseEvent", event => {
   event.id = event.data.id || event.data_old.id;

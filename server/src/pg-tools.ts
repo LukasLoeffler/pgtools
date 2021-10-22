@@ -1,9 +1,9 @@
 const { Client } = require('pg')
-import { getConnectionByName } from "./config-handler";
+import { getConnectionById } from "./config-handler";
 
-export async function generateGeneralTrigger(connectionName: string) {
+export async function generateGeneralTrigger(connectionId: string) {
 
-    const connection = await getConnectionByName(connectionName);
+    const connection = await getConnectionById(connectionId);
 
     const client = new Client(connection);
 

@@ -27,7 +27,7 @@ app.get('/', (req: any, res: any) => {
 
 
 server.listen(PORT, {origins: "*:*"}, () => {
-    console.log(`Listening on: ${PORT}`);
+    console.log(`Listening on: http://localhost:${PORT}`);
 });
 
 
@@ -41,9 +41,9 @@ const ioOptions = {
 export const sio = new Server(server, ioOptions);
 
 sio.on("connection", (socket: Socket) => {
-    console.log("Client connected");
+    // console.log("Client connected");
 
     socket.on('disconnect', (reason: any) => {
-        console.log("Client disconnected");
+        // console.log("Client disconnected");
     });
 });

@@ -6,6 +6,8 @@
           </v-btn>
             <CommandCreateEdit 
               mode="EDIT"
+              :command="commandCopy"
+              @commandChange="handleCommandChange"
             >
               <template v-slot:activator>
                 <v-btn icon class="mr-1">
@@ -24,36 +26,37 @@
 
 <script>
 import CommandCreateEdit from "./CommandCreateEdit";
+import colorHelper from '@/mixins/color-helper.js'
+import { BASE_URL } from '@/main'
 
 export default {
   name: 'ManageCommand',
   components: { CommandCreateEdit },
+  mixins: [colorHelper],
   props: {
     command: Object,
     connection: Object
   },
   data () {
     return {
-      baseUrl: `http://${location.hostname}:5000`,
       dialog: false,
       valid: false,
       rules: {
         required: value => !!value || 'Required.',
       },
       name: null,
-      query_string: null,
-      localCommand: JSON.parse(JSON.stringify(this.command)),
-      severities: ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      commandCopy: JSON.parse(JSON.stringify(this.command)),
+      severities: ["LOW", "MEDIUM", "HIGH"],
       alert: false,
       alertMessage: null
     }
   },
   methods: {
     executeCommand() {
-      let url = `${this.baseUrl}/connection/execute`
+      let url = `${BASE_URL}/command/execute`
       let data = {
-        connection_id: this.connection.id,
-        db_query: this.command.query_string
+        connectionId: this.connection.id,
+        query: this.command.query
       }
       this.$http.post(url, data)
         .then((result) => {
@@ -64,8 +67,11 @@ export default {
           }
       })
     },
+    handleCommandChange(data) {
+      this.$emit('commandChange', data);
+    },
     saveCommand() {
-      let url = `${this.baseUrl}/command/${this.command.id}`
+      let url = `${BASE_URL}/command/${this.command.id}`
       this.$http.put(url, this.localCommand)
       .then((result) => {
         this.$emit('commandChange', result)
@@ -73,18 +79,13 @@ export default {
       })
     },
     deleteCommand() {
-      let url = `${this.baseUrl}/command/${this.command.name}`
+      let url = `${BASE_URL}/command/${this.command.id}`
       this.$http.delete(url)
       .then((result) => {
         this.$emit('commandChange', result)
         this.dialog = false;
       })
     },
-    getSeverityColor(severity) {
-      if (severity === "LOW") return "green  lighten-2"
-      if (severity === "MEDIUM") return "orange  lighten-2"
-      if (severity === "HIGH") return "red  lighten-2"
-    }
   },
   created() {},
 }

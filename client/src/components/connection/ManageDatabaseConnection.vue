@@ -33,14 +33,13 @@
 </template>
 
 <script>
-import ButtonContainer from '../ubiquitous/ButtonContainer.vue';
+import ButtonContainer from '../misc/ButtonContainer.vue';
 import ConnectionEditor from "./ConnectionEditor";
-
+import { BASE_URL } from '@/main'
 
 export default {
   data () {
     return {
-      baseUrl: `http://${location.hostname}:5000`,
       dialog: false,
       valid: false,
       connected: false,
@@ -63,7 +62,7 @@ export default {
       this.updatedConnection = newConnection;
     },
     connect() {
-      let url = `${this.baseUrl}/connection/listen-start/${this.connection.name}`
+      let url = `${BASE_URL}/connection/listen-start/${this.connection.id}`
       this.$http.get(url)
       .then((result) => this.loadStatus())
       .catch((error) => {
@@ -72,7 +71,7 @@ export default {
       });
     },
     disconnect() {
-      let url = `${this.baseUrl}/connection/listen-end/${this.connection.name}`
+      let url = `${BASE_URL}/connection/listen-end/${this.connection.id}`
       this.$http.get(url)
         .then((result) => {
           this.loadStatus();
@@ -82,7 +81,7 @@ export default {
         });
     },
     loadStatus() {
-      let url = `${this.baseUrl}/connection/status/${this.connection.name}`
+      let url = `${BASE_URL}/connection/status/${this.connection.id}`
       this.$http.get(url)
       .then((result) => {
         this.connected = result.data.connected;
@@ -94,7 +93,7 @@ export default {
       });
     },
     deleteConnection() {
-      let url = `${this.baseUrl}/connection/${this.connection.name}`;
+      let url = `${BASE_URL}/connection/${this.connection.id}`;
       this.$http.delete(url)
       .then((result) => {
         this.$emit('connectionDelete', result)
@@ -102,7 +101,7 @@ export default {
       });
     },
     updateConnection() {
-      let url = `${this.baseUrl}/connection`;
+      let url = `${BASE_URL}/connection`;
       this.$http.put(url, this.updatedConnection)
       .then((result) => {
         this.$emit('connectionDelete', result)

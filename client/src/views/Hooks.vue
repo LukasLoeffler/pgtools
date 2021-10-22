@@ -1,7 +1,18 @@
 <template id="temp">
   <v-container fluid class="pr-1 pb-1">
     <v-row class="ma-1">
-      <v-col cols="4">
+      <v-col cols="4" class="pr-1 pl-0">
+        <v-text-field
+          outlined
+          dense
+          v-model="search"
+          placeholder="Search"
+          label="Search"
+          append-icon="mdi-magnify"
+          hide-details
+        ></v-text-field>
+      </v-col>
+      <v-col cols="4" class="pr-1 pl-1">
         <DropSelect v-model="selectedConnection" :items="connections">
           <template slot="no-data">
             <v-list-item>
@@ -12,13 +23,28 @@
           </template>
         </DropSelect>
       </v-col>
-      <v-col cols="2">
-        <v-btn color="success" :loading="loading" @click="save" :disabled="!saveRequired">
-          SAVE
-          <v-icon right>
-            mdi-content-save
-          </v-icon>
-        </v-btn>
+      <v-col cols="1" class="pr-1 pl-1">
+        <ButtonContainer outlined>
+          <v-btn 
+            icon
+            :loading="saving" 
+            @click="save" 
+            :disabled="!saveRequired"
+          >
+            <v-icon>
+              mdi-content-save-outline
+            </v-icon>
+          </v-btn>
+          <v-btn 
+            icon
+            :loading="loading" 
+            @click="reload" 
+          >
+            <v-icon>
+              mdi-reload
+            </v-icon>
+          </v-btn>
+        </ButtonContainer>
       </v-col>
     </v-row>
     <v-data-table
@@ -32,9 +58,13 @@
       v-model="selected"
       :single-select="false"
       height="calc(100vh - 150px)"
+      :search="search"
     >
       <template v-slot:[`item.hookEnabled`]="{ item }">
-        <v-simple-checkbox v-model="item.hookEnabled" @click="requireSave"></v-simple-checkbox>
+        <v-simple-checkbox 
+          v-model="item.hookEnabled"
+          @click="requireSave"
+        ></v-simple-checkbox>
       </template>
       <template v-slot:no-data>
         <v-list-item class="justify-center">
@@ -48,26 +78,29 @@
 </template>
 
 <script>
-import DropSelect from '../components/ubiquitous/DropSelect.vue';
+import DropSelect from '../components/misc/DropSelect.vue';
+import { BASE_URL } from '@/main'
+import ButtonContainer from '../components/misc/ButtonContainer.vue';
 
 export default {
   name: 'Triggers',
-  components: { DropSelect  },
+  components: { DropSelect, ButtonContainer  },
   
   data: function () {
     return {
-      baseUrl: `http://${location.hostname}:5000`,
       tables: [],
       headers: [
-        {text: 'Schema', value: 'schema'},
         {text: 'Table', value: 'table'},
+        {text: 'Schema', value: 'schema'},
         {text: 'Type', value: 'type'},
       ],
       saveRequired: false,
       loading: false,
+      saving: false,
       connections: [],
       selectedConnection: null,
-      selected: []
+      selected: [],
+      search: ""
     }
   },
   methods: {
@@ -83,10 +116,11 @@ export default {
         this.saveRequired = true;
       });
     },
+    reload() {
+      this.loadHooks();
+    },
     save() {
-        this.loading = true;
-
-
+        this.saving = true;
         this.tables = this.tables
           .filter((table) => !this.selected.some(selectedTable => selectedTable.table === table.table))
           .map((table) => {
@@ -102,23 +136,24 @@ export default {
 
         const payload = this.tables.concat(this.selected);
 
-        let url = `${this.baseUrl}/hooks/set/${this.selectedConnection.name}`;
+        let url = `${BASE_URL}/hooks/set/${this.selectedConnection.id}`;
         this.$http.post(url, payload)
-        .then((result) => {
-          this.tables = result.data;
-          this.saveRequired = false;
-          this.loading = false;
-        })
-        .catch((error) => {
-          console.error(error);
-          this.loading = false;
-        });
+          .then((result) => {
+            this.tables = result.data;
+            this.saveRequired = false;
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+            this.saving = false;
+          });
     },
     requireSave() {
       this.saveRequired = true;
     },
     loadConnections() {
-      let url = `${this.baseUrl}/connection/all`;
+      let url = `${BASE_URL}/connection/all`;
       this.$http.get(url)
       .then((result) => {
         this.connections = result.data;
@@ -126,24 +161,30 @@ export default {
           this.selectedConnection = result.data[0];
         }
       });
+    },
+    loadHooks() {
+      let url = `${BASE_URL}/hooks/${this.selectedConnection.id}`;
+      this.loading = true;
+      this.$http.get(url)
+        .then((result) => {
+          this.tables = result.data;
+          this.selected = this.tables.filter((table) => table.hookEnabled);
+          this.$nextTick(() => this.saveRequired = false );
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     }
   },
   created() {
     this.loadConnections();
   },
   watch: {
-    selectedConnection(newValue) {
-      let url = `${this.baseUrl}/hooks/${newValue.name}`;
-      this.$http.get(url)
-      .then((result) => {
-        this.tables = result.data;
-
-        this.selected = this.tables.filter((table) => table.hookEnabled);
-        this.$nextTick(() => this.saveRequired = false );
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+    selectedConnection(newSelectedConnection) {
+      this.loadHooks();
     },
     selected() {
       this.saveRequired = true;
@@ -151,6 +192,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>
