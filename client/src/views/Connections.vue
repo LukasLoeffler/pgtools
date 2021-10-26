@@ -66,17 +66,20 @@ export default {
   },
   methods: {
     loadData() {
-      let url = `${BASE_URL}/connection/all`;
-      this.$http.get(url)
-      .then((result) => {
-        this.connections = result.data;
-      });
+      this.$http.get(`${BASE_URL}/connection/all`)
+        .then((result) => {
+          this.connections = result.data;
+        });
     }
   },
-    created() {
-      this.loadData();
+  created() {
+    this.loadData();
   },
-
+  watch: {
+    '$store.getters.websocketStatus': function(connected) {
+      if (connected) this.loadData();
+    }
+  }
 }
 </script>
 

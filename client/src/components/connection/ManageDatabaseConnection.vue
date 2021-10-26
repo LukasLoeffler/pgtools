@@ -112,6 +112,11 @@ export default {
   created() {
     this.loadStatus();
   },
+  watch: {
+    '$store.getters.websocketStatus': function(connected) {
+      this.loadStatus();
+    }
+  }
 }
 </script>
 
