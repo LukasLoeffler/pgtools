@@ -1,10 +1,13 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col id="content">
+      <v-col>
         <v-row>
-          <v-col cols="5">
-            <v-text-field 
+          <v-col 
+            cols="5" 
+            class="pl-2"
+          >
+            <v-text-field
               class="ma-1" 
               v-model="search" 
               append-icon="mdi-magnify"
@@ -22,7 +25,7 @@
             <ConnectionInfoModal style="float: right;" class="mt-1"/>
           </v-col>
         </v-row>
-        <v-data-table 
+        <v-data-table
           fixed-header 
           :headers="headers"
           :disable-pagination="true"

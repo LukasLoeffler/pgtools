@@ -1,35 +1,46 @@
 <template>
-  <v-app id="app">
-
+  <v-app 
+    id="app"
+  >
     <v-app-bar
       app
       color="blue-grey darken-2"
-      dark
       clipped-left
       height="50"
     >
       <v-app-bar-nav-icon>
-        <v-btn icon>
+        <v-btn 
+          color="white"
+          icon
+        >
           <v-icon>{{currentIcon}}</v-icon>
         </v-btn>
       </v-app-bar-nav-icon>
       <v-toolbar-title 
-        color="white"
+        style="color: white"
         class="pl-1"
       >{{ $route.name || 'pgtools'}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <ConnectionIndicator id="dbCon" :clickable="true"/>
+      <v-btn
+        icon
+        color="white"
+        @click="settingsDrawer = !settingsDrawer"
+      >
+        <v-icon>
+          mdi-cog
+        </v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-navigation-drawer
       app
-      dark
       :mini-variant="$vuetify.breakpoint.width <= 900"
       permanent
       :expand-on-hover="$vuetify.breakpoint.width > 900"
       clipped
     >
-      <v-list dark>
+      <v-list>
         <v-list-item class="pl-2">
           <v-list-item-avatar color="teal lighten-2" size="37">
             <v-img :src="'/favicon.ico'" width="25" height="25" contain></v-img>
@@ -71,6 +82,45 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
+
+    <v-navigation-drawer
+      v-model="settingsDrawer"
+      clipped
+      temporary
+      app
+      right
+      
+      hide-overlay
+      width="300"
+    >
+      <v-toolbar
+        height="50"
+      >
+        <v-toolbar-title 
+          class="text-h6 font-weight-medium"
+        >Settings</v-toolbar-title>
+
+        <v-spacer></v-spacer>
+        <v-btn
+          icon
+          @click="settingsDrawer = false"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      
+      <v-row class="ma-auto">
+        <v-col class="pl-5">
+          <v-switch
+            v-model="$vuetify.theme.dark"
+            inset
+            label="Toggle darkmode"
+            @change="saveDarkmode"
+          ></v-switch>
+        </v-col>
+      </v-row>
+    </v-navigation-drawer>
+
     <v-main>
       <router-view></router-view>
     </v-main>
@@ -85,7 +135,9 @@ export default {
   components: {ConnectionIndicator },
   data: () => ({
     mini: false,
+    dark: false,
     drawer: null,
+    settingsDrawer: false,
     currentRoute: null,
     sidebarElements: [
       {
@@ -110,9 +162,18 @@ export default {
       }
     ]
   }),
+  created() {
+    this.$vuetify.theme.dark = Boolean(localStorage.getItem("darkmode") === "true");
+  },
   computed: {
     currentIcon() {
       return this.sidebarElements.find(element => element.name === this.$route.name).icon;
+    },
+  },
+  methods: {
+    saveDarkmode(value) {
+      console.log("Saving:", value);
+      localStorage.setItem("darkmode", this.$vuetify.theme.dark);
     }
   }
 }

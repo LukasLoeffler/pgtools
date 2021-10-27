@@ -3,7 +3,7 @@
       <v-row
         align="center" 
         justify="center" 
-        class="pa-4"
+        class="pl-2 pr-3 pt-4"
       >
         <transition name="fade">
           <FilterField 

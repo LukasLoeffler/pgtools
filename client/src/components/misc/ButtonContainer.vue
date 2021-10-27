@@ -4,6 +4,7 @@
         rounded
         class="button-container"
         style="display: inline-flex;"
+        :style="{ 'border-color': ($vuetify.theme.dark) ? 'rgba(75,75,75,1)' : 'rgba(0,0,0,.42) !important' }"
     >
         <slot></slot>
     </v-sheet>
@@ -23,7 +24,6 @@ export default {
 <style scoped>
     .button-container {
         background-color: transparent !important;
-        border-color: rgba(0,0,0,.42) !important; 
         padding: 1px 1px 1px 1px;
     }
 </style>
