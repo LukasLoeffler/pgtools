@@ -43,7 +43,7 @@ const store = new Vuex.Store({
     },
     //Removed connection from active connection if existing
     removeActiveConnection(state, connection) {
-      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.id !== connection.id)
+      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.id !== connection.id);
     },
     addEvent(state, event) {
       state.events = [event, ...state.events];

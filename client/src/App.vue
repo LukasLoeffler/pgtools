@@ -171,8 +171,7 @@ export default {
     },
   },
   methods: {
-    saveDarkmode(value) {
-      console.log("Saving:", value);
+    saveDarkmode() {
       localStorage.setItem("darkmode", this.$vuetify.theme.dark);
     }
   }
