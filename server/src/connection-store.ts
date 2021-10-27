@@ -5,11 +5,11 @@ import { getConnectionById as getConnection } from "./config-handler"
 import { Connection } from "./domain/connection";
 
 class ConnectionInstance {
-    name: string;
+    id: string;
     subscriber: Subscriber;
 
-    constructor(name: string, subscriber: Subscriber) {
-        this.name = name;
+    constructor(id: string, subscriber: Subscriber) {
+        this.id = id;
         this.subscriber = subscriber;
     }
 }
@@ -21,15 +21,18 @@ export async function startListen(connectionId: string) {
     const connection: Connection | undefined = await getConnection(connectionId);
 
     if (!connection) throw new Error(`Connection is not present`);
-
+    
     const conString = `postgresql://${connection.user}:${connection.password}@${connection.host}:${connection.port}/${connection.database}`
     const subscriber: Subscriber = createSubscriber({ connectionString: conString })
-    
+
     subscriber.notifications.on("pg_change", (payload) => {
         payload.index = eventIndex; 
         sio.emit("databaseEvent", payload)
         eventIndex++;
     })
+
+    subscriber.events.on("error", (error: Error) => console.log("Error:", error));
+
     
     try {
         subscriber.connect()
@@ -50,17 +53,17 @@ function addConnectionToStore(connection: ConnectionInstance) {
     connectionStore.push(connection);
 }
 
-function getConnectionByName(name: string): ConnectionInstance | undefined {
-    return connectionStore.find(connection => connection.name === name);
+function getConnectionById(id: string): ConnectionInstance | undefined {
+    return connectionStore.find(connection => connection.id === id);
 }
 
-function removeConnectionFromStore(name: string) {
-    connectionStore = connectionStore.filter(connection => connection.name !== name)
+function removeConnectionFromStore(id: string) {
+    connectionStore = connectionStore.filter(connection => connection.id !== id)
 }
 
-export function endListen(dbName: string) {
-    const connection = getConnectionByName(dbName);
-    removeConnectionFromStore(dbName);
+export function endListen(id: string) {
+    const connection = getConnectionById(id);
+    removeConnectionFromStore(id);
     connection?.subscriber.close();
 }
 
@@ -68,7 +71,7 @@ export function getActiveConnections() {
     return connectionStore;
 }
 
-export function getConnectionStatus(name: string) {
-    const connection = getConnectionByName(name);
+export function getConnectionStatus(id: string) {
+    const connection = getConnectionById(id);
     return (connection === undefined) ? false : true;
 }
