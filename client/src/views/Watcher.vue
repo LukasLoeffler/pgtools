@@ -260,6 +260,6 @@ export default {
 }
 
 .box-expanded {
-  box-shadow: inset 0px 4px 8px -5px rgb(200 200 200 / 75%), inset 0px -4px 8px -5px rgb(200 200 200 / 75%) !important;
+  box-shadow: inset 0 0 8px gray;
 }
 </style>
