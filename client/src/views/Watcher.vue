@@ -97,7 +97,7 @@
               <a @click="setDataIdFilter(item)">{{ item.id }}</a>
             </template>
             <template v-slot:expanded-item="{ headers, item }">
-              <td :colspan="headers.length" class="px-1">
+              <td :colspan="headers.length" class="px-1 box-expanded">
                 <v-sheet>
                   <ObjectDiff
                     class="my-2"
@@ -257,5 +257,9 @@ export default {
 
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+.box-expanded {
+  box-shadow: inset 0px 4px 8px -5px rgb(200 200 200 / 75%), inset 0px -4px 8px -5px rgb(200 200 200 / 75%) !important;
 }
 </style>
