@@ -3,7 +3,7 @@
       <v-row
         align="center" 
         justify="center" 
-        class="pa-4"
+        class="pl-2 pr-3 pt-4"
       >
         <transition name="fade">
           <FilterField 
@@ -97,7 +97,7 @@
               <a @click="setDataIdFilter(item)">{{ item.id }}</a>
             </template>
             <template v-slot:expanded-item="{ headers, item }">
-              <td :colspan="headers.length" class="px-1">
+              <td :colspan="headers.length" class="px-1 box-expanded">
                 <v-sheet>
                   <ObjectDiff
                     class="my-2"
@@ -257,5 +257,9 @@ export default {
 
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+.box-expanded {
+  box-shadow: inset 0 0 8px gray;
 }
 </style>

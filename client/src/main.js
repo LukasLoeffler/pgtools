@@ -28,7 +28,7 @@ const store = new Vuex.Store({
     activeConnections: [],
     events: [],
     eventSelection: [],
-    websocketStatus: false
+    websocketStatus: false,
   },
   mutations: {
     //Sets a whole array of connections as active connections
@@ -43,7 +43,7 @@ const store = new Vuex.Store({
     },
     //Removed connection from active connection if existing
     removeActiveConnection(state, connection) {
-      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.id !== connection.id)
+      state.activeConnections = state.activeConnections.filter(existingConnection => existingConnection.id !== connection.id);
     },
     addEvent(state, event) {
       state.events = [event, ...state.events];
@@ -54,7 +54,7 @@ const store = new Vuex.Store({
     resetEvents(state) {
       state.events = [];
       state.eventSelection = [];
-    }
+    },
   },
   getters: {
     activeConnections: state => {

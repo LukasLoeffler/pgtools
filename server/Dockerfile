@@ -23,6 +23,7 @@ COPY --from=build-stage /usr/src/app/build ./build
 
 RUN mkdir output
 RUN mkdir temp
+RUN npm install pm2 -g
 
 
-CMD [ "node", "./build/index.js" ]
+CMD [ "pm2-runtime", "./build/index.js" ]

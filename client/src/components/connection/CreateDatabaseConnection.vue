@@ -10,22 +10,30 @@
         <v-card-title>
           <span class="headline">Create connection</span>
         </v-card-title>
-        <ConnectionEditor :connection="connection" @validityChange="changeValidity" @connectionChange="setConnection"/>
+        <ConnectionEditor 
+          :connection="connection" 
+          @validityChange="changeValidity" 
+          @connectionChange="setConnection"
+        />
         <v-divider></v-divider>
         <v-card-actions>
-          <v-spacer></v-spacer>
           <v-btn 
             color="blue" 
             text 
             @click="checkConnection" 
-            :disabled="!valid" 
+            :disabled="!valid"
+            left
             :loading="checkingConnection"
-          >Check</v-btn>
+          >
+            Check:
+            {{ status }}
+          </v-btn>
+          <v-spacer></v-spacer>
           <v-btn 
             color="green" 
             text 
             @click="createConnection" 
-            :disabled="!valid"
+            :disabled="!connectionValid"
           >
           Create</v-btn>
           <v-btn 
@@ -58,6 +66,7 @@ export default {
       alert: false,
       successSnackbar: false,
       valid: false,
+      connectionValid: null,
       connection: {
         name: '',
         host: 'localhost',
@@ -71,6 +80,7 @@ export default {
   methods: {
     setConnection(newConnection) {
       this.connection = newConnection;
+      this.connectionValid = null;
     },
     changeValidity(validity) {
       this.valid = validity;
@@ -92,6 +102,8 @@ export default {
       let url = `${BASE_URL}/connection/check`
       this.$http.post(url, this.connection)
         .then((result) => {
+
+          this.connectionValid = result.data.valid;
           if (!result.data.valid) {
             this.alert = true;
           } else {
@@ -99,6 +111,14 @@ export default {
           }
           this.checkingConnection = false;
         })
+    }
+  },
+  computed: {
+    status() {
+      if (this.connectionValid === null) return "Undefined";
+      if (!this.connectionValid) return "Invalid";
+      if (this.connectionValid) return "Valid";
+      return "Undefined";
     }
   }
 }

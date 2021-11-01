@@ -35,10 +35,19 @@
                 </tr>
             </thead>
             <tbody>
+
+                <tr v-if="getObjectDifferences().length === 0">
+                    <td 
+                        colspan="3"
+                        style="text-align: center;"
+                    >No difference</td>
+                </tr>
+
                 <tr
+                    v-else
                     v-for="(diffPr, index) of getObjectDifferences()" 
                     :key="index"
-                    :style="{'background-color': (diffPr.old === diffPr.new) ? 'white': 'rgba(134, 206, 250, 0.2)'}"
+                    :style="{'background-color': (diffPr.old === diffPr.new) ? '': 'rgba(134, 206, 250, 0.1)'}"
                 >
                     <td>{{ diffPr.key }}</td>
                     <td>{{ String(diffPr.old) }}</td>
