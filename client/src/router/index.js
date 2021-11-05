@@ -16,7 +16,8 @@ Vue.use(VueRouter)
   {
     path: '/hooks',
     name: 'Hooks',
-    component: Hooks
+    component: Hooks,
+    props: true
   },
   {
     path: '/watcher',
