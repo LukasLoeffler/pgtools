@@ -229,4 +229,8 @@ export default {
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+
+.v-dialog {
+  outline: 1px solid lightblue;
+}
 </style>

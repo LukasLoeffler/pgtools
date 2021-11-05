@@ -38,6 +38,10 @@
           <template v-slot:[`item.status`]="{ item }">
             <ManageDatabaseConnection :connection="item" @connectionDelete="loadData"/>
           </template>
+          
+          <template v-slot:[`item.hooks`]="{ item }">
+            <HookIndicator :connection="item"/>
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -49,10 +53,11 @@ import ManageDatabaseConnection from "../components/connection/ManageDatabaseCon
 import CreateDatabaseConnection from "../components/connection/CreateDatabaseConnection.vue";
 import ConnectionInfoModal from "../components/info-modals/ConnectionInfoModal"
 import { BASE_URL } from '@/main'
+import HookIndicator from '../components/connection/HookIndicator.vue';
 
 export default {
   name: 'Connections',
-  components: { ManageDatabaseConnection, CreateDatabaseConnection, ConnectionInfoModal },
+  components: { ManageDatabaseConnection, CreateDatabaseConnection, ConnectionInfoModal, HookIndicator },
   data: function () {
     return {
       connections: [],
@@ -63,7 +68,8 @@ export default {
         { text: 'User', value: 'user' },
         { text: 'Host', value: 'host' },
         { text: 'Port', value: 'port' },
-        { text: 'Status', value: 'status' }
+        { text: 'Status', value: 'status' },
+        { text: 'Hooked', value: 'hooks' },
       ],
     }
   },

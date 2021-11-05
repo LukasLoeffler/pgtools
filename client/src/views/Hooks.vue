@@ -85,7 +85,7 @@ import ButtonContainer from '../components/misc/ButtonContainer.vue';
 export default {
   name: 'Triggers',
   components: { DropSelect, ButtonContainer  },
-  
+  props: ["connectionId"],
   data: function () {
     return {
       tables: [],
@@ -158,7 +158,11 @@ export default {
       .then((result) => {
         this.connections = result.data;
         if (result.data[0]){
-          this.selectedConnection = result.data[0];
+
+          if(this.$route.params.connectionId) {
+            this.selectedConnection = result.data.find(connection => connection.id === this.$route.params.connectionId);
+          }
+          if (!this.selectedConnection) this.selectedConnection = result.data[0];
         }
       });
     },

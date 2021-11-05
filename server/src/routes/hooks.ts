@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { getConnectionById } from "../config-handler";
+import { getErrorByCode } from "../pg-error-codes";
 const { Client } = require('pg')
 
 var express = require('express'),
@@ -62,6 +63,16 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 });
 
+
+router.get('/:id/stats', async (req: Request, res: Response) => {
+    try {
+        const responseBody = await getHookStats(req.params.id);
+        res.send(responseBody);
+    } catch (error: any) {
+        res.status(400).send(error);
+    }
+});
+
 router.post('/set/:name', async (req: Request, res: Response) => {
     const triggers = await setTriggerForTable(req.params.name, req.body);
     res.send(triggers);
@@ -95,6 +106,31 @@ async function createTriggerForTable(client: any, tableName: string, triggerName
         FOR EACH ROW EXECUTE PROCEDURE notify_event();
     `
     return await client.query(queryString);
+}
+
+async function getHookStats(connectionId: string) {
+    const connection = await getConnectionById(connectionId);
+    const client = new Client(connection);
+
+    try {
+        await client.connect();
+        const tablesWithHooks = await getAllTablesWithTriggers(client);
+    
+        return {
+            totalTables: tablesWithHooks.length,
+            hookedTables: tablesWithHooks.filter(hook => hook.hookEnabled).length
+        }
+    } catch (error: any) {
+        if (error.code) {
+            throw {
+                code: error.code,
+                error: getErrorByCode(error.code),
+                database: connection?.database
+            }
+        } else {
+            throw error;
+        }
+    }
 }
 
 async function setTriggerForTable(connectionId: string, tableList: Array<TableHook>) {
