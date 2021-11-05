@@ -5,15 +5,15 @@
         dense
         mandatory
     >
-        <v-btn :color="value === 'LOW' ? 'green lighten-2' : 'white'" value="LOW">
+        <v-btn :color="value === 'LOW' ? 'green lighten-2' : ''" value="LOW">
         LOW
         </v-btn>
 
-        <v-btn :color="value === 'MEDIUM' ? 'orange lighten-2' : 'white'" value="MEDIUM">
+        <v-btn :color="value === 'MEDIUM' ? 'orange lighten-2' : ''" value="MEDIUM">
         MEDIUM
         </v-btn>
 
-        <v-btn :color="value === 'HIGH' ? 'red lighten-2' : 'white'" value="HIGH">
+        <v-btn :color="value === 'HIGH' ? 'red lighten-2' : ''" value="HIGH">
         HIGH
         </v-btn>
     </v-btn-toggle>
