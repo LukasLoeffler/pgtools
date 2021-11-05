@@ -8,25 +8,26 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="headline">Create connection</span>
+          <span class="headline ml-3">Create connection</span>
         </v-card-title>
-        <ConnectionEditor 
-          :connection="connection" 
+        <v-divider></v-divider>
+        <ConnectionEditor
+          :connection="connection"
           @validityChange="changeValidity" 
           @connectionChange="setConnection"
         />
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn 
+          <v-btn
             color="blue" 
             text 
             @click="checkConnection" 
             :disabled="!valid"
             left
+            class="ml-2"
             :loading="checkingConnection"
           >
-            Check:
-            {{ status }}
+            Check{{ status }}
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn 
@@ -38,7 +39,8 @@
           Create</v-btn>
           <v-btn 
             color="red" 
-            text 
+            text
+            class="mr-2"
             @click="dialog = false"
           >Abort</v-btn>
         </v-card-actions>
@@ -67,6 +69,7 @@ export default {
       successSnackbar: false,
       valid: false,
       connectionValid: null,
+      invalidityMessage: null,
       connection: {
         name: '',
         host: 'localhost',
@@ -106,18 +109,25 @@ export default {
           this.connectionValid = result.data.valid;
           if (!result.data.valid) {
             this.alert = true;
+            this.invalidityMessage = this.resolveError(result.data.message);
           } else {
             this.successSnackbar = true;
           }
           this.checkingConnection = false;
         })
+    },
+    resolveError(errorMessage) {
+      if (errorMessage === "invalid_password") return "Invalid username or password"
+      if (errorMessage == "invalid_catalog_name") return "Database not found"
+
+      return errorMessage
     }
   },
   computed: {
     status() {
-      if (this.connectionValid === null) return "Undefined";
-      if (!this.connectionValid) return "Invalid";
-      if (this.connectionValid) return "Valid";
+      if (this.connectionValid === null) return "";
+      if (!this.connectionValid) return (this.invalidityMessage) ? ": " + this.invalidityMessage : ": Invalid";
+      if (this.connectionValid) return ": Valid";
       return "Undefined";
     }
   }
