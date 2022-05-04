@@ -9,3 +9,4 @@ build.zip
 /server/node_modules
 server/config.json
 /server/build
+/server/config/config.json
