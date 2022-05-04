@@ -15,10 +15,12 @@ app.use(express.json())
 var connectionRoutes = require('./routes/connections');
 var hookRoutes = require('./routes/hooks');
 var commandRoutes = require('./routes/commands');
+var configRoutes = require('./routes/config');
 
 app.use('/connection', connectionRoutes);
 app.use('/hooks', hookRoutes);
 app.use('/command', commandRoutes);
+app.use('/config', configRoutes);
 
 
 app.get('/', (req: any, res: any) => {

@@ -4,7 +4,7 @@ import { Command } from './domain/command';
 import { Connection } from './domain/connection';
 
 
-const configPath = path.join(__dirname, '../config.json');
+const configPath = path.join(__dirname, '../config/config.json');
 
 // If no config file exists initially, create an empty one
 fs.exists(configPath, function (exists: boolean) {
@@ -70,17 +70,17 @@ export async function removeConnection(connectionId: String) {
     await writeConfigToFile(config)
 }
 
-export async function getCommandById(id: string): Promise<Command | undefined> {
+export async function getCommandById(id: number): Promise<Command | undefined> {
     const allCommands = await loadCommands();
     return allCommands.find((command: Command) => command.id === id);
 }
 
 export async function loadCommands(): Promise<Array<Command>> {
     const settings = await loadConfigFromFile();
-    return settings.commands;
+    return settings.commands.sort((a: Command, b: Command) => a.id - b.id);
 }
 
-export async function removeCommand(commandId: String) {
+export async function removeCommand(commandId: number) {
     let config = await loadConfigFromFile();
     config.commands = config.commands.filter((command: any) => command.id !== commandId);
     await writeConfigToFile(config)

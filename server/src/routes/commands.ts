@@ -3,19 +3,19 @@ import { loadCommands, removeCommand, addCommand, updateCommand, getConnectionBy
 import { Command } from "../domain/command";
 import { Connection } from "../domain/connection";
 import { getErrorByCode } from "../pg-error-codes";
-const crypto = require("crypto");
 
 var express = require('express');
 const router = express.Router();
 
 router.get('/all', async (req: Request, res: Response) => {
-    const allCommands = await loadCommands()
+    const allCommands = await loadCommands();
     res.send(allCommands);
 });
 
 router.post('/', async (req: Request, res: Response) => {
-    const id = crypto.randomBytes(16).toString("hex");
-    const command = new Command(id, req.body.name, req.body.query, req.body.severity);
+    const allCommands = await loadCommands();
+    const lastId = allCommands[allCommands.length - 1]?.id ?? 1;
+    const command = new Command(lastId + 1, req.body.name, req.body.query, req.body.severity);
     await addCommand(command);
     res.send();
 });
@@ -37,14 +37,19 @@ router.post('/execute', async (req: Request, res: Response) => {
     await client.connect();
 
     try {
+        const start = process.hrtime();
         let result = await client.query(query);
+        const end = process.hrtime(start)[1] / 1000000;
 
         const output = {
             status: "success",
             payload: result.rows,
-            message: null
+            message: null,
+            rowCount: result.rowCount,
+            command: result.command,
+            elapsed: end.toFixed(1)
         }
-    
+
         res.send(output);
     } catch (error: any) {
         const response = {
@@ -57,7 +62,7 @@ router.post('/execute', async (req: Request, res: Response) => {
 });
 
 router.delete('/:id', function(req: Request, res: Response){
-    removeCommand(req.params.id);
+    removeCommand(parseInt(req.params.id));
     res.send();
 });
 

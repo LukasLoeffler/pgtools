@@ -9,10 +9,17 @@ services:
     build: ./server
     ports:
       - "5000:5000"
-
+    volumes:
+      - pgtools:/app/config
+    restart: unless-stopped
   frontend:
     container_name: pgtools-frontend
     image: pgtools-frontend:latest
     build: ./client
     ports:
       - "80:80"
+
+
+
+volumes:
+  pgtools:
