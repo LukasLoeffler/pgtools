@@ -18,7 +18,7 @@
           <span class="headline">{{(mode ==='CREATE') ? 'Create command' : 'Edit command'}}</span>
         </v-card-title>
         <v-form v-model="valid" ref="form">
-          <v-container class="pl-7">
+          <v-container class="px-7">
             <v-row>
               <v-col cols="6">
                 <v-text-field 
@@ -34,14 +34,12 @@
                 <SeveritySelector v-model="commandCopy.severity"/>
               </v-col>
               <v-col cols="12">
-                <v-textarea 
-                  label="Query"
-                  outlined
-                  filled
-                  v-model="commandCopy.query" 
-                  :rules="[rules.required]"
-                  hide-details
-                ></v-textarea>
+                <prism-editor
+                  class="my-editor height-300"
+                  v-model="commandCopy.query"
+                  :highlight="highlighter"
+                  :line-numbers="false"
+                ></prism-editor>
               </v-col>
             </v-row>
           </v-container>
@@ -70,10 +68,19 @@
 <script>
 import SeveritySelector from '../misc/SeveritySelector.vue';
 import { BASE_URL } from '@/main'
+import { PrismEditor } from "vue-prism-editor";
+import "vue-prism-editor/dist/prismeditor.min.css"; // import the styles somewhere
+
+// import highlighting library (you can use any library you want just return html string)
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
+import "prismjs/themes/prism-tomorrow.css"; // import syntax highlighting styles
+import "prismjs/components/prism-sql";
 
 export default {
   name: 'CommandCreateEdit',
-  components: { SeveritySelector },
+  components: { SeveritySelector, PrismEditor },
   props: {
     mode: {
       type: String,
@@ -135,11 +142,25 @@ export default {
       // Required due to dirty form validation. Input fields red otherwise after save and reopen.
       this.$refs.form.resetValidation();  
       this.dialog = false;
-    }
+    },
+    highlighter(code) {
+      return highlight(code, languages.sql);
+    },
   },
 }
 </script>
 
 
 <style scoped>
+
+.my-editor {
+  background: #2d2d2d;
+  color: #ccc;
+
+  font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
+  font-size: 18px;
+  line-height: 1.5;
+  padding: 5px;
+  border-radius: 2px;
+}
 </style>

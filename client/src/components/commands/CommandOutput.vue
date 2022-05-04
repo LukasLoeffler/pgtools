@@ -1,7 +1,7 @@
 <template>
   <v-card 
     class="ml-1" 
-    v-resize="updateTableDistance"
+    height="calc(100vh - 70px)"
   >
     <v-card-title>
       <v-row>
@@ -13,9 +13,10 @@
             class="text-right"
           >
             <v-chip
+              v-if="commandData.status"
               label
               small
-              :color="getColor(  commandData.status )"
+              :color="getColor(commandData.status)"
             >
               {{ commandData.status }}
             </v-chip>
@@ -23,19 +24,15 @@
         </v-row>
     </v-card-title>
 
-    <v-divider class="mb-12"></v-divider>
+    <v-divider class="mb-3"></v-divider>
 
     <v-card-text class="pa-1">
-      <v-row class="ml-1">
-        <v-col cols="10">
-          <p v-if="commandData.message">>{{ commandData.message }}</p>
-        </v-col>
-      </v-row>
       <v-simple-table 
-        v-if="commandData.payload" 
+        v-if="commandData && commandData.payload && Array.isArray(commandData.payload) && commandData.payload.length > 0" 
         ref="table" 
-        :height="`calc(100vh - ${tableDistanceTop}px)`"
+        height="calc(100vh - 155px)"
         dense
+        fixed-header
       >
         <thead>
           <tr>
@@ -65,26 +62,12 @@
 <script>
 export default {
   name: "CommandOutput",
-    data: () => {
-    return {
-      name: "CommandOutput",
-      toggle_one: 0,
-      tableDistanceTop: 200
-    }
-  },
-  props: {
-      commandData: Object
-  },
+  props: ["commandData"],
   methods: {
     getColor (status) {
-      if (status === "error") return "red";
+      if (status === "error") return "warning";
       if (status === "success") return "green";
       else return 'blue';
-    },
-    updateTableDistance() {
-      try {
-        this.tableDistanceTop = this.$refs.table.$el.getBoundingClientRect().top + 24;
-      } catch (error) {/** */}
     }
   },
 }

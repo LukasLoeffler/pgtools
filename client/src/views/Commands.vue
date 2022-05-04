@@ -26,7 +26,7 @@
           />
         </v-col>
         <transition name="fade">
-          <v-col v-if="commandData">
+          <v-col v-if="commandData" class="pr-1">
             <CommandOutput :commandData="commandData" class="mr-1"/>
           </v-col>
         </transition>
@@ -50,20 +50,23 @@ export default {
       selectedConnection: null,
       noDataText: "Keine Verbindungen vorhanden",
       commands: [],
-      commandData: {},
+      commandData: null,
       tableDistanceTop: 115
     }
   },
   methods: {
-    loadConnections() {
+    async loadConnections() {
       let url = `${BASE_URL}/connection/all`;
-      this.$http.get(url)
-      .then((result) => {
-        this.connections = result.data;
-        if (result.data[0]){
-          this.selectedConnection = result.data[0];
-        }
-      });
+      this.connections = (await this.$http.get(url)).data;
+
+      let urlActive = `${BASE_URL}/connection/all/active`;
+      const activeConnections = (await this.$http.get(urlActive)).data;
+
+      if (activeConnections.length === 0 && this.connections[0]) {
+        this.selectedConnection = this.connections[0];
+      } else {
+        this.selectedConnection = this.connections.find(connection => connection.id === activeConnections[0].id);
+      }
     },
     loadCommands() {
       let url = `${BASE_URL}/command/all`;

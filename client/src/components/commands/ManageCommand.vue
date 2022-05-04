@@ -1,27 +1,37 @@
 <template>
-  <v-row>
-        <div style="display: flex; flex-direction: row; flex-wrap: nowrap">
-          <v-btn icon class="mr-1" @click="executeCommand">
-            <v-icon color="green">mdi-play-circle-outline</v-icon>
-          </v-btn>
-            <CommandCreateEdit 
-              mode="EDIT"
-              :command="commandCopy"
-              @commandChange="handleCommandChange"
-            >
-              <template v-slot:activator>
-                <v-btn icon class="mr-1">
-                  <v-icon color="#46a2d4">mdi-pencil-circle-outline</v-icon>
-                </v-btn>
-              </template>
-            </CommandCreateEdit>
-          <v-btn icon class="mr-1" @click="deleteCommand">
-            <v-icon color="red">mdi-delete-circle-outline</v-icon>
-          </v-btn>
-        </div>
+  <div>
+    <v-row>
+          <div style="display: flex; flex-direction: row; flex-wrap: nowrap">
+            <v-btn icon class="mr-1" @click="executeCommand">
+              <v-icon color="green">mdi-play-circle-outline</v-icon>
+            </v-btn>
+              <CommandCreateEdit 
+                mode="EDIT"
+                :command="commandCopy"
+                @commandChange="handleCommandChange"
+              >
+                <template v-slot:activator>
+                  <v-btn icon class="mr-1">
+                    <v-icon color="#46a2d4">mdi-pencil-circle-outline</v-icon>
+                  </v-btn>
+                </template>
+              </CommandCreateEdit>
+            <v-btn icon class="mr-1" @click="deleteCommand">
+              <v-icon color="red">mdi-delete-circle-outline</v-icon>
+            </v-btn>
+          </div>
 
-    <v-snackbar color="warning" v-model="alert" timeout="3000" top>{{alertMessage}}</v-snackbar>
-  </v-row>
+      
+    </v-row>
+    <v-snackbar
+      bottom right
+      :color="alertType"
+      v-model="alert"
+      timeout="3000"
+      class="pb-1 pr-1"
+      transition="slide-x-reverse-transition"
+    >{{alertMessage}}</v-snackbar>
+  </div>
 </template>
 
 <script>
@@ -48,6 +58,7 @@ export default {
       commandCopy: JSON.parse(JSON.stringify(this.command)),
       severities: ["LOW", "MEDIUM", "HIGH"],
       alert: false,
+      alertType: null,
       alertMessage: null
     }
   },
@@ -61,11 +72,10 @@ export default {
       this.$http.post(url, data)
         .then((result) => {
           this.$emit('commandData', result.data);
-          if (result.data.status !== "success") {
-            this.alertMessage = result.data.message;
+            this.alertMessage = result.data.message ?? `${result.data.rowCount} rows affected (${result.data.elapsed}ms)`;
+            this.alertType = (result.data.status === "success") ? "success" : "warning";
             this.alert = true;
-          }
-      })
+        })
     },
     handleCommandChange(data) {
       this.$emit('commandChange', data);
