@@ -18,7 +18,7 @@
           <span class="headline">{{(mode ==='CREATE') ? 'Create command' : 'Edit command'}}</span>
         </v-card-title>
         <v-form v-model="valid" ref="form">
-          <v-container class="px-7">
+          <v-container fluid>
             <v-row>
               <v-col cols="6">
                 <v-text-field 
@@ -35,7 +35,7 @@
               </v-col>
               <v-col cols="12">
                 <prism-editor
-                  class="my-editor height-300"
+                  class="my-editor"
                   v-model="commandCopy.query"
                   :highlight="highlighter"
                   :line-numbers="false"
